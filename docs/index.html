@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Job Radar</title>
+<style>
+:root{--bg:#f4f2ec;--card:#fffdf8;--ink:#1c1b18;--mute:#6f6a5f;--line:#e2ddd0;--acc:#0b6b53;--acc-bg:#dcefe7;--ai:#6a3fb5;--ai-bg:#ebe3f8;--new:#b3470d}
+@media(prefers-color-scheme:dark){:root{--bg:#141412;--card:#1e1d1a;--ink:#edeae2;--mute:#9c968a;--line:#33312c;--acc:#5fd0ae;--acc-bg:#16332b;--ai:#bfa2f2;--ai-bg:#2b2340;--new:#ff9a5c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px 10px;z-index:2}
+.wrap{max-width:760px;margin:0 auto}
+h1{font:700 19px/1.2 ui-serif,Georgia,serif;margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+#status{font:400 12px ui-sans-serif,system-ui;color:var(--mute)}
+.bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#q{flex:1;min-width:130px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 14px;font:inherit;font-size:14px}
+main{padding:12px 16px 60px}
+.job{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.job.is-new{border-left:4px solid var(--new)}
+.job.done{opacity:.5}
+.job a.t{color:var(--ink);font-weight:650;font-size:16px;text-decoration:none;overflow-wrap:anywhere}
+.job a.t:hover{text-decoration:underline}
+.co{color:var(--mute);margin-top:1px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:13px;color:var(--mute)}
+.sal{color:var(--acc);font-weight:600}
+.tag{font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:5px;padding:1px 6px;vertical-align:2px;margin-left:6px}
+.tag.ai{background:var(--ai-bg);color:var(--ai)}
+.tag.nw{background:transparent;color:var(--new);border:1px solid var(--new)}
+.act{display:flex;gap:8px;margin-top:10px}
+.act a,.act button{flex:0 0 auto;border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.act a{background:var(--acc-bg);border-color:transparent;color:var(--acc);font-weight:600}
+.empty{color:var(--mute);text-align:center;padding:40px 10px}
+details{margin-top:24px;color:var(--mute);font-size:12px}
+details table{border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums}
+details td{padding:2px 12px 2px 0}
+.bad{color:var(--new)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Job Radar <span id="status">yukleniyor…</span></h1>
+  <div class="bar">
+    <button class="chip" data-f="all" aria-pressed="true">Hepsi</button>
+    <button class="chip" data-f="new" aria-pressed="false">Yeni</button>
+    <button class="chip" data-f="ai" aria-pressed="false">AI</button>
+    <button class="chip" data-f="applied" aria-pressed="false">Basvurdum</button>
+    <input id="q" type="search" placeholder="Ara: sirket, baslik…" aria-label="Ara">
+  </div>
+</div></header>
+<main><div class="wrap"><div id="list"></div><details><summary>Kaynak durumu</summary><table id="rep"></table></details></div></main>
+<script>
+const $=s=>document.querySelector(s), LS=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+      save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let data={jobs:[],report:[]}, filter='all', marks=LS('jr-marks')||{}, lastVisit=LS('jr-last')||null;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ago(iso){ if(!iso) return ''; const m=(Date.now()-new Date(iso))/6e4;
+  if(m<60) return Math.max(1,Math.round(m))+' dk once'; if(m<1440) return Math.round(m/60)+' sa once'; return Math.round(m/1440)+' gun once'; }
+const isNew=j=>lastVisit ? j.first_seen>lastVisit : (Date.now()-new Date(j.first_seen))<864e5;
+function render(){
+  const q=$('#q').value.trim().toLowerCase();
+  const rows=data.jobs.filter(j=>{
+    const m=marks[j.id];
+    if(filter==='applied') return m==='applied';
+    if(m==='hidden') return false;
+    if(filter==='new'&&!isNew(j)) return false;
+    if(filter==='ai'&&!j.ai) return false;
+    return !q || (j.title+' '+j.company+' '+j.location).toLowerCase().includes(q);
+  });
+  $('#list').innerHTML = rows.length ? rows.map(j=>{
+    const url=/^https?:\/\//.test(j.url)?j.url:'#';
+    return `<article class="job ${isNew(j)?'is-new':''} ${marks[j.id]==='applied'?'done':''}">
+      <a class="t" href="${esc(url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.ai?'<span class="tag ai">AI</span>':''}${isNew(j)?'<span class="tag nw">YENI</span>':''}
+      <div class="co">${esc(j.company)}</div>
+      <div class="meta"><span>📍 ${esc(j.location||'Remote')}</span>${j.salary?`<span class="sal">${esc(j.salary)}</span>`:''}<span>${esc(ago(j.posted||j.first_seen))}</span><span>${esc(j.source)}</span></div>
+      <div class="act"><a href="${esc(url)}" target="_blank" rel="noopener">Ilana git</a>
+        <button data-id="${esc(j.id)}" data-m="applied">${marks[j.id]==='applied'?'Geri al':'Basvurdum'}</button>
+        <button data-id="${esc(j.id)}" data-m="hidden">Gizle</button></div></article>`}).join('')
+    : '<div class="empty">Bu filtrede ilan yok.</div>';
+  const nNew=data.jobs.filter(j=>isNew(j)&&marks[j.id]!=='hidden').length;
+  $('#status').textContent = data.updated ? `${data.jobs.length} ilan · ${nNew} yeni · son tarama ${ago(data.updated)}` : 'henuz tarama yok';
+  $('#rep').innerHTML=(data.report||[]).map(r=>`<tr><td>${esc(r.source)}</td><td class="${r.ok?'':'bad'}">${r.ok?esc(r.fetched)+' ilan':'HATA: '+esc(r.error)}</td></tr>`).join('');
+}
+async function load(){
+  try{ const r=await fetch('jobs.json?'+Date.now(),{cache:'no-store'}); if(r.ok) data=await r.json(); }
+  catch(e){ $('#status').textContent='veri okunamadi'; return; }
+  render();
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.chip'); if(c){ filter=c.dataset.f; document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c)); return render(); }
+  const b=e.target.closest('button[data-id]'); if(b){ const {id,m}=b.dataset; marks[id]===m?delete marks[id]:marks[id]=m; save('jr-marks',marks); render(); }
+});
+$('#q').addEventListener('input',render);
+load(); setInterval(load,5*60*1000);
+window.addEventListener('pagehide',()=>save('jr-last',new Date().toISOString()));
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+# Job Radar ayarlari. Gunluk degistirilecek tek dosya burasi.
+
+# Baslikta bunlardan en az biri gecmeli (regex, buyuk/kucuk harf farketmez)
+include:
+  - '\bsdet\b'
+  - '\bqa\b'
+  - '\bquality (assurance|engineer|engineering)\b'
+  - '\b(software|automation|qa) test(er|ing)?\b'
+  - '\btest (automation|engineer|developer|architect|lead)\b'
+  - '\b(engineer|developer) in test\b'
+  - '\bautomation engineer\b'
+  - '\b(ai|llm|ml|model|genai) (eval|evals|evaluation|quality|test|testing|qa)\b'
+  - '\beval(s|uation)? engineer\b'
+
+# Baslikta bunlardan biri gecerse atilir
+exclude:
+  - '\b(intern|internship|apprentice)\b'
+  - '\b(director|vp|vice president|head of)\b'
+  - '\b(hardware|manufacturing|mechanical|electrical|rf|firmware|semiconductor|supplier|food|clinical|pharma|lab)\b'
+  - '\bquality assurance (specialist|analyst|auditor|inspector|coordinator)\b'
+  - '\b(game|games|localization) tester\b'
+
+# Bu kelimeler baslik/etiketlerde gecerse ilan "AI" rozeti alir
+ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative', '\beval', '\bagent']
+
+# Kac gunden eski ilanlar ilk taramada alinmasin / listeden dussun
+max_age_days: 21
+
+# Remote is siteleri (acik API / RSS). Kapatmak icin satiri sil.
+boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads]
+
+# Sirket kariyer sayfalari. Slug = kariyer sayfasi URL'indeki sirket adi.
+# Yanlis slug botu durdurmaz; calisma raporunda "FAIL" olarak gorunur.
+greenhouse: [anthropic, scaleai, databricks, stripe, figma, gitlab, affirm, datadog,
+             cloudflare, coinbase, discord, airtable, robinhood, twilio, okta, pendo,
+             grammarly, instacart, reddit, duolingo, hubspot, mongodb, elastic, samsara]
+lever: [plaid, spotify, mistral, palantir]
+ashby: [openai, cohere, perplexity, ramp, notion, linear, harvey, elevenlabs, replit,
+        deepgram, runway, sierra, decagon, writer, langchain, modal, baseten, vanta,
+        glean, hebbia, cursor, abridge, snorkelai, arize]
