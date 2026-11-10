@@ -54,8 +54,9 @@ def money(lo, hi, cur="$"):
 
 
 def job(src, jid, title, company, loc, url, posted="", salary="", tags="", remote=None):
-    return {"id": f"{src}:{jid}", "source": src, "title": (title or "").strip(),
-            "company": (company or "").strip(), "location": (loc or "").strip(),
+    u = lambda x: html.unescape(x or "").strip()
+    return {"id": f"{src}:{jid}", "source": src, "title": u(title),
+            "company": u(company), "location": u(loc),
             "url": url or "", "posted": iso(posted), "salary": salary or "",
             "tags": tags or "", "remote_flag": remote}
 
@@ -295,7 +296,7 @@ def main():
     failed = {r["source"].split("/")[0] for r in report if not r["ok"]}
     ids = {j["id"] for j in picked}
     keep = [j for j in known.values() if j["id"] not in ids and j["source"] in failed
-            and fresh(j, cfg.get("max_age_days", 21))]
+            and fresh(j, cfg.get("max_age_days", 21)) and matches(j, cfg)]
     alljobs = sorted(picked + keep, key=lambda j: j["posted"] or j["first_seen"], reverse=True)
 
     for r in report:
