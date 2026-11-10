@@ -100,14 +100,21 @@ def himalayas(_):
 
 
 def jobicy(_):
-    out = []
-    for tag in ("qa", "test", "sdet"):
-        js = get("https://jobicy.com/api/v2/remote-jobs", params={"count": 50, "geo": "usa", "tag": tag}).json().get("jobs", [])
+    out, err = [], None
+    for params in ({"count": 50, "geo": "usa", "industry": "qa"}, {"count": 50, "tag": "qa"},
+                   {"count": 50, "tag": "sdet"}, {"count": 50, "geo": "usa"}):
+        try:
+            js = get("https://jobicy.com/api/v2/remote-jobs", params=params).json().get("jobs", [])
+        except Exception as ex:
+            err = ex
+            continue
         for j in js:
             out.append(job("jobicy", j.get("id"), j.get("jobTitle"), j.get("companyName"),
                            j.get("jobGeo"), j.get("url"), j.get("pubDate"),
                            money(j.get("annualSalaryMin"), j.get("annualSalaryMax")), "", True))
         time.sleep(1)
+    if not out and err:
+        raise err
     return out
 
 
@@ -173,7 +180,7 @@ ATS = {"greenhouse": greenhouse, "lever": lever, "ashby": ashby}
 US = re.compile(r"\b(usa?|u\.s\.a?\.?|united states|america|americas|north america|worldwide|anywhere|global)\b", re.I)
 US_STATE = re.compile(r",\s*(A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]|DC)\b")
 FOREIGN = re.compile(r"\b(canada|uk|united kingdom|europe|emea|apac|latam|india|germany|france|spain|ireland|poland|"
-                     r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|"
+                     r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|cet|cest|gmt|"
                      r"london|berlin|paris|dublin|toronto|bangalore|bengaluru|tokyo|sydney|amsterdam)\b", re.I)
 
 
@@ -239,16 +246,30 @@ def collect(cfg):
     return jobs, report
 
 
+NEAR = []  # basligi uyan ama konumu yuzunden elenenler (ayar yaparken bakmak icin)
+
+
+def short_loc(loc):
+    parts = [p.strip() for p in loc.split(",")]
+    if len(parts) > 5 and len(loc) > 90:
+        us = any(p.lower() in ("united states", "usa", "us") for p in parts)
+        return f"United States + {len(parts) - 1} ulke" if us else f"{parts[0]} + {len(parts) - 1} ulke"
+    return loc
+
+
 def select(raw, cfg):
     seen, out = set(), []
     for j in raw:
         key = (re.sub(r"\W+", "", j["title"].lower()), re.sub(r"\W+", "", j["company"].lower()))
         if not j["url"] or j["id"] in seen or key in seen:
             continue
+        if matches(j, cfg) and not us_remote(j) and fresh(j, cfg.get("max_age_days", 21)):
+            NEAR.append(f"{j['source']} | {j['title']} | {j['company']} | {j['location'][:70]}")
         if matches(j, cfg) and us_remote(j) and fresh(j, cfg.get("max_age_days", 21)):
             seen.update((j["id"], key))
             j["ai"] = any(re.search(p, j["title"] + " " + j["tags"], re.I) for p in cfg.get("ai_terms", []))
             j.pop("remote_flag"); j.pop("tags")
+            j["location"] = short_loc(j["location"])
             out.append(j)
     return out
 
@@ -280,6 +301,9 @@ def main():
     for r in report:
         print(("ok  " if r["ok"] else "FAIL"), r["source"].ljust(28), r.get("fetched", r.get("error")))
     print(f"toplam {len(raw)} ilan tarandi · {len(alljobs)} uygun · {len(new)} yeni")
+    print(f"basligi uyup konumdan elenen: {len(NEAR)}")
+    for n in NEAR[:150]:
+        print("  near:", n)
     if dry:
         for j in new[:40]:
             print(" -", j["title"], "@", j["company"], "|", j["location"], "|", j["url"])

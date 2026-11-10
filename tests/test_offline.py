@@ -12,7 +12,9 @@ cases = [
  (J("Software Engineer", "Remote US"), False), (J("Hardware Test Engineer", "Remote US"), False),
  (J("Director of Quality Engineering", "Remote US"), False), (J("Test Automation Lead", "Remote, Canada"), False),
  (J("SDET", "Remote US", posted="2026-01-01T00:00:00+00:00"), False), (J("LLM Evals Engineer", "Remote, United States"), True),
- (J("Quality Assurance Analyst", "USA", True), False), (J("Senior QA Engineer", "US or Canada", True), True),
+ (J("Quality Assurance Analyst", "USA", True), False), (J("Physician (MD/DO) - Medical AI Evaluation", "United States", True), False),
+ (J("Automation Engineer - Patching", "United States", True), False), (J("Senior QA Automation Engineer", "Time zone: CET (+/- 3 hours)", True), False),
+ (J("Senior AI Test Engineer", "United States", True), True), (J("Senior QA Engineer", "US or Canada", True), True),
 ]
 bad = [(j["title"], j["location"], exp) for j, exp in cases if bool(radar.select([dict(j)], cfg)) != exp]
 assert not bad, bad

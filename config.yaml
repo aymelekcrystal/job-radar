@@ -8,8 +8,8 @@ include:
   - '\b(software|automation|qa) test(er|ing)?\b'
   - '\btest (automation|engineer|developer|architect|lead)\b'
   - '\b(engineer|developer) in test\b'
-  - '\bautomation engineer\b'
-  - '\b(ai|llm|ml|model|genai) (eval|evals|evaluation|quality|test|testing|qa)\b'
+  - '\b(qa|test|quality) automation\b'
+  - '\b(ai|llm|ml|model|genai) (evals?|evaluation|quality|test|testing|qa) (engineer|analyst|specialist|lead|developer|scientist)\b'
   - '\beval(s|uation)? engineer\b'
 
 # Baslikta bunlardan biri gecerse atilir
@@ -19,6 +19,7 @@ exclude:
   - '\b(hardware|manufacturing|mechanical|electrical|rf|firmware|semiconductor|supplier|food|clinical|pharma|lab)\b'
   - '\bquality assurance (specialist|analyst|auditor|inspector|coordinator)\b'
   - '\b(game|games|localization) tester\b'
+  - '\b(physician|nurse|md|cybersecurity|security|substation|data center|penetration)\b'
 
 # Bu kelimeler baslik/etiketlerde gecerse ilan "AI" rozeti alir
 ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative', '\beval', '\bagent']
@@ -33,8 +34,16 @@ boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads]
 # Yanlis slug botu durdurmaz; calisma raporunda "FAIL" olarak gorunur.
 greenhouse: [anthropic, scaleai, databricks, stripe, figma, gitlab, affirm, datadog,
              cloudflare, coinbase, discord, airtable, robinhood, twilio, okta, pendo,
-             grammarly, instacart, reddit, duolingo, hubspot, mongodb, elastic, samsara]
-lever: [plaid, spotify, mistral, palantir]
+             instacart, reddit, duolingo, mongodb, elastic, samsara,
+             canonical, automattic, doximity, webflow, gusto, lyft, pinterest, dropbox, asana,
+             brex, chime, sofi, toast, squarespace, roblox, nerdwallet, calendly, pagerduty,
+             newrelic, zscaler, fivetran, dbtlabsinc, hashicorp, grafanalabs, sumologic,
+             teladoc, hingehealth, oscar, cerebral, headway, springhealth, omadahealth,
+             coursera, udemy, chegg, khanacademy, upstart, marqeta, bill, justworks,
+             appian, bandwidth, redhat, sas, epicgames, lookout, wizinc, abnormalsecurity]
+lever: [spotify, palantir, zoox, outreach, attentive, veeva, kraken, wealthfront, ro, binance]
 ashby: [openai, cohere, perplexity, ramp, notion, linear, harvey, elevenlabs, replit,
         deepgram, runway, sierra, decagon, writer, langchain, modal, baseten, vanta,
-        glean, hebbia, cursor, abridge, snorkelai, arize]
+        cursor, abridge, zapier, deel, posthog, supabase, vercel, render, clickup,
+        duckduckgo, 1password, docker, kong, sentry, mercury, plaid, airwallex, quora,
+        character, suno, lambda, crusoe, together, fireworks, pinecone, weaviate, llamaindex]
