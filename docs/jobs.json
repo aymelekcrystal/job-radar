@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-10T23:46:32+00:00",
+ "updated": "2026-11-10T23:48:25+00:00",
  "report": [
   {
    "source": "remotive",
@@ -18,8 +18,8 @@
   },
   {
    "source": "jobicy",
-   "ok": false,
-   "error": "HTTPError: 400 Client Error: Bad Request for url: https://jobicy.com/api/v2/remote-jobs?count=50&geo=usa&tag=qa"
+   "ok": true,
+   "fetched": 52
   },
   {
    "source": "weworkremotely",
@@ -112,11 +112,6 @@
    "fetched": 20
   },
   {
-   "source": "greenhouse/grammarly",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/grammarly/jobs"
-  },
-  {
    "source": "greenhouse/instacart",
    "ok": true,
    "fetched": 90
@@ -130,11 +125,6 @@
    "source": "greenhouse/duolingo",
    "ok": true,
    "fetched": 61
-  },
-  {
-   "source": "greenhouse/hubspot",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hubspot/jobs"
   },
   {
    "source": "greenhouse/mongodb",
@@ -152,9 +142,244 @@
    "fetched": 315
   },
   {
-   "source": "lever/plaid",
+   "source": "greenhouse/canonical",
+   "ok": true,
+   "fetched": 316
+  },
+  {
+   "source": "greenhouse/automattic",
    "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.lever.co/v0/postings/plaid?mode=json"
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/automattic/jobs"
+  },
+  {
+   "source": "greenhouse/doximity",
+   "ok": true,
+   "fetched": 13
+  },
+  {
+   "source": "greenhouse/webflow",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "greenhouse/gusto",
+   "ok": true,
+   "fetched": 81
+  },
+  {
+   "source": "greenhouse/lyft",
+   "ok": true,
+   "fetched": 155
+  },
+  {
+   "source": "greenhouse/pinterest",
+   "ok": true,
+   "fetched": 165
+  },
+  {
+   "source": "greenhouse/dropbox",
+   "ok": true,
+   "fetched": 38
+  },
+  {
+   "source": "greenhouse/asana",
+   "ok": true,
+   "fetched": 107
+  },
+  {
+   "source": "greenhouse/brex",
+   "ok": true,
+   "fetched": 279
+  },
+  {
+   "source": "greenhouse/chime",
+   "ok": true,
+   "fetched": 66
+  },
+  {
+   "source": "greenhouse/sofi",
+   "ok": true,
+   "fetched": 50
+  },
+  {
+   "source": "greenhouse/toast",
+   "ok": true,
+   "fetched": 334
+  },
+  {
+   "source": "greenhouse/squarespace",
+   "ok": true,
+   "fetched": 21
+  },
+  {
+   "source": "greenhouse/roblox",
+   "ok": true,
+   "fetched": 277
+  },
+  {
+   "source": "greenhouse/nerdwallet",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/nerdwallet/jobs"
+  },
+  {
+   "source": "greenhouse/calendly",
+   "ok": true,
+   "fetched": 7
+  },
+  {
+   "source": "greenhouse/pagerduty",
+   "ok": true,
+   "fetched": 49
+  },
+  {
+   "source": "greenhouse/newrelic",
+   "ok": true,
+   "fetched": 42
+  },
+  {
+   "source": "greenhouse/zscaler",
+   "ok": true,
+   "fetched": 377
+  },
+  {
+   "source": "greenhouse/fivetran",
+   "ok": true,
+   "fetched": 176
+  },
+  {
+   "source": "greenhouse/dbtlabsinc",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/dbtlabsinc/jobs"
+  },
+  {
+   "source": "greenhouse/hashicorp",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hashicorp/jobs"
+  },
+  {
+   "source": "greenhouse/grafanalabs",
+   "ok": true,
+   "fetched": 144
+  },
+  {
+   "source": "greenhouse/sumologic",
+   "ok": true,
+   "fetched": 19
+  },
+  {
+   "source": "greenhouse/teladoc",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/teladoc/jobs"
+  },
+  {
+   "source": "greenhouse/hingehealth",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hingehealth/jobs"
+  },
+  {
+   "source": "greenhouse/oscar",
+   "ok": true,
+   "fetched": 188
+  },
+  {
+   "source": "greenhouse/cerebral",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/cerebral/jobs"
+  },
+  {
+   "source": "greenhouse/headway",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/headway/jobs"
+  },
+  {
+   "source": "greenhouse/springhealth",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/springhealth/jobs"
+  },
+  {
+   "source": "greenhouse/omadahealth",
+   "ok": true,
+   "fetched": 18
+  },
+  {
+   "source": "greenhouse/coursera",
+   "ok": true,
+   "fetched": 40
+  },
+  {
+   "source": "greenhouse/udemy",
+   "ok": true,
+   "fetched": 3
+  },
+  {
+   "source": "greenhouse/chegg",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/chegg/jobs"
+  },
+  {
+   "source": "greenhouse/khanacademy",
+   "ok": true,
+   "fetched": 3
+  },
+  {
+   "source": "greenhouse/upstart",
+   "ok": true,
+   "fetched": 81
+  },
+  {
+   "source": "greenhouse/marqeta",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/marqeta/jobs"
+  },
+  {
+   "source": "greenhouse/bill",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/bill/jobs"
+  },
+  {
+   "source": "greenhouse/justworks",
+   "ok": true,
+   "fetched": 111
+  },
+  {
+   "source": "greenhouse/appian",
+   "ok": true,
+   "fetched": 158
+  },
+  {
+   "source": "greenhouse/bandwidth",
+   "ok": true,
+   "fetched": 25
+  },
+  {
+   "source": "greenhouse/redhat",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/redhat/jobs"
+  },
+  {
+   "source": "greenhouse/sas",
+   "ok": true,
+   "fetched": 3
+  },
+  {
+   "source": "greenhouse/epicgames",
+   "ok": true,
+   "fetched": 135
+  },
+  {
+   "source": "greenhouse/lookout",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "greenhouse/wizinc",
+   "ok": true,
+   "fetched": 114
+  },
+  {
+   "source": "greenhouse/abnormalsecurity",
+   "ok": true,
+   "fetched": 87
   },
   {
    "source": "lever/spotify",
@@ -162,19 +387,54 @@
    "fetched": 85
   },
   {
-   "source": "lever/mistral",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.lever.co/v0/postings/mistral?mode=json"
-  },
-  {
    "source": "lever/palantir",
    "ok": true,
    "fetched": 304
   },
   {
+   "source": "lever/zoox",
+   "ok": true,
+   "fetched": 230
+  },
+  {
+   "source": "lever/outreach",
+   "ok": true,
+   "fetched": 16
+  },
+  {
+   "source": "lever/attentive",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.lever.co/v0/postings/attentive?mode=json"
+  },
+  {
+   "source": "lever/veeva",
+   "ok": true,
+   "fetched": 861
+  },
+  {
+   "source": "lever/kraken",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "lever/wealthfront",
+   "ok": true,
+   "fetched": 22
+  },
+  {
+   "source": "lever/ro",
+   "ok": true,
+   "fetched": 54
+  },
+  {
+   "source": "lever/binance",
+   "ok": true,
+   "fetched": 4
+  },
+  {
    "source": "ashby/openai",
    "ok": true,
-   "fetched": 829
+   "fetched": 828
   },
   {
    "source": "ashby/cohere",
@@ -262,16 +522,6 @@
    "fetched": 82
   },
   {
-   "source": "ashby/glean",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/glean?includeCompensation=true"
-  },
-  {
-   "source": "ashby/hebbia",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/hebbia?includeCompensation=true"
-  },
-  {
    "source": "ashby/cursor",
    "ok": true,
    "fetched": 115
@@ -282,14 +532,129 @@
    "fetched": 25
   },
   {
-   "source": "ashby/snorkelai",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/snorkelai?includeCompensation=true"
+   "source": "ashby/zapier",
+   "ok": true,
+   "fetched": 10
   },
   {
-   "source": "ashby/arize",
+   "source": "ashby/deel",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "ashby/posthog",
+   "ok": true,
+   "fetched": 9
+  },
+  {
+   "source": "ashby/supabase",
+   "ok": true,
+   "fetched": 74
+  },
+  {
+   "source": "ashby/vercel",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "ashby/render",
+   "ok": true,
+   "fetched": 35
+  },
+  {
+   "source": "ashby/clickup",
+   "ok": true,
+   "fetched": 46
+  },
+  {
+   "source": "ashby/duckduckgo",
    "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/arize?includeCompensation=true"
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/duckduckgo?includeCompensation=true"
+  },
+  {
+   "source": "ashby/1password",
+   "ok": true,
+   "fetched": 80
+  },
+  {
+   "source": "ashby/docker",
+   "ok": true,
+   "fetched": 53
+  },
+  {
+   "source": "ashby/kong",
+   "ok": true,
+   "fetched": 113
+  },
+  {
+   "source": "ashby/sentry",
+   "ok": true,
+   "fetched": 42
+  },
+  {
+   "source": "ashby/mercury",
+   "ok": true,
+   "fetched": 0
+  },
+  {
+   "source": "ashby/plaid",
+   "ok": true,
+   "fetched": 143
+  },
+  {
+   "source": "ashby/airwallex",
+   "ok": true,
+   "fetched": 490
+  },
+  {
+   "source": "ashby/quora",
+   "ok": true,
+   "fetched": 8
+  },
+  {
+   "source": "ashby/character",
+   "ok": true,
+   "fetched": 13
+  },
+  {
+   "source": "ashby/suno",
+   "ok": true,
+   "fetched": 66
+  },
+  {
+   "source": "ashby/lambda",
+   "ok": true,
+   "fetched": 93
+  },
+  {
+   "source": "ashby/crusoe",
+   "ok": true,
+   "fetched": 326
+  },
+  {
+   "source": "ashby/together",
+   "ok": false,
+   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/together?includeCompensation=true"
+  },
+  {
+   "source": "ashby/fireworks",
+   "ok": true,
+   "fetched": 94
+  },
+  {
+   "source": "ashby/pinecone",
+   "ok": true,
+   "fetched": 6
+  },
+  {
+   "source": "ashby/weaviate",
+   "ok": true,
+   "fetched": 2
+  },
+  {
+   "source": "ashby/llamaindex",
+   "ok": true,
+   "fetched": 4
   }
  ],
  "jobs": [
@@ -310,33 +675,9 @@
    "source": "himalayas",
    "title": "Senior QA Engineer - Performance Testing",
    "company": "CodeRoad",
-   "location": "Anguilla, Antigua and Barbuda, Argentina, Aruba, Bahamas, Barbados, Belize, Bermuda, Bolivia, Bonaire, Sint Eustatius and Saba, Brazil, Canada, Cayman Islands, Chile, Colombia, Costa Rica, Cuba, Curaçao, Dominica, Dominican Republic, Ecuador, El Salvador, Falkland Islands (Malvinas), French Guiana, Greenland, Grenada, Guadeloupe, Guatemala, Guyana, Haiti, Honduras, Jamaica, Martinique, Mexico, Montserrat, Nicaragua, Panama, Paraguay, Peru, Puerto Rico, Saint Barthélemy, Saint Kitts and Nevis, Saint Lucia, Saint Martin (French part), Saint Pierre and Miquelon, Saint Vincent and the Grenadines, Sint Maarten (Dutch part), Suriname, Trinidad and Tobago, Turks and Caicos Islands, United States, United States Minor Outlying Islands, Uruguay, Venezuela, Virgin Islands, British, Virgin Islands, U.S.",
+   "location": "United States + 58 ulke",
    "url": "https://himalayas.app/companies/coderoad/jobs/senior-qa-engineer-performance-testing?utm_source=api",
    "posted": "2026-11-10T20:53:46+00:00",
-   "salary": "",
-   "ai": false,
-   "first_seen": "2026-11-10T23:46:32+00:00"
-  },
-  {
-   "id": "himalayas:https://himalayas.app/companies/mindrift/jobs/physician-md-do-medical-ai-evaluation-remote-part-time-955527890",
-   "source": "himalayas",
-   "title": "Physician (MD/DO) - Medical AI Evaluation (Remote, Part-Time)",
-   "company": "Mindrift",
-   "location": "United States",
-   "url": "https://himalayas.app/companies/mindrift/jobs/physician-md-do-medical-ai-evaluation-remote-part-time-955527890?utm_source=api",
-   "posted": "2026-11-10T18:37:11+00:00",
-   "salary": "",
-   "ai": true,
-   "first_seen": "2026-11-10T23:46:32+00:00"
-  },
-  {
-   "id": "himalayas:https://himalayas.app/companies/unisys/jobs/automation-engineer-patching",
-   "source": "himalayas",
-   "title": "Automation Engineer - Patching",
-   "company": "Unisys",
-   "location": "United States",
-   "url": "https://himalayas.app/companies/unisys/jobs/automation-engineer-patching?utm_source=api",
-   "posted": "2026-11-10T17:09:40+00:00",
    "salary": "",
    "ai": false,
    "first_seen": "2026-11-10T23:46:32+00:00"
@@ -358,7 +699,7 @@
    "source": "himalayas",
    "title": "Senior QA Engineer",
    "company": "Airtm",
-   "location": "Anguilla, Antigua and Barbuda, Argentina, Aruba, Bahamas, Barbados, Belize, Bermuda, Bolivia, Bonaire, Sint Eustatius and Saba, Brazil, Canada, Cayman Islands, Chile, Colombia, Costa Rica, Cuba, Curaçao, Dominica, Dominican Republic, Ecuador, El Salvador, Falkland Islands (Malvinas), French Guiana, Greenland, Grenada, Guadeloupe, Guatemala, Guyana, Haiti, Honduras, Jamaica, Martinique, Mexico, Montserrat, Nicaragua, Panama, Paraguay, Peru, Puerto Rico, Saint Barthélemy, Saint Kitts and Nevis, Saint Lucia, Saint Martin (French part), Saint Pierre and Miquelon, Saint Vincent and the Grenadines, Sint Maarten (Dutch part), Suriname, Trinidad and Tobago, Turks and Caicos Islands, United States, United States Minor Outlying Islands, Uruguay, Venezuela, Virgin Islands, British, Virgin Islands, U.S.",
+   "location": "United States + 58 ulke",
    "url": "https://himalayas.app/companies/airtm/jobs/senior-qa-engineer?utm_source=api",
    "posted": "2026-11-10T16:57:24+00:00",
    "salary": "",
@@ -366,28 +707,28 @@
    "first_seen": "2026-11-10T23:46:32+00:00"
   },
   {
-   "id": "workingnomads:https://www.workingnomads.com/job/go/2007928/",
-   "source": "workingnomads",
-   "title": "Senior QA Automation Engineer",
-   "company": "Proxify",
-   "location": "Time zone: CET (+/- 3 hours)",
-   "url": "https://www.workingnomads.com/job/go/2007928/",
-   "posted": "2026-11-09T13:43:40+00:00",
+   "id": "jobicy:161171",
+   "source": "jobicy",
+   "title": "QA Engineer",
+   "company": "Neuroscale AI",
+   "location": "USA",
+   "url": "https://jobicy.com/jobs/161171-qa-engineer-6",
+   "posted": "2026-11-10T15:11:50+00:00",
    "salary": "",
    "ai": false,
-   "first_seen": "2026-11-10T23:46:32+00:00"
+   "first_seen": "2026-11-10T23:48:25+00:00"
   },
   {
-   "id": "wwr:https://weworkremotely.com/remote-jobs/terac-offensive-cybersecurity-engineers-build-rl-environments-for-ai-evaluation",
-   "source": "wwr",
-   "title": "Offensive Cybersecurity Engineers: Build RL Environments for AI Evaluation",
-   "company": "Terac",
-   "location": "USA Only",
-   "url": "https://weworkremotely.com/remote-jobs/terac-offensive-cybersecurity-engineers-build-rl-environments-for-ai-evaluation",
-   "posted": "2026-11-09T09:06:52+00:00",
+   "id": "jobicy:159347",
+   "source": "jobicy",
+   "title": "Sr. Staff SDET, Customer Engineering",
+   "company": "hims &#038; hers",
+   "location": "USA",
+   "url": "https://jobicy.com/jobs/159347-sr-staff-sdet-customer-engineering",
+   "posted": "2026-11-06T15:58:27+00:00",
    "salary": "",
-   "ai": true,
-   "first_seen": "2026-11-10T23:46:32+00:00"
+   "ai": false,
+   "first_seen": "2026-11-10T23:48:25+00:00"
   },
   {
    "id": "greenhouse:anthropic-5468380008",
@@ -400,6 +741,18 @@
    "salary": "",
    "ai": false,
    "first_seen": "2026-11-10T23:46:32+00:00"
+  },
+  {
+   "id": "lever:veeva-0d88dc70-1023-4ee5-a7fe-67eb0b5cb848",
+   "source": "lever",
+   "title": "Software Engineer in Test",
+   "company": "Veeva",
+   "location": "Massachusetts - Boston",
+   "url": "https://jobs.lever.co/veeva/0d88dc70-1023-4ee5-a7fe-67eb0b5cb848",
+   "posted": "2026-10-22T22:06:49+00:00",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-10T23:48:25+00:00"
   }
  ]
 }
