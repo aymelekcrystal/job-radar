@@ -195,6 +195,14 @@ eq("topics status", notify.process(pj, stt, cfg), "sent 2 of 2")
 eq("topics routing", calls, [("111", None), ("-100222", 6), ("-100222", 7)])
 stt2 = {"tg_hello": True, "tg_welcomed": ["111", "0222"], "tg_named": {"100222": {"linkedin": 42}}}
 eq("named tab new", notify.topics_for("t", "-100222", stt2), {"ok": 5, "check": 6, "platform": 42})
+deny = notify.api
+notify.api = lambda tok, method, **p: {"ok": True, "result": {"is_forum": True}} if method == "getChat" else {"ok": False, "description": "not enough rights"}
+stt3 = {"tg_named": {"100333": {"linkedin": 111}}}
+eq("tabs denied -> only own tab", notify.topics_for("t", "-100333", stt3), {"platform": 111})
+calls.clear(); os.environ["TELEGRAM_CHAT_ID"] = "-100333"; stt3.update(tg_hello=True, tg_welcomed=["0333"])
+pj3 = [dict(j, id="p3", kind="platform", src="LinkedIn", notify="hold"), dict(j, id="c3", notify="pending")]
+notify.process(pj3, stt3, cfg); eq("denied routing", calls, [("-100333", None), ("-100333", 111)])
+notify.api = deny; os.environ["TELEGRAM_CHAT_ID"] = "111, -100222"
 stt["tg_named"] = {"100222": {"linkedin": 42}}
 eq("named tab override", notify.topics_for("t", "-100222", stt)["platform"], 42)
 stt.pop("tg_named")

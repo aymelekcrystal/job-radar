@@ -49,28 +49,37 @@ def api(tok, method, **params):
 
 
 def topics_for(tok, chat, state):
-    """For a group with Topics switched on: the three tab ids (created once). None for an ordinary chat."""
+    """For a group with Topics switched on: {kind: tab id}. Kinds without a tab go to General. None for an ordinary chat."""
     saved = state.setdefault("tg_topics", {})
     key = chat[-6:]
     mine = next((tid for name, tid in state.get("tg_named", {}).get(key, {}).items() if "linkedin" in name or "platform" in name), None)
-    if key in saved:
-        return dict(saved[key], platform=mine) if mine else saved[key]
-    info = api(tok, "getChat", chat_id=chat)
-    if not (info.get("result") or {}).get("is_forum"):
-        return None
-    ids = {}
-    for kind, name in TOPICS:
-        if kind == "platform" and mine:                # use the owner's own "LinkedIn" tab instead of making another
-            ids[kind] = mine
-            continue
-        r = api(tok, "createForumTopic", chat_id=chat, name=name)
-        if r.get("ok"):
-            ids[kind] = r["result"]["message_thread_id"]
-        else:
-            LAST_ERROR[0] = f"cannot create tab: {r.get('description', '')}"[:120]
+    if key not in saved:
+        info = api(tok, "getChat", chat_id=chat)
+        if not (info.get("result") or {}).get("is_forum") and not mine:
             return None
-    saved[key] = ids
-    return ids
+        saved[key] = {}
+    ids = saved[key]
+    if not ids.get("_denied"):
+        for kind, name in TOPICS:
+            if kind in ids or (kind == "platform" and mine):
+                continue
+            r = api(tok, "createForumTopic", chat_id=chat, name=name)
+            if r.get("ok"):
+                ids[kind] = r["result"]["message_thread_id"]
+            else:                                      # usually: the bot lacks the "Manage Topics" admin right
+                LAST_ERROR[0] = f"cannot create tab: {r.get('description', '')}"[:120]
+                ids["_denied"] = STAMP_DAY()
+                break
+    elif ids["_denied"] != STAMP_DAY():
+        ids.pop("_denied")                             # try again once a day
+    out = {k: v for k, v in ids.items() if not k.startswith("_")}
+    if mine:
+        out["platform"] = mine
+    return out
+
+
+def STAMP_DAY():
+    return NOW.isoformat()[:10]
 
 
 def deliver(j, tok, chats, state):
@@ -78,7 +87,7 @@ def deliver(j, tok, chats, state):
     results = []
     for c in chats:
         tp = topics_for(tok, c, state)
-        if j["kind"] == "platform" and not tp:
+        if j["kind"] == "platform" and not (tp or {}).get("platform"):
             continue                                   # platform postings only go to their own tab
         results.append(send(fmt(j), tok, c, thread=(tp or {}).get(j["kind"])))
     return any(results) if results else None
@@ -178,7 +187,7 @@ def process(jobs, state, cfg, dry=False):
             state["tg_welcomed"] = [c[-4:] for c in chats]
         else:
             return f"TELEGRAM ERROR: {LAST_ERROR[0]} | {diagnose(tok)} ({len(pend)} waiting)"
-    forum = any(topics_for(tok, c, state) for c in chats)
+    forum = any((topics_for(tok, c, state) or {}).get("platform") for c in chats)
     for j in jobs:                                     # platform postings wait until a Platforms tab exists
         if j["kind"] == "platform" and j.get("notify") in ("hold", "pending"):
             j["notify"] = "pending" if forum else "hold"
@@ -204,4 +213,5 @@ def process(jobs, state, cfg, dry=False):
             if j["tries"] >= 5:
                 j["notify"] = "failed"
         time.sleep(gap)
-    return f"sent {sent} of {total}" + (f" (last error: {LAST_ERROR[0]})" if sent < len(pend) and LAST_ERROR[0] else "")
+    tabs = f" | tabs: {LAST_ERROR[0]}" if LAST_ERROR[0].startswith("cannot create tab") else ""
+    return f"sent {sent} of {total}" + tabs + (f" (last error: {LAST_ERROR[0]})" if sent < len(pend) and LAST_ERROR[0] else "")
