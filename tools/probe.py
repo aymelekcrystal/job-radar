@@ -47,12 +47,12 @@ def duck():
     print("all size MB:", MAN["all"].get("parquet_size_bytes", MAN["all"].get("size_bytes", 0)) / 1e6)
     t = time.time()
     con.execute(f"""CREATE TABLE m AS SELECT url,apply_url,title,company,ats_type,location,country_iso,is_remote,
-        salary_summary,salary_min,salary_max,posted_at,fetched_at,length(description) AS dlen
+        salary_summary,salary_min,salary_max,posted_at,length(description) AS dlen
         FROM read_parquet('{url}') WHERE regexp_matches(title, '{TITLE}')""")
     print("title-match rows:", con.execute("SELECT count(*) FROM m").fetchone(), f"{time.time()-t:.1f}s")
     for r in con.execute("""SELECT ats_type,count(*) n, round(avg((posted_at IS NOT NULL)::int),2) dated,
         round(avg((dlen>200)::int),2) described, round(avg((country_iso IS NOT NULL)::int),2) ctry,
-        round(avg((is_remote)::int),2) remote, count(DISTINCT company) cos, max(fetched_at) fresh
+        round(avg((is_remote)::int),2) remote, count(DISTINCT company) cos, max(posted_at) fresh
         FROM m GROUP BY 1 ORDER BY 2 DESC""").fetchall():
         print("  ", r)
     q = """FROM m WHERE (country_iso='US' OR regexp_matches(location,'(?i)united states|\\busa?\\b|, [A-Z]{2}\\b'))
