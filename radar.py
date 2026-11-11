@@ -209,12 +209,13 @@ def jobspipe(cfg):
         print("jobspipe alanlari:", sorted(data[0].keys()))
     out = []
     for j in data:
-        sal = j.get("salary") or j.get("compensation") or {}
-        sal = money(sal.get("min"), sal.get("max")) if isinstance(sal, dict) else str(sal)
-        out.append(job("jobspipe", j.get("id"), j.get("title") or j.get("job_title"),
-                       _s(j.get("company") or j.get("company_name")),
-                       _s(j.get("location") or j.get("job_location"), "normalized", "name", "display_name", "raw", "city") or "United States",
-                       j.get("apply_url") or j.get("url"), j.get("posted_at"), sal, remote=True))
+        sal = j.get("salary_string") or money(j.get("min_annual_salary_usd") or j.get("min_annual_salary"),
+                                              j.get("max_annual_salary_usd") or j.get("max_annual_salary"))
+        out.append(job("jobspipe", j.get("id"), j.get("job_title") or j.get("title"),
+                       _s(j.get("company") or j.get("company_object")),
+                       _s(j.get("short_location") or j.get("location") or j.get("long_location")) or "United States",
+                       j.get("final_url") or j.get("url") or j.get("source_url"),
+                       j.get("date_posted") or j.get("discovered_at"), sal, remote=True))
     return out
 
 
