@@ -52,13 +52,17 @@ def topics_for(tok, chat, state):
     """For a group with Topics switched on: the three tab ids (created once). None for an ordinary chat."""
     saved = state.setdefault("tg_topics", {})
     key = chat[-6:]
+    mine = next((tid for name, tid in state.get("tg_named", {}).get(key, {}).items() if "linkedin" in name or "platform" in name), None)
     if key in saved:
-        return saved[key]
+        return dict(saved[key], platform=mine) if mine else saved[key]
     info = api(tok, "getChat", chat_id=chat)
     if not (info.get("result") or {}).get("is_forum"):
         return None
     ids = {}
     for kind, name in TOPICS:
+        if kind == "platform" and mine:                # use the owner's own "LinkedIn" tab instead of making another
+            ids[kind] = mine
+            continue
         r = api(tok, "createForumTopic", chat_id=chat, name=name)
         if r.get("ok"):
             ids[kind] = r["result"]["message_thread_id"]
@@ -118,7 +122,7 @@ def send_all(text, tok, chats):
     return any(ok)
 
 
-def greet_new_chats(tok, chats):
+def greet_new_chats(tok, chats, state):
     """A chat or channel the bot was just added to gets a message with its own ID, so it can be added to the settings."""
     try:
         base = f"https://api.telegram.org/bot{tok.strip()}"
@@ -128,6 +132,9 @@ def greet_new_chats(tok, chats):
             last = u["update_id"]
             m = u.get("message") or u.get("channel_post") or u.get("my_chat_member") or {}
             cid = str((m.get("chat") or {}).get("id") or "")
+            made = m.get("forum_topic_created")
+            if cid and made and m.get("message_thread_id"):          # a tab the owner created by hand
+                state.setdefault("tg_named", {}).setdefault(cid[-6:], {})[str(made.get("name", "")).lower()] = m["message_thread_id"]
             if not cid or cid in chats or cid in seen:
                 continue
             seen.add(cid)
@@ -156,7 +163,7 @@ def process(jobs, state, cfg, dry=False):
     if dry:
         return f"dry run ({len(pend)} pending)"
     chats = [c.strip() for c in chat.replace(";", ",").split(",") if c.strip()]
-    greet_new_chats(tok, chats)
+    greet_new_chats(tok, chats, state)
     for c in chats:                                  # a newly added chat gets a welcome once
         w = state.setdefault("tg_welcomed", [])
         if "*" in w:                                 # setup before multi-chat support: the first chat was already welcomed

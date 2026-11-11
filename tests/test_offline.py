@@ -180,7 +180,7 @@ calls = []
 notify.send = lambda text, tok, c, thread=None: (calls.append((c, thread)), True)[1]
 notify.api = lambda tok, method, **p: ({"ok": True, "result": {"is_forum": p.get("chat_id") == "-100222"}} if method == "getChat"
                                          else {"ok": True, "result": {"message_thread_id": {"🟢": 5, "🟡": 6, "🔵": 7}[p["name"][0]]}})
-notify.greet_new_chats = lambda tok, chats: None
+notify.greet_new_chats = lambda tok, chats, state: None
 import os
 os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"] = "t", "111, -100222"
 stt = {"tg_hello": True, "tg_welcomed": ["*"]}
@@ -193,6 +193,11 @@ calls.clear()
 pj = [dict(j, id="p1", kind="platform", src="LinkedIn", notify="hold"), dict(j, id="c1", kind="check", why="x", notify="pending")]
 eq("topics status", notify.process(pj, stt, cfg), "sent 2 of 2")
 eq("topics routing", calls, [("111", None), ("-100222", 6), ("-100222", 7)])
+stt2 = {"tg_hello": True, "tg_welcomed": ["111", "0222"], "tg_named": {"100222": {"linkedin": 42}}}
+eq("named tab new", notify.topics_for("t", "-100222", stt2), {"ok": 5, "check": 6, "platform": 42})
+stt["tg_named"] = {"100222": {"linkedin": 42}}
+eq("named tab override", notify.topics_for("t", "-100222", stt)["platform"], 42)
+stt.pop("tg_named")
 os.environ["TELEGRAM_CHAT_ID"] = "111"
 pj2 = [dict(j, id="p2", kind="platform", src="LinkedIn", notify="pending")]
 notify.process(pj2, stt, cfg); eq("platform held without tabs", pj2[0]["notify"], "hold")
