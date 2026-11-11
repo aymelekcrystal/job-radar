@@ -66,7 +66,7 @@ def himalayas(_):
 
 
 def jobicy(_):
-    js = http("https://jobicy.com/api/v2/remote-jobs", params={"count": 50, "geo": "usa", "industry": "qa"}).json().get("jobs", [])
+    js = http("https://jobicy.com/api/v2/remote-jobs", params={"count": 50, "geo": "usa", "tag": "qa"}).json().get("jobs", [])
     return [cand("jobicy", "jobicy", j.get("id"), j.get("jobTitle"), j.get("companyName"), [(j.get("jobGeo"), "")], j.get("url"),
                  j.get("pubDate"), remote=True, salary=money(j.get("annualSalaryMin"), j.get("annualSalaryMax")),
                  desc=j.get("jobDescription") or "") for j in js]
