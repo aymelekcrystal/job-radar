@@ -43,9 +43,10 @@ def duck():
         url = "https://storage.stapply.ai/" + url.lstrip("/")
     con = duckdb.connect()
     con.execute("INSTALL httpfs; LOAD httpfs;")
-    print(con.execute(f"DESCRIBE SELECT * FROM read_parquet('{url}')").fetchall())
+    print([c[0] for c in con.execute(f"DESCRIBE SELECT * FROM read_parquet('{url}')").fetchall()])
+    print("all size MB:", MAN["all"].get("parquet_size_bytes", MAN["all"].get("size_bytes", 0)) / 1e6)
     t = time.time()
-    con.execute(f"""CREATE TABLE m AS SELECT global_id,url,apply_url,title,company,ats_type,location,country_iso,is_remote,
+    con.execute(f"""CREATE TABLE m AS SELECT url,apply_url,title,company,ats_type,location,country_iso,is_remote,
         salary_summary,salary_min,salary_max,posted_at,fetched_at,length(description) AS dlen
         FROM read_parquet('{url}') WHERE regexp_matches(title, '{TITLE}')""")
     print("title-match rows:", con.execute("SELECT count(*) FROM m").fetchone(), f"{time.time()-t:.1f}s")
@@ -59,6 +60,7 @@ def duck():
     for d in (1, 3, 7, 30):
         print(f"US remote/Raleigh, posted <= {d}d:", con.execute(f"SELECT count(*) {q} AND posted_at >= now() - INTERVAL {d} DAY").fetchone())
     print("US remote/Raleigh, no date:", con.execute(f"SELECT count(*) {q} AND posted_at IS NULL").fetchone())
+    print("by ats, 7d:", con.execute(f"SELECT ats_type,count(*) {q} AND posted_at >= now() - INTERVAL 7 DAY GROUP BY 1 ORDER BY 2 DESC").fetchall())
     for r in con.execute(f"SELECT posted_at,ats_type,title,company,location,country_iso,is_remote,salary_summary,url {q} AND posted_at >= now() - INTERVAL 3 DAY ORDER BY posted_at DESC LIMIT 40").fetchall():
         print("  ", [str(x)[:60] for x in r])
 
@@ -114,5 +116,4 @@ def ats():
 
 
 step("stapply manifest", manifest)
-step("ATS endpoints", ats)
 step("stapply duckdb", duck)
