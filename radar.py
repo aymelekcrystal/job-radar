@@ -79,10 +79,10 @@ class Radar:
         self.now_et = NOW.astimezone(ET)
 
     # ---------- stage 1: read boards ----------
-    def _read(self, ats, board):
+    def _read(self, ats, board, terms=None):
         try:
             if ats == "workday":
-                cs, ids = sources.workday(board, self.cfg["workday_terms"], self.titles.ok)
+                cs, ids = sources.workday(board, terms or self.cfg["workday_terms"], self.titles.ok)
             else:
                 cs, ids = sources.SIMPLE[ats](board)
             return ats, board, "ok", [c for c in cs if self.titles.ok(c["title"])], ids, len(cs)
@@ -91,16 +91,18 @@ class Radar:
         except Exception as ex:
             return ats, board, f"{type(ex).__name__}: {str(ex)[:40]}", [], None, 0
 
-    def scan(self, ats, boards, workers, total=None):
+    def scan(self, ats, boards, workers, total=None, terms=None, label=None):
         boards = [b for b in boards if self.state["dead"].get(f"{ats}/{b}", 0) < 3]
         if self.max_boards:
             boards = boards[: self.max_boards]
-        st = Counter()
+        st, hits = Counter(), set()
         with ThreadPoolExecutor(workers) as ex:
-            for a, b, status, cs, ids, n in ex.map(lambda b: self._read(ats, b), boards):
+            for a, b, status, cs, ids, n in ex.map(lambda b: self._read(ats, b, terms), boards):
                 key = f"{a}/{b}"
                 if status == "ok":
                     st["ok"] += 1; st["jobs"] += n; st["match"] += len(cs)
+                    if cs:
+                        hits.add(b)
                     self.state["dead"].pop(key, None)
                     if cs and cs[0].get("nodate"):          # undated system: on a company's first read, age is unknown
                         known = self.state.setdefault("nodate_boards", [])
@@ -117,7 +119,8 @@ class Radar:
                 else:
                     st["err"] += 1; st["e:" + status.split(":")[0]] += 1
         errs = ", ".join(f"{k[2:]}×{v}" for k, v in st.items() if k.startswith("e:"))
-        self.report.append({"source": ats, "companies": total or len(boards), "scanned": len(boards), "ok": st["ok"], "gone": st["gone"],
+        added = self.promote({ats: hits}) if hits else {}      # companies seen hiring for these roles are read more often
+        self.report.append({"source": label or ats, "companies": total or len(boards), "scanned": len(boards), "watch_added": added.get(ats, 0), "ok": st["ok"], "gone": st["gone"],
                             "errors": st["err"], "error_types": errs, "postings": st["jobs"], "title_match": st["match"]})
 
     def fast(self):
@@ -127,9 +130,18 @@ class Radar:
             allb = read_list(ROOT / f"data/boards/{ats}.txt")
             pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
             self.scan(ats, pick, 16, total=len(set(allb) | watch))
-        if run % self.cfg.get("hourly_every_runs", 4) == 0 or "--all" in ARGS:
-            for ats in ("smartrecruiters", "breezy", "rippling", "recruitee"):
-                self.scan(ats, read_list(ROOT / f"data/watch/{ats}.txt"), 8)
+        hourly = run % self.cfg.get("hourly_every_runs", 4) == 0 or "--all" in ARGS
+        for ats, n in self.cfg.get("rotation_wide", {}).items():       # whole list every N runs; hiring companies hourly
+            watch = set(read_list(ROOT / f"data/watch/{ats}.txt")) if hourly else set()
+            allb = read_list(ROOT / f"data/boards/{ats}.txt")
+            pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
+            self.scan(ats, pick, self.cfg.get("workers", {}).get(ats, 10), total=len(allb))
+        n = self.cfg.get("workday_universe_runs", 96)                   # every Workday company, a small slice per run
+        wwatch = {b.lower() for b in read_list(ROOT / "data/watch/workday.txt")}
+        allw = read_list(ROOT / "data/boards/workday.txt")
+        self.scan("workday", [b for b in allw if bucket(b, n) == run % n and b.lower() not in wwatch], 5, total=len(allw),
+                  terms=self.cfg.get("workday_universe_terms"), label="workday (all companies, rotating)")
+        if hourly:
             try:
                 cs, _ = sources.amazon(self.cfg["amazon_terms"])
                 keep = [c for c in cs if self.titles.ok(c["title"])]
@@ -242,7 +254,7 @@ class Radar:
                 "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):
-        keys = {(norm(j["title"]), norm(j["company"])) for j in self.jobs.values()}
+        keys = {(norm(j["title"]), norm(j["company"])): j["id"] for j in self.jobs.values()}
         urls = {j["url"].split("?")[0].rstrip("/").lower() for j in self.jobs.values()}
         todo, seen_ids = [], set()
         for c in cands:
@@ -262,10 +274,16 @@ class Radar:
                         self.state["seen"][c["id"]] = STAMP[:10]
                     continue
                 k, u = (norm(res["title"]), norm(res["company"])), res["url"].split("?")[0].rstrip("/").lower()
-                if k in keys or u in urls:
+                old = self.jobs.get(keys.get(k, ""))
+                if old and old["via"] in ("stapply", "feashliaa") and res["via"] == "direct":
+                    # the same posting, now read from the company's system itself: keep its history, switch the source
+                    res.update(notify=old["notify"], first_seen=old["first_seen"], stale=old.get("stale", False))
+                    self.drop(old["id"])
+                    stats["now direct"] += 1
+                elif k in keys or u in urls:
                     stats["duplicate"] += 1
                     continue
-                keys.add(k); urls.add(u)
+                keys[k] = res["id"]; urls.add(u)
                 self.desc[res["id"]] = res.pop("_text")
                 self.jobs[res["id"]] = res
                 stats["accepted"] += 1

@@ -18,7 +18,8 @@ FEASH = "https://raw.githubusercontent.com/Feashliaa/job-board-data/main/data/"
 NOT_COMPANY = {"eures", "bundesagentur", "arbetsformedlingen", "welcometothejungle", "jobbankca", "jobsch", "wanted",
                "programathor", "getonbrd", "ycombinator", "wellfound", "weworkremotely", "builtin", "mercor", "manfred",
                "join_com", "infojobs_es", "jobs_cz", "seek", "thehub", "remoteok", "usajobs"}
-WATCHED = ("greenhouse", "lever", "ashby", "workday", "smartrecruiters", "breezy", "rippling", "recruitee")
+WATCHED = ("greenhouse", "lever", "ashby", "workday", "smartrecruiters", "breezy", "rippling", "recruitee",
+           "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem")
 _WD = re.compile(r"https://([^./]+)\.(wd\d+)\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?([^/?#]+)")
 _URL = {
     "greenhouse": re.compile(r"greenhouse\.io/(?:embed/job_board\?for=)?([A-Za-z0-9_.\-]+)"),
@@ -28,6 +29,12 @@ _URL = {
     "breezy": re.compile(r"https?://([A-Za-z0-9\-]+)\.breezy\.hr"),
     "rippling": re.compile(r"ats\.rippling\.com/([^/?#]+)/jobs"),
     "recruitee": re.compile(r"https?://([A-Za-z0-9\-]+)\.recruitee\.com"),
+    "bamboohr": re.compile(r"https?://([A-Za-z0-9\-]+)\.bamboohr\.com"),
+    "workable": re.compile(r"apply\.workable\.com/([^/?#]+)"),
+    "pinpoint": re.compile(r"https?://([A-Za-z0-9\-]+)\.pinpointhq\.com"),
+    "recruiterbox": re.compile(r"https?://([A-Za-z0-9\-]+)\.recruiterbox\.com"),
+    "teamtailor": re.compile(r"https?://([A-Za-z0-9\-]+)\.teamtailor\.com"),
+    "gem": re.compile(r"jobs\.gem\.com/([^/?#]+)"),
 }
 
 

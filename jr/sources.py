@@ -10,7 +10,8 @@ from .common import NOW, NotFound, http, iso, money, ld_jobposting
 
 LABEL = {"greenhouse": "Greenhouse", "lever": "Lever", "ashby": "Ashby", "workday": "Workday",
          "smartrecruiters": "SmartRecruiters", "breezy": "Breezy", "rippling": "Rippling", "recruitee": "Recruitee",
-         "amazon": "Amazon Jobs"}
+         "amazon": "Amazon Jobs", "bamboohr": "BambooHR", "workable": "Workable", "pinpoint": "Pinpoint",
+         "recruiterbox": "Recruiterbox", "teamtailor": "Teamtailor", "gem": "Gem"}
 
 
 def cand(ats, board, jid, title, company, locs, url, posted="", remote=None, salary="", desc="", date_est=False, detail=None):
@@ -291,5 +292,161 @@ def amazon(terms):
     return out, None
 
 
-SIMPLE = {"greenhouse": greenhouse, "lever": lever, "ashby": ashby, "smartrecruiters": smartrecruiters,
+# ---------- BambooHR ----------
+def bamboohr(board):
+    base = f"https://{board}.bamboohr.com"
+    rows = []
+    try:
+        d = http(base + "/careers/list", retries=1).json()
+        for j in d.get("result") or []:
+            l, a = j.get("location") or {}, j.get("atsLocation") or {}
+            rows.append((j.get("id"), j.get("jobOpeningName"), ", ".join(x for x in (l.get("city") or a.get("city"), l.get("state") or a.get("state")) if x),
+                         a.get("country") or "", j.get("locationType"), j.get("isRemote")))
+    except NotFound:
+        txt = http(base + "/jobs/embed2.php", retries=1).text.strip()
+        if txt.startswith("{"):
+            import json as _json
+            for dep in _json.loads(txt).get("departments") or []:
+                for p_ in dep.get("positions") or []:
+                    loc = p_.get("location")
+                    loc = loc if isinstance(loc, str) else ", ".join(str(v) for v in (loc or {}).values() if isinstance(v, str) and v)
+                    rows.append((p_.get("id"), p_.get("name") or p_.get("title"), loc, "", p_.get("locationType"), None))
+        else:
+            for m in re.finditer(r'bhrPositionID_(\d+)"[^>]*>\s*<a[^>]*>([^<]+)</a>\s*(?:<span[^>]*BambooHR-ATS-Location[^>]*>([^<]*)</span>)?', txt):
+                rows.append((m.group(1), m.group(2).strip(), (m.group(3) or "").strip(), "", None, None))
+    out = []
+    for jid, title, loc, ctry, ltype, isrem in rows:
+        if not jid:
+            continue
+
+        def detail(c, jid=jid):
+            o = (http(f"{base}/careers/{jid}/detail", retries=1).json().get("result") or {}).get("jobOpening") or {}
+            c["desc"] = o.get("description") or ""
+            if o.get("datePosted") and iso(o["datePosted"]):
+                c["posted"], c["date_est"] = iso(o["datePosted"]), False
+            l = o.get("location") or {}
+            if isinstance(l, dict) and (l.get("city") or l.get("state")):
+                c["locs"].append((", ".join(x for x in (l.get("city"), l.get("state")) if x), l.get("addressCountry") or l.get("country") or ""))
+            lt = str(o.get("locationType") or "")
+            if lt == "1":
+                c["remote"] = True
+            comp = o.get("compensation")
+            if isinstance(comp, str) and comp and not c["salary"]:
+                c["salary"] = comp[:60]
+
+        lt = str(ltype) if ltype is not None else ""
+        out.append(cand("bamboohr", board, jid, title, pretty(board), [(loc, ctry)], f"{base}/careers/{jid}", "",
+                        remote=True if (lt == "1" or isrem is True) else False if lt in ("0", "2") else None, date_est=True, detail=detail))
+        out[-1]["nodate"] = True
+    return out, {c["id"] for c in out}
+
+
+# ---------- Workable ----------
+def workable(board):
+    d = http(f"https://apply.workable.com/api/v1/widget/accounts/{board}?details=true", retries=1).json()
+    out = []
+    for j in d.get("jobs") or []:
+        locs = [(", ".join(x for x in (l.get("city"), l.get("region")) if x), "United States" if (l.get("countryCode") or "").upper() == "US" else (l.get("country") or ""))
+                for l in j.get("locations") or [] if isinstance(l, dict)]
+        if not locs:
+            locs = [(", ".join(x for x in (j.get("city"), j.get("state")) if x), j.get("country") or "")]
+        code = j.get("shortcode") or j.get("code") or j.get("id")
+
+        def detail(c, code=code):
+            try:
+                c["desc"] = http(f"https://apply.workable.com/{board}/jobs/view/{code}.md", retries=1).text
+            except Exception:
+                page_detail(c)
+
+        out.append(cand("workable", board, code, j.get("title"), d.get("name") or pretty(board), locs,
+                        j.get("url") or j.get("application_url") or f"https://apply.workable.com/{board}/j/{code}/",
+                        j.get("published_on") or j.get("created_at"), remote=True if j.get("telecommuting") or j.get("remote") else None,
+                        desc=j.get("description") or "", detail=detail))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Pinpoint ----------
+def pinpoint(board):
+    out = []
+    for j in http(f"https://{board}.pinpointhq.com/postings.json", retries=1).json().get("data") or []:
+        l = j.get("location") or {}
+        wt = (j.get("workplace_type") or "").lower()
+        sal = money(j.get("compensation_minimum"), j.get("compensation_maximum")) \
+            if j.get("compensation_visible") and (j.get("compensation_currency") or "USD") == "USD" else ""
+        desc = (j.get("description") or "") + "".join(f"<h3>{h}</h3>{j.get(k) or ''}" for k, h in (
+            ("key_responsibilities", "Responsibilities"), ("skills_knowledge_expertise", "Requirements")) if j.get(k))
+        out.append(cand("pinpoint", board, j.get("id"), j.get("title"), pretty(board),
+                        [(l.get("name") or ", ".join(x for x in (l.get("city"), l.get("province")) if x), "")], j.get("url"),
+                        j.get("first_published_at"), remote=True if wt == "remote" else False if wt in ("onsite", "hybrid") else None,
+                        salary=sal, desc=desc, date_est=not j.get("first_published_at")))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Recruiterbox ----------
+def recruiterbox(board):
+    d = http(f"https://jsapi.recruiterbox.com/v1/openings?client_name={board}&offset=0&limit=100", retries=1).json()
+    out = []
+    for j in d.get("objects") or []:
+        l = j.get("location") or {}
+        out.append(cand("recruiterbox", board, j.get("id"), j.get("title"), pretty(board),
+                        [(", ".join(x for x in (l.get("city"), l.get("state")) if x), l.get("country") or "")], j.get("hosted_url") or j.get("url"),
+                        j.get("created_on"), remote=True if j.get("allows_remote") else None, desc=j.get("description") or ""))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Teamtailor ----------
+def teamtailor(board):
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring(http(f"https://{board}.teamtailor.com/jobs.rss", retries=1).content)
+    out = []
+    for it in root.iter("item"):
+        locs, rem = [], None
+        for el in it.iter():
+            tag = el.tag.rsplit("}", 1)[-1]
+            if tag == "location":
+                parts = {c.tag.rsplit("}", 1)[-1]: (c.text or "").strip() for c in el}
+                locs.append((", ".join(x for x in (parts.get("name") or parts.get("city"), ) if x), parts.get("country") or ""))
+            elif tag == "remoteStatus":
+                rem = True if (el.text or "").strip().lower() in ("fully", "remote") else None
+        out.append(cand("teamtailor", board, it.findtext("guid") or it.findtext("link"), it.findtext("title"), pretty(board),
+                        locs or [("", "")], it.findtext("link"), it.findtext("pubDate"), remote=rem, desc=it.findtext("description") or ""))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Gem ----------
+_GEM = "https://jobs.gem.com/api/public/graphql/batch"
+_GEM_LIST = ("query JobBoardList($boardId: String!) { oatsExternalJobPostings(boardId: $boardId) { jobPostings { id extId title "
+             "locations { id name city isoCountry isRemote } job { id locationType employmentType } } } }")
+_GEM_ONE = ("query ExternalJobPostingQuery($boardId: String!, $extId: String!) { oatsExternalJobPosting(boardId: $boardId, extId: $extId) "
+            "{ id title descriptionHtml extId firstPublishedTsSec compensationHtml } }")
+
+
+def gem(board):
+    r = http(_GEM, method="POST", retries=1, headers={"Content-Type": "application/json"},
+             json=[{"operationName": "JobBoardList", "variables": {"boardId": board}, "query": _GEM_LIST}]).json()
+    posts = ((((r[0] if isinstance(r, list) else r).get("data") or {}).get("oatsExternalJobPostings") or {}).get("jobPostings")) or []
+    out = []
+    for j in posts:
+        ext = j.get("extId") or j.get("id")
+        locs = [(l.get("name") or l.get("city") or "", "United States" if (l.get("isoCountry") or "").upper() in ("US", "USA") else (l.get("isoCountry") or ""))
+                for l in j.get("locations") or []]
+        lt = ((j.get("job") or {}).get("locationType") or "").lower()
+
+        def detail(c, ext=ext):
+            x = http(_GEM, method="POST", retries=1, headers={"Content-Type": "application/json"},
+                     json=[{"operationName": "ExternalJobPostingQuery", "variables": {"boardId": board, "extId": ext}, "query": _GEM_ONE}]).json()
+            o = (((x[0] if isinstance(x, list) else x).get("data") or {}).get("oatsExternalJobPosting")) or {}
+            c["desc"] = (o.get("descriptionHtml") or "") + (o.get("compensationHtml") or "")
+            if o.get("firstPublishedTsSec"):
+                c["posted"], c["date_est"] = iso(o["firstPublishedTsSec"]), False
+
+        out.append(cand("gem", board, ext, j.get("title"), pretty(board), locs or [("", "")], f"https://jobs.gem.com/{board}/{ext}", "",
+                        remote=True if ("remote" in lt or any(l.get("isRemote") for l in j.get("locations") or [])) else None,
+                        date_est=True, detail=detail))
+        out[-1]["nodate"] = True
+    return out, {c["id"] for c in out}
+
+
+SIMPLE = {"bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
+          "teamtailor": teamtailor, "gem": gem, "greenhouse": greenhouse, "lever": lever, "ashby": ashby, "smartrecruiters": smartrecruiters,
           "breezy": breezy, "rippling": rippling, "recruitee": recruitee}

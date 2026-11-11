@@ -146,6 +146,27 @@ eq("wd list", (len(cs), cs[0]["multi"], ids, cs[0]["id"]), (1, True, None, "work
 cs[0]["detail"](cs[0])
 eq("wd detail", (cs[0]["locs"], cs[0]["posted"][:10], cs[0]["date_est"]), ([("Remote - United States", "United States of America"), ("Durham, NC", "United States of America")], "2026-10-20", False))
 
+sources.http = fake({"/careers/5/detail": {"result": {"jobOpening": {"description": "<ul><li>4 years of QA automation</li></ul>", "datePosted": "2026-11-09", "locationType": "1"}}},
+                     "/careers/list": {"result": [{"id": 5, "jobOpeningName": "QA Engineer", "location": {"city": "Austin", "state": "Texas"}, "atsLocation": {"country": "United States"}, "locationType": "1"}]}})
+c = sources.bamboohr("acme")[0][0]; c["detail"](c)
+eq("bamboo", (c["id"], c["remote"], c["locs"][0], c["posted"][:10], c["date_est"]), ("bamboohr:acme:5", True, ("Austin, Texas", "United States"), "2026-11-09", False))
+sources.http = fake({"widget/accounts/acme": {"name": "Acme Inc", "jobs": [{"title": "SDET", "shortcode": "AB12", "url": "https://apply.workable.com/acme/j/AB12/", "published_on": "2026-11-10",
+    "telecommuting": True, "locations": [{"country": "United States", "countryCode": "US", "city": "Denver", "region": "Colorado"}], "description": "<p>d</p>"}]}})
+c = sources.workable("acme")[0][0]
+eq("workable", (c["company"], c["remote"], c["locs"], F.classify(c["locs"], c["remote"])[0]), ("Acme Inc", True, [("Denver, Colorado", "United States")], "ok"))
+sources.http = fake({"postings.json": {"data": [{"id": 9, "title": "Test Engineer", "description": "<p>x</p>", "skills_knowledge_expertise": "<ul><li>3 years of software testing</li></ul>",
+    "location": {"name": "Remote - US"}, "workplace_type": "remote", "url": "https://acme.pinpointhq.com/postings/9", "first_published_at": "2026-11-10T10:00:00Z"}]}})
+c = sources.pinpoint("acme")[0][0]
+eq("pinpoint", (c["remote"], c["date_est"], F.requirements(to_lines(c["desc"]))), (True, False, ["3 years of software testing"]))
+class RC:
+    content = b'<rss xmlns:tt="https://teamtailor.com/locations"><channel><item><title>QA Lead</title><link>https://a.teamtailor.com/jobs/1</link><guid>g1</guid><pubDate>Tue, 10 Nov 2026 12:00:00 +0000</pubDate><description>d</description><remoteStatus>fully</remoteStatus><tt:locations><tt:location><tt:name>New York</tt:name><tt:country>United States</tt:country></tt:location></tt:locations></item></channel></rss>'
+sources.http = lambda url, **kw: RC()
+c = sources.teamtailor("a")[0][0]
+eq("teamtailor", (c["title"], c["remote"], c["locs"], c["posted"][:10]), ("QA Lead", True, [("New York", "United States")], "2026-11-10"))
+sources.http = fake({"graphql": [{"data": {"oatsExternalJobPostings": {"jobPostings": [{"id": "i", "extId": "e1", "title": "QA Engineer", "locations": [{"name": "Remote", "isoCountry": "US", "isRemote": True}], "job": {"locationType": "REMOTE"}}]}}}]})
+c = sources.gem("acme")[0][0]
+eq("gem", (c["id"], c["remote"], c["locs"], c["url"]), ("gem:acme:e1", True, [("Remote", "United States")], "https://jobs.gem.com/acme/e1"))
+
 jp = ld_jobposting('<html><script type="application/ld+json">{"@context":"http://schema.org","@type":"JobPosting","description":"<p>desc</p>","datePosted":"2026-11-09","jobLocationType":"TELECOMMUTE","applicantLocationRequirements":{"@type":"Country","name":"USA"}}</script></html>')
 eq("ldjson", (jp or {}).get("datePosted"), "2026-11-09")
 
