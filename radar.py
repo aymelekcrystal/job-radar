@@ -117,7 +117,9 @@ class Radar:
                     st["gone"] += 1
                     self.state["dead"][key] = self.state["dead"].get(key, 0) + 1
                 else:
-                    st["err"] += 1; st["e:" + status.split(":")[0]] += 1
+                    st["err"] += 1; st["e:" + status.replace("RuntimeError: ", "")[:22]] += 1
+                    if "HTTP 4" in status:                 # a board that keeps answering 4xx is treated like a missing one
+                        self.state["dead"][key] = self.state["dead"].get(key, 0) + 1
         errs = ", ".join(f"{k[2:]}×{v}" for k, v in st.items() if k.startswith("e:"))
         added = self.promote({ats: hits}) if hits else {}      # companies seen hiring for these roles are read more often
         self.report.append({"source": label or ats, "companies": total or len(boards), "scanned": len(boards), "watch_added": added.get(ats, 0), "ok": st["ok"], "gone": st["gone"],

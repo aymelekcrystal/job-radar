@@ -302,7 +302,7 @@ def bamboohr(board):
             l, a = j.get("location") or {}, j.get("atsLocation") or {}
             rows.append((j.get("id"), j.get("jobOpeningName"), ", ".join(x for x in (l.get("city") or a.get("city"), l.get("state") or a.get("state")) if x),
                          a.get("country") or "", j.get("locationType"), j.get("isRemote")))
-    except NotFound:
+    except (NotFound, ValueError):                 # older tenants: no JSON list, only the embedded widget
         txt = http(base + "/jobs/embed2.php", retries=1).text.strip()
         if txt.startswith("{"):
             import json as _json
