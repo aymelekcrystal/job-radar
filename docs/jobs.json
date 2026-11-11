@@ -1,6 +1,8 @@
 {
- "updated": "2026-11-11T00:01:25+00:00",
- "meta": {},
+ "updated": "2026-11-11T02:58:57+00:00",
+ "meta": {
+  "jobspipe_last": "2026-11-11T02:58:57+00:00"
+ },
  "report": [
   {
    "source": "remotive",
@@ -40,12 +42,12 @@
   {
    "source": "jobspipe",
    "ok": true,
-   "skipped": "anahtar eklenmemis"
+   "fetched": 25
   },
   {
    "source": "greenhouse/anthropic",
    "ok": true,
-   "fetched": 679
+   "fetched": 678
   },
   {
    "source": "greenhouse/scaleai",
@@ -54,8 +56,8 @@
   },
   {
    "source": "greenhouse/databricks",
-   "ok": false,
-   "error": "ReadTimeout: HTTPSConnectionPool(host='boards-api.greenhouse.io', port=443): Read timed out. (read timeout=30)"
+   "ok": true,
+   "fetched": 920
   },
   {
    "source": "greenhouse/stripe",
@@ -65,17 +67,17 @@
   {
    "source": "greenhouse/figma",
    "ok": true,
-   "fetched": 144
+   "fetched": 142
   },
   {
    "source": "greenhouse/gitlab",
    "ok": true,
-   "fetched": 252
+   "fetched": 251
   },
   {
    "source": "greenhouse/affirm",
    "ok": true,
-   "fetched": 210
+   "fetched": 208
   },
   {
    "source": "greenhouse/datadog",
@@ -85,12 +87,12 @@
   {
    "source": "greenhouse/cloudflare",
    "ok": true,
-   "fetched": 471
+   "fetched": 473
   },
   {
    "source": "greenhouse/coinbase",
    "ok": true,
-   "fetched": 284
+   "fetched": 287
   },
   {
    "source": "greenhouse/discord",
@@ -105,7 +107,7 @@
   {
    "source": "greenhouse/robinhood",
    "ok": true,
-   "fetched": 156
+   "fetched": 155
   },
   {
    "source": "greenhouse/twilio",
@@ -150,7 +152,7 @@
   {
    "source": "greenhouse/samsara",
    "ok": true,
-   "fetched": 315
+   "fetched": 316
   },
   {
    "source": "greenhouse/canonical",
@@ -170,7 +172,7 @@
   {
    "source": "greenhouse/gusto",
    "ok": true,
-   "fetched": 81
+   "fetched": 80
   },
   {
    "source": "greenhouse/lyft",
@@ -180,7 +182,7 @@
   {
    "source": "greenhouse/pinterest",
    "ok": true,
-   "fetched": 165
+   "fetched": 164
   },
   {
    "source": "greenhouse/dropbox",
@@ -210,7 +212,7 @@
   {
    "source": "greenhouse/toast",
    "ok": true,
-   "fetched": 334
+   "fetched": 336
   },
   {
    "source": "greenhouse/squarespace",
@@ -230,7 +232,7 @@
   {
    "source": "greenhouse/pagerduty",
    "ok": true,
-   "fetched": 49
+   "fetched": 47
   },
   {
    "source": "greenhouse/newrelic",
@@ -240,7 +242,7 @@
   {
    "source": "greenhouse/zscaler",
    "ok": true,
-   "fetched": 377
+   "fetched": 375
   },
   {
    "source": "greenhouse/fivetran",
@@ -325,12 +327,12 @@
   {
    "source": "greenhouse/abnormalsecurity",
    "ok": true,
-   "fetched": 87
+   "fetched": 86
   },
   {
    "source": "lever/spotify",
    "ok": true,
-   "fetched": 85
+   "fetched": 86
   },
   {
    "source": "lever/palantir",
@@ -340,7 +342,7 @@
   {
    "source": "lever/zoox",
    "ok": true,
-   "fetched": 230
+   "fetched": 229
   },
   {
    "source": "lever/outreach",
@@ -375,27 +377,27 @@
   {
    "source": "ashby/openai",
    "ok": true,
-   "fetched": 829
+   "fetched": 827
   },
   {
    "source": "ashby/cohere",
    "ok": true,
-   "fetched": 126
+   "fetched": 127
   },
   {
    "source": "ashby/perplexity",
    "ok": true,
-   "fetched": 135
+   "fetched": 136
   },
   {
    "source": "ashby/ramp",
    "ok": true,
-   "fetched": 177
+   "fetched": 176
   },
   {
    "source": "ashby/notion",
    "ok": true,
-   "fetched": 155
+   "fetched": 156
   },
   {
    "source": "ashby/linear",
@@ -410,7 +412,7 @@
   {
    "source": "ashby/elevenlabs",
    "ok": true,
-   "fetched": 131
+   "fetched": 132
   },
   {
    "source": "ashby/replit",
@@ -430,7 +432,7 @@
   {
    "source": "ashby/sierra",
    "ok": true,
-   "fetched": 213
+   "fetched": 199
   },
   {
    "source": "ashby/decagon",
@@ -445,7 +447,7 @@
   {
    "source": "ashby/langchain",
    "ok": true,
-   "fetched": 100
+   "fetched": 101
   },
   {
    "source": "ashby/modal",
@@ -455,7 +457,7 @@
   {
    "source": "ashby/baseten",
    "ok": true,
-   "fetched": 101
+   "fetched": 100
   },
   {
    "source": "ashby/vanta",
@@ -465,12 +467,12 @@
   {
    "source": "ashby/cursor",
    "ok": true,
-   "fetched": 115
+   "fetched": 116
   },
   {
    "source": "ashby/abridge",
    "ok": true,
-   "fetched": 25
+   "fetched": 24
   },
   {
    "source": "ashby/zapier",
@@ -505,7 +507,7 @@
   {
    "source": "ashby/clickup",
    "ok": true,
-   "fetched": 46
+   "fetched": 48
   },
   {
    "source": "ashby/1password",
@@ -540,7 +542,7 @@
   {
    "source": "ashby/airwallex",
    "ok": true,
-   "fetched": 490
+   "fetched": 489
   },
   {
    "source": "ashby/quora",
@@ -560,12 +562,12 @@
   {
    "source": "ashby/lambda",
    "ok": true,
-   "fetched": 93
+   "fetched": 92
   },
   {
    "source": "ashby/crusoe",
    "ok": true,
-   "fetched": 326
+   "fetched": 325
   },
   {
    "source": "ashby/fireworks",
@@ -589,6 +591,294 @@
   }
  ],
  "jobs": [
+  {
+   "id": "jobspipe:12830ee4ce9dc1b7",
+   "source": "jobspipe",
+   "title": "QA Automation Engineer",
+   "company": "LandOffer",
+   "location": "Remote",
+   "url": "https://www.indeed.com/viewjob?jk=12830ee4ce9dc1b7",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:8372985",
+   "source": "jobspipe",
+   "title": "Senior Quality Engineer",
+   "company": "Cambridge Mobile Telematics",
+   "location": "Cambridge, MA",
+   "url": "https://www.cmtelematics.com/who-we-are/join-our-team/job-posting/?gh_jid=8372985",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:2822738",
+   "source": "jobspipe",
+   "title": "Senior QA Engineer - Platform",
+   "company": "Hard Rock Digital",
+   "location": "United States, Florida, United States",
+   "url": "https://hardrockdigital.recruitee.com/o/senior-qa-engineer-platform-1/c/new",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:8e8cc4386968a5d7",
+   "source": "jobspipe",
+   "title": "Automation QA Engineers",
+   "company": "Arrikai LLC",
+   "location": "Remote",
+   "url": "https://www.indeed.com/viewjob?jk=8e8cc4386968a5d7",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:266021977",
+   "source": "jobspipe",
+   "title": "Quality Engineer",
+   "company": "Appcast",
+   "location": "Winsted, Connecticut",
+   "url": "https://www.resume-library.com/job/266021977/quality-engineer",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:266021624",
+   "source": "jobspipe",
+   "title": "QA Engineer Manager",
+   "company": "Appcast",
+   "location": "San Diego, California",
+   "url": "https://www.resume-library.com/job/266021624/qa-engineer-manager",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:careers.avaya.com:1456223133",
+   "source": "jobspipe",
+   "title": "Test Automation Engineering Lead",
+   "company": "Avaya",
+   "location": "Virtual, US",
+   "url": "https://careers.avaya.com/job/Virtual-Test-Automation-Engineering-Lead/1456223133/",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488372624",
+   "source": "jobspipe",
+   "title": "Associate QA Engineer",
+   "company": "Haystack",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/associate-qa-engineer-at-haystack-4488372624",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488312602",
+   "source": "jobspipe",
+   "title": "Staff Quality Engineer (Remote)",
+   "company": "Joblet-AI",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/staff-quality-engineer-remote-at-joblet-ai-4488312602",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4487497308",
+   "source": "jobspipe",
+   "title": "Automation QA Engineer – Healthcare",
+   "company": "iTek People Inc",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/automation-qa-engineer-%E2%80%93-healthcare-at-itek-people-inc-4487497308",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4487839439",
+   "source": "jobspipe",
+   "title": "Senior Quality Engineer",
+   "company": "Credo AI",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/senior-quality-engineer-at-credo-ai-4487839439",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488361681",
+   "source": "jobspipe",
+   "title": "QA Engineer - Remote",
+   "company": "Wiraa",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/qa-engineer-remote-at-wiraa-4488361681",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4394204256",
+   "source": "jobspipe",
+   "title": "Sr. Quality Engineer",
+   "company": "Evergen",
+   "location": "West Lafayette, IN",
+   "url": "https://www.linkedin.com/jobs/view/sr-quality-engineer-at-evergen-4394204256",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4480268938",
+   "source": "jobspipe",
+   "title": "Senior Software Developer in Test SDET, Remote",
+   "company": "Autodesk",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/senior-software-developer-in-test-sdet-remote-at-autodesk-4480268938",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4487472954",
+   "source": "jobspipe",
+   "title": "Senior QA/SDET",
+   "company": "TalentHop",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/senior-qa-sdet-at-talenthop-4487472954",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:dexcom:/job/Remote---United-States/Staff-SW-QA-Engineer_JR121931",
+   "source": "jobspipe",
+   "title": "Staff SW QA Engineer",
+   "company": "1 DexCom Inc",
+   "location": "Remote - United States",
+   "url": "https://dexcom.wd1.myworkdayjobs.com/Dexcom/job/Remote---United-States/Staff-SW-QA-Engineer_JR121931",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488638149",
+   "source": "jobspipe",
+   "title": "Manual QA Engineer",
+   "company": "Bright Vision Technologies",
+   "location": "Dallas, TX",
+   "url": "https://www.linkedin.com/jobs/view/manual-qa-engineer-at-bright-vision-technologies-4488638149",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4489609785",
+   "source": "jobspipe",
+   "title": "Data Quality Engineer - Remote",
+   "company": "Martin's Point Health Care",
+   "location": "Portland, ME",
+   "url": "https://www.linkedin.com/jobs/view/data-quality-engineer-remote-at-martin-s-point-health-care-4489609785",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4487485012",
+   "source": "jobspipe",
+   "title": "Senior QA Engineer",
+   "company": "TalentHop",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/senior-qa-engineer-at-talenthop-4487485012",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488372510",
+   "source": "jobspipe",
+   "title": "QA Engineer, Manual",
+   "company": "Wiraa",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/qa-engineer-manual-at-wiraa-4488372510",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4487995897",
+   "source": "jobspipe",
+   "title": "QA Automation Engineer",
+   "company": "Cognizant",
+   "location": "Mangum, NC",
+   "url": "https://www.linkedin.com/jobs/view/qa-automation-engineer-at-cognizant-4487995897",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4489413200",
+   "source": "jobspipe",
+   "title": "Lead / Senior QA Automation Engineer",
+   "company": "Randstad Digital Americas",
+   "location": "Hollywood, FL",
+   "url": "https://www.linkedin.com/jobs/view/lead-senior-qa-automation-engineer-at-randstad-digital-americas-4489413200",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "jobspipe:4488366769",
+   "source": "jobspipe",
+   "title": "QA Automation Engineer - Quantitative Sports",
+   "company": "Hard Rock Digital",
+   "location": "United States",
+   "url": "https://www.linkedin.com/jobs/view/qa-automation-engineer-quantitative-sports-at-hard-rock-digital-4488366769",
+   "posted": "",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
+  {
+   "id": "himalayas:https://himalayas.app/companies/labelmaster/jobs/manual-software-tester",
+   "source": "himalayas",
+   "title": "Manual Software Tester",
+   "company": "Labelmaster",
+   "location": "United States",
+   "url": "https://himalayas.app/companies/labelmaster/jobs/manual-software-tester?utm_source=api",
+   "posted": "2026-11-11T01:11:47+00:00",
+   "salary": "$34 – $40",
+   "ai": false,
+   "first_seen": "2026-11-11T02:58:57+00:00"
+  },
   {
    "id": "himalayas:https://himalayas.app/companies/super-dispatch/jobs/senior-test-automation-engineer",
    "source": "himalayas",
