@@ -181,7 +181,8 @@ def page_detail(c):
     jp = ld_jobposting(http(c["url"], retries=1).text)
     if not jp:
         return
-    c["desc"] = jp.get("description") or c["desc"]
+    if len(jp.get("description") or "") > 300:
+        c["desc"] = jp["description"]
     if jp.get("datePosted") and (not c["posted"] or c["date_est"]):
         d = iso(jp["datePosted"])
         if d:

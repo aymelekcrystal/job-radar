@@ -73,11 +73,11 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const hrs=iso=>(Date.now()-new Date(iso))/36e5;
 function ago(iso){const h=hrs(iso); if(h<1.5) return Math.max(1,Math.round(h*60))+' min ago'; if(h<36) return Math.round(h)+' h ago'; return Math.round(h/24)+' days ago';}
 function tabOf(j){ if(marks[j.id]==='applied') return 'applied'; if(marks[j.id]==='hidden') return null;
-  if(j.kind==='platform') return 'platform'; if(j.kind==='check') return 'check'; return hrs(j.posted)<=72?'main':'older'; }
+  if(j.kind==='platform') return 'platform'; if(j.kind==='check') return 'check'; return (!j.stale&&hrs(j.posted)<=72)?'main':'older'; }
 function card(j){
-  const url=/^https?:\/\//.test(j.url)?j.url:'#', when=j.date_est?('first seen '+ago(j.first_seen)+' · post date unknown'):('posted '+ago(j.posted));
+  const url=/^https?:\/\//.test(j.url)?j.url:'#', when=j.stale?'post date unknown (already open when first scanned)':j.date_est?('first seen '+ago(j.first_seen)+' · post date unknown'):('posted '+ago(j.posted));
   const src=j.kind==='platform'?(j.src+(j.direct_link?' → company link':'')):('Company site · '+j.src);
-  return `<article class="job ${hrs(j.posted)<=24?'fresh':''} ${marks[j.id]==='applied'?'done':''}">
+  return `<article class="job ${!j.stale&&hrs(j.posted)<=24?'fresh':''} ${marks[j.id]==='applied'?'done':''}">
     <a class="t" href="${esc(url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.ai?'<span class="tag ai">AI</span>':''}${j.kind==='platform'?'<span class="tag pl">PLATFORM</span>':''}
     <div class="co">${esc(j.company)}</div>
     <div class="meta"><span>📍 ${esc(j.location||'Not stated')}</span>${j.salary?`<span class="sal">${esc(j.salary)}</span>`:''}<span>${esc(when)}</span><span>${esc(src)}</span></div>
@@ -98,6 +98,8 @@ function render(){
   if(!rows.length) h='<div class="empty">Nothing in this tab right now.</div>';
   else if(tab==='main'){ const a=rows.filter(j=>hrs(j.posted)<=24), b=rows.filter(j=>hrs(j.posted)>24);
     if(a.length) h+='<h2>Last 24 hours</h2>'+a.map(card).join(''); if(b.length) h+='<h2>24 – 72 hours</h2>'+b.map(card).join(''); }
+  else if(tab==='older'){ const a=rows.filter(j=>!j.stale), b=rows.filter(j=>j.stale);
+    if(a.length) h+='<h2>3 – 30 days</h2>'+a.map(card).join(''); if(b.length) h+='<h2>Post date unknown</h2>'+b.map(card).join(''); }
   else h=rows.map(card).join('');
   $('#list').innerHTML=h;
   $('#status').textContent=data.updated?`last scan ${ago(data.updated)}`:'no scan yet';

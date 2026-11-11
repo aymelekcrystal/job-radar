@@ -96,6 +96,21 @@ _TAG = re.compile(r"<[^>]+>")
 _BULLET = re.compile(r"^\s*(?:[•·▪●◦■□\-–—*]|\d{1,2}[.)])\s+")
 
 
+_FLAT_HEAD = re.compile(
+    r"\s(?=(?:Basic|Minimum|Required|Preferred|Desired|Additional|Key|Job|Essential|Core)?\s?"
+    r"(?:Qualifications|Requirements|Responsibilities|Skills|Education|Experience|Duties|Benefits|Overview)(?: Include| and Experience| & Experience)?\s?:)"
+    r"|\s(?=(?:What You(?:'ll| Will) (?:Do|Need|Bring)|What We(?:'re| Are) Looking For|Who You Are|About (?:You|Us|the Role|The Role)|"
+    r"Nice to Have|Must Haves?|Position Overview|Job Description|Why Join)\b)")
+
+
+def _flat(s):
+    """A description flattened to one line: break before section names and between sentences."""
+    s = _FLAT_HEAD.sub("\n## ", s)
+    s = re.sub(r"(## [^\n:]{3,60}):\s", r"\1\n", s)
+    s = re.sub(r"(?<=[a-z0-9\)])([.!?;])\s+(?=[A-Z0-9])", r"\1\n", s)
+    return s
+
+
 def to_lines(text):
     """HTML or plain text -> list of clean lines. Bullets start with '• ', headings with '## '."""
     if not text:
@@ -105,6 +120,8 @@ def to_lines(text):
         s = html.unescape(s)                      # Greenhouse double-encodes its HTML
     elif "&lt;p" in s or "&lt;li" in s or "&lt;div" in s:
         s = html.unescape(s)
+    if "<" not in s and "\n" not in s.strip() and len(s) > 400:
+        s = _flat(s)
     s = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", s)
     s = _LI.sub("\n• ", s)
     s = _HEAD.sub("\n## ", s)

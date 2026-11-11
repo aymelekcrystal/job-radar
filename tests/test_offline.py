@@ -39,11 +39,19 @@ for name, got, exp in [
     ("canada", C([("Remote, Canada", "")]), "drop"), ("us or canada", C([("Remote - US or Canada", "")]), "ok"),
     ("multi one us", C([("Remote (Canada)", "Canada"), ("Remote (US)", "United States")]), "ok"),
     ("sf onsite", C([("San Francisco, CA", "")], desc="We work from our office."), "drop"),
-    ("sf strong remote desc", C([("San Francisco, CA", "")], desc="This is a fully remote role."), "check"),
+    ("sf strong remote desc", C([("San Francisco, CA", "")], desc="This is a fully remote role."), "drop"),
+    ("remote DE", C([("Remote,DE | München", "")]), "drop"), ("remote ambiguous DE", C([("Remote, DE", "")]), "drop"),
+    ("india 3part", C([("Remote, KA, IN", "")]), "drop"), ("unknown place", C([("Cheltenham", "")], True), "drop"),
+    ("thb", C([("Chiang Mai,Remote (THB)", "")]), "drop"), ("sg", C([("SG, 486018", "")], True), "drop"),
+    ("mx", C([("MX Remote Work, MX", "")]), "drop"), ("mexico title", C([("Remote", "")], None, "FBS (Mexico) - Sr. QA Engineer"), "drop"),
+    ("remote NY NY US", C([("Remote NY, NY, US", "")]), "ok"), ("virtual US", C([("Virtual, US", "")]), "ok"),
+    ("select states", C([("Remote (select US states)", "")]), "ok"), ("zip", C([("Durham, NC, US, 27712", "")]), "ok"),
+    ("city CA", C([("Saratoga, CA", "")], True), "ok"), ("not remote desc", C([("United States", "")], True, desc="THIS IS NOT A REMOTE POSITION Stafford"), "drop"),
+    ("remote worker na", C([("Remote Worker - N/A", "")]), "check"), ("remote kentucky", C([("Remote Kentucky", "")]), "ok"),
     ("us only no desc", C([("United States", "")]), "check"), ("us only desc no remote", C([("United States", "")], desc="Join us in the office."), "drop"),
     ("us only remote flag", C([("US", "")], True, desc="x"), "ok"), ("bogota flag", C([("Bogotá, Bogota, co", "")], True), "drop"),
     ("kyiv", C([("Kyiv, UA", "")], True), "drop"), ("title remote", C([("United States", "")], None, "QA Engineer (Remote)"), "ok"),
-    ("empty", C([]), "drop"), ("poland code", C([("POL Remote - USVP", "")]), "check"),
+    ("empty", C([]), "drop"), ("poland code", C([("POL Remote - USVP", "")]), "drop"),
     ("no remote", C([("United States - no remote", "")], desc="x"), "drop"), ("india", C([("Remote", "India")]), "drop")]:
     eq("loc " + name, got, exp)
 
@@ -61,6 +69,23 @@ eq("deg ms office", D("<ul><li>Experience with MS Office</li><li>BA experience, 
 eq("deg unknown", F.degree([]), "unknown")
 eq("deg next line or", D("<ul><li>Bachelor's degree in CS</li><li>or equivalent practical experience</li></ul>"), "alt")
 eq("deg masters req", D("<ul><li>Master's degree in Statistics required</li></ul>"), "required")
+
+# ---- flattened dataset text ----
+flat = ("NTT DATA strives to hire exceptional people. We are seeking a Mobile Test Engineer to join our team in Durham. Job Responsibilities Include: "
+        "Use your knowledge of testing to influence better software design. Collaborate with team members on test coverage. Basic Qualifications: "
+        "5+ years of testing experience in test automation with Rest Assured and JUnit. Bachelor's degree in Computer Science. Preferred Skills: "
+        "Experience in crafting robust QA strategies. Master's degree is a plus. About Us We are a global company with many offices around the world.")
+fl = to_lines(flat)
+eq("flat degree", F.degree(fl), "required")
+eq("flat reqs", F.requirements(fl)[:1], ["5+ years of testing experience in test automation with Rest Assured and JUnit"])
+eq("flat alt", F.degree(to_lines(flat.replace("Bachelor's degree in Computer Science.", "Bachelor's degree in Computer Science or equivalent experience."))), "alt")
+eq("software generic no", F.software_role(False, "Ensure GMP compliance in our manufacturing plant. Use Minitab software."), False)
+eq("software generic yes", F.software_role(False, "Lead software quality assurance and testing strategies for platforms."), True)
+eq("software strong", F.software_role(True, "GMP manufacturing"), True)
+eq("tidy salary", [F.tidy_salary("71600.00 to 116550.00"), F.tidy_salary("$150K – $180K"), F.tidy_salary("EUR 50000"), F.tidy_salary("")], ["$71,600 – $116,550", "$150K – $180K", "", ""])
+for t, exp in [("Quality Engineer (Chemical)", False), ("QA Engineer, Drug Product - Second Shift", False), ("QA Automation Engineer (m/f/d)", False),
+               ("Sterilization Assurance Quality Engineer", False), ("Acoustic and Audio Test Engineer", False)]:
+    eq("title " + t, T.ok(t), exp)
 
 # ---- requirements + salary ----
 html = ("<p>About us: we build things.</p><h3>What you'll do</h3><ul><li>Write automated tests for the platform</li></ul>"
@@ -155,7 +180,7 @@ rd.cfg, rd.titles, rd.state, rd.jobs, rd.desc, rd.present = cfg, T, {"seen": {},
 mk = lambda i, title, locs, desc, **kw: dict(sources.cand("lever", "acme", i, title, "Acme", locs, f"https://jobs.lever.co/acme/{i}", iso(NOW - timedelta(hours=5)), desc=desc), **kw)
 st = rd.decide([mk("1", "QA Engineer", [("Remote", "United States")], "<h3>Requirements</h3><ul><li>3 years of QA experience</li></ul>", remote=True),
                 mk("2", "QA Engineer II", [("Remote", "United States")], "<ul><li>Bachelor's degree in CS required</li></ul>", remote=True),
-                mk("3", "SDET", [("Berlin", "Germany")], "<p>x</p>"), mk("4", "Test Engineer", [("Remote", "")], "<p>Anywhere</p>"),
+                mk("3", "SDET", [("Berlin", "Germany")], "<p>x</p>"), mk("4", "Test Engineer", [("Remote", "")], "<p>Test our software from anywhere.</p>"),
                 mk("5", "QA Engineer", [("Remote", "United States")], "<p>dup</p>", remote=True), mk("6", "Senior SDET", [("Raleigh, NC", "")], "")])
 eq("decide stats", dict(st), {"accepted": 3, "degree": 1, "location": 1, "duplicate": 1})
 eq("decide kinds", {k.split(":")[-1]: v["kind"] for k, v in rd.jobs.items()}, {"1": "ok", "4": "check", "6": "check"})

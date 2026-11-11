@@ -8,26 +8,43 @@ STATES = ("alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaw
           "oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|texas|utah|vermont|virginia|washington|"
           "west virginia|wisconsin|wyoming|district of columbia")
 ST2 = "A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]|DC"
-US_RE = re.compile(r"\b(usa|u\.s\.a?\.?|united states|any state|nationwide|us[- ]based|us only|" + STATES + r")\b|\bUS\b|\bU\.S\b", re.I)
-US_CASE = re.compile(r"(?:,|-|–|\(|\bremote)\s*(?:" + ST2 + r")\b|\b(?:" + ST2 + r")\s*(?:,|-|–)\s*(?:US|USA|United States)\b")
+US_RE = re.compile(r"\b(usa|u\.s\.a?\.?|united states|any state|nationwide|us[- ]based|us only|us states|" + STATES + r")\b|\bUS\b|\bU\.S\b", re.I)
+AMBIG = {"DE", "IN", "CA", "CO", "AR", "IL", "ID", "MA", "PA", "ME", "AL", "GA", "SC", "MD", "MT", "NE", "TN"}   # also country codes
+_CITY_ST = re.compile(r"([A-Za-z.]+)\s*,\s*(" + ST2 + r")\b")
+_REM_ST = re.compile(r"(?:[Rr]emote|REMOTE|[Vv]irtual)\s*(?:,|-|–|/|\(|\s)\s*(" + ST2 + r")\b")
+_ST_US = re.compile(r"\b(?:" + ST2 + r")\s*,\s*(?:US|USA)\b")
+_3PART = re.compile(r",\s*[A-Z]{2},\s*([A-Z]{2})(?:,|\s|$)")
+FOREIGN_CODE = re.compile(r"\b(MX|SG|GB|BR|PH|TR|JP|KR|CN|AU|NZ|IE|NL|PL|ES|FR|IT|SE|CH|AT|BE|PT|RO|UA|ZA|AE|TH|VN|MY|HK|TW|THB|EUR)\b")
 RALEIGH = re.compile(r"\b(raleigh|durham|cary|morrisville|chapel hill|research triangle|rtp|apex|wake forest|holly springs|garner)\b", re.I)
 NOT_RALEIGH = re.compile(r"\b(county durham|durham,? (uk|england|on|ontario|nh)|darlington)\b", re.I)
 REMOTE = re.compile(r"\b(remote|work from home|wfh|telecommut\w*|virtual|home[- ]based|anywhere|distributed)\b", re.I)
-NOT_REMOTE = re.compile(r"\b(no remote|not remote|non[- ]remote|on[- ]?site only|100% on[- ]?site|remote (not|is not) (available|an option))\b", re.I)
+NOT_REMOTE = re.compile(r"\b(no remote|not (a )?remote|non[- ]remote|on[- ]?site only|100% on[- ]?site|remote (not|is not) (available|an option))\b", re.I)
 FOREIGN = re.compile(
-    r"\b(canada|uk|u\.k\.|united kingdom|england|scotland|europe|emea|apac|latam|eu|india|germany|france|spain|ireland|poland|"
-    r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|romania|serbia|"
-    r"ukraine|turkey|italy|sweden|denmark|norway|finland|hungary|czech|bulgaria|greece|macedonia|armenia|peru|chile|"
-    r"costa rica|vietnam|china|korea|pakistan|egypt|nigeria|kenya|south africa|uae|dubai|malaysia|indonesia|thailand|taiwan|"
-    r"new zealand|switzerland|austria|belgium|lithuania|latvia|estonia|croatia|slovakia|slovenia|puerto rico|international|"
-    r"british columbia|ontario|quebec|alberta|london|berlin|paris|dublin|toronto|vancouver|montreal|bangalore|bengaluru|"
-    r"hyderabad|pune|chennai|mumbai|delhi|tokyo|sydney|melbourne|amsterdam|prague|warsaw|krakow|kraków|lisbon|madrid|"
-    r"barcelona|bogot[aá]|medell[ií]n|buenos aires|s[aã]o paulo|manila|kyiv|cairo|tel aviv|cet|cest|gmt|amer|martinique)\b",
-    re.I)
+    r"\b(canada|uk|u\.k\.|united kingdom|england|scotland|europe|emea|apac|latam|eu|india|germany|deutschland|france|spain|ireland|"
+    r"poland|brazil|brasil|mexico|méxico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|"
+    r"romania|serbia|ukraine|turkey|türkiye|italy|sweden|denmark|norway|finland|hungary|czech|bulgaria|greece|macedonia|armenia|"
+    r"peru|chile|costa rica|vietnam|china|korea|pakistan|egypt|nigeria|kenya|south africa|uae|dubai|malaysia|indonesia|thailand|"
+    r"taiwan|new zealand|switzerland|austria|belgium|lithuania|latvia|estonia|croatia|slovakia|slovenia|puerto rico|international|"
+    r"british columbia|ontario|quebec|alberta|london|berlin|munich|münchen|paris|dublin|toronto|vancouver|montreal|bangalore|"
+    r"bengaluru|hyderabad|pune|chennai|mumbai|delhi|tokyo|sydney|melbourne|amsterdam|prague|warsaw|krakow|kraków|lisbon|madrid|"
+    r"barcelona|bogot[aá]|medell[ií]n|buenos aires|s[aã]o paulo|manila|kyiv|cairo|tel aviv|guadalajara|ciudad de m[eé]xico|"
+    r"cet|cest|gmt|amer|martinique|m/w/d|m/f/d)\b", re.I)
 US_NAMES = {"us", "usa", "united states", "united states of america", "u.s.", "u.s.a."}
 STRONG_REMOTE_DESC = re.compile(
     r"\b(fully remote|100% remote|remote[- ]first|this (is a|role is|position is)( \w+){0,2} remote|remote (role|position|opportunity)|"
-    r"work from (home|anywhere)|work remotely from anywhere in the (us|u\.s\.|united states))\b", re.I)
+    r"work remotely from anywhere in the (us|u\.s\.|united states))\b", re.I)
+_GENERIC = re.compile(r"(?i)remote|work from home|wfh|virtual|anywhere|worldwide|global|worker|role|work|position|n/?a|full[- ]?time|only|based|location|not specified|unavailable")
+
+
+def us_evidence(t):
+    if US_RE.search(t) or _ST_US.search(t):
+        return True
+    for m in _CITY_ST.finditer(t):
+        if m.group(1).lower() not in ("remote", "virtual", "hybrid", "wfh", "telework"):
+            return True
+        if m.group(2) not in AMBIG:
+            return True
+    return any(m.group(1) not in AMBIG for m in _REM_ST.finditer(t))
 
 
 def _one(text, country, remote_flag, title):
@@ -35,18 +52,21 @@ def _one(text, country, remote_flag, title):
     t = (text or "").strip()
     c = (country or "").strip().lower()
     is_us_c = c in US_NAMES
-    foreign_c = bool(c) and not is_us_c
-    foreign = foreign_c or (bool(FOREIGN.search(t)) and not (is_us_c or US_RE.search(t) or US_CASE.search(t)))
+    us = is_us_c or us_evidence(t)
+    three = _3PART.search(t)
+    foreign = (bool(c) and not is_us_c) or (bool(three) and three.group(1) != "US" and not is_us_c) or \
+              ((bool(FOREIGN.search(t)) or bool(FOREIGN_CODE.search(t)) or bool(FOREIGN.search(title or ""))) and not us)
     if foreign:
         return "drop"
     if RALEIGH.search(t) and not NOT_RALEIGH.search(t):
         return "raleigh"
-    us = is_us_c or bool(US_RE.search(t) or US_CASE.search(t))
-    remote = (remote_flag is True or bool(REMOTE.search(t)) or bool(REMOTE.search(title or ""))) and not NOT_REMOTE.search(t)
+    remote = (remote_flag is True or bool(REMOTE.search(t)) or bool(REMOTE.search(title or ""))) \
+        and not NOT_REMOTE.search(t) and not NOT_REMOTE.search(title or "")
     if remote and us:
         return "ok"
     if remote:
-        return "check"
+        rest = re.sub(r"[^a-z]", "", _GENERIC.sub(" ", t.lower()))
+        return "check" if not rest else "drop"         # a place we cannot recognise is not evidence of the US
     if us:
         bare = re.sub(r"[^a-z]", "", t.lower()) in ("", "us", "usa", "unitedstates", "unitedstatesofamerica")
         return "usonly" if bare else "uscity"
@@ -56,6 +76,9 @@ def _one(text, country, remote_flag, title):
 def classify(locs, remote_flag=None, title="", desc_text=""):
     """locs: list of (text, country). Returns (kind, why). kind: 'ok' | 'check' | 'drop'."""
     locs = [(t, c) for t, c in (locs or []) if (t or c)] or [("", "")]
+    denied = bool(desc_text and NOT_REMOTE.search(desc_text[:400]))
+    if denied:
+        remote_flag = False
     res = [_one(t, c, remote_flag, title) for t, c in locs]
     if "raleigh" in res:
         return "ok", "Raleigh area"
@@ -63,12 +86,27 @@ def classify(locs, remote_flag=None, title="", desc_text=""):
         return "ok", ""
     if "check" in res:
         return "check", "Remote, but country not stated"
-    strong = bool(desc_text and STRONG_REMOTE_DESC.search(desc_text[:6000]))
-    if "usonly" in res:
-        return ("check", "US location, remote not confirmed") if (strong or remote_flag is True or not desc_text) else ("drop", "")
-    if "uscity" in res and strong:
-        return "check", "Office location listed, description mentions remote"
+    if "usonly" in res and not denied and (not desc_text or STRONG_REMOTE_DESC.search(desc_text[:6000])):
+        return "check", "US location, remote not confirmed"
     return "drop", ""
+
+
+SW = [r"selenium", r"playwright", r"cypress", r"appium", r"test automation|automat(ed|ion) test", r"api test", r"postman|rest ?assured",
+      r"\bsoftware\b", r"\bsdlc\b", r"\bagile\b|\bscrum\b", r"\bjira\b", r"\bpython\b", r"\bjava(script)?\b|typescript", r"ci/cd|jenkins|github|gitlab",
+      r"regression", r"test (cases?|plans?|scripts?)", r"web application|mobile app", r"\bllm\b|machine learning", r"\bsql\b", r"\bsdet\b"]
+NONSW = [r"\bc?gmp\b", r"\bfda\b", r"iso ?13485|iso ?9001|as9100", r"manufactur", r"sterili", r"pharma", r"\bcapa\b", r"batch record",
+         r"six sigma", r"supplier quality", r"gd&t", r"clinical trial", r"laborator", r"assembly line|production floor", r"\bppap\b|\bfmea\b",
+         r"calibration", r"nuclear", r"welding", r"chemical", r"call (center|centre)|call monitoring", r"food safety"]
+SW = [re.compile(p, re.I) for p in SW]
+NONSW = [re.compile(p, re.I) for p in NONSW]
+
+
+def software_role(strong, text):
+    """Generic titles ('Quality Engineer') must look like software work in the description."""
+    if strong or not text:
+        return True
+    sw, non = sum(bool(p.search(text)) for p in SW), sum(bool(p.search(text)) for p in NONSW)
+    return sw >= 1 and sw > non
 
 
 # ---------- title ----------
@@ -84,6 +122,9 @@ class Titles:
         if not self.inc.search(t) or self.hard.search(t):
             return False
         return not self.soft.search(t) or bool(self.strong.search(t))
+
+    def is_strong(self, title):
+        return bool(self.strong.search(title or ""))
 
     def is_ai(self, title):
         return bool(self.ai.search(title or ""))
@@ -143,6 +184,7 @@ REQ_LINE = re.compile(r"(?i)\b(\d\+? ?(years|yrs)|experience (with|in|using|test
 
 def requirements(lines, limit=4, width=150):
     best, cur, mode = [], None, None
+    bullets = any(l.startswith("• ") for l in lines)
     for ln in lines:
         if is_heading(ln):
             h = ln.lstrip("# ").strip()
@@ -153,10 +195,12 @@ def requirements(lines, limit=4, width=150):
             else:
                 mode = "other"
             continue
-        if mode == "req" and ln.startswith("• "):
-            best.append(ln[2:].strip())
+        if mode == "req" and (ln.startswith("• ") or not bullets):
+            best.append(ln[2:].strip() if ln.startswith("• ") else ln)
     if not best:
         best = [ln[2:].strip() for ln in lines if ln.startswith("• ") and REQ_LINE.search(ln)]
+    if not best and not bullets:
+        best = [ln for ln in lines if not is_heading(ln) and REQ_LINE.search(ln) and len(ln) < 400][:limit]
     out, seen = [], set()
     for b in best:
         b = re.sub(r"\s+", " ", b).strip(" ;.")
@@ -191,3 +235,15 @@ def salary_from(text):
     if m:
         return f"${m.group(1)} – ${m.group(2)} / hour"
     return ""
+
+
+def tidy_salary(s):
+    """'71600.00 to 116550.00' -> '$71,600 – $116,550'. Leaves already formatted text alone."""
+    s = (s or "").strip()
+    if not s or "$" in s or re.search(r"[€£¥]|[A-Z]{3}", s.replace("USD", "")):
+        return s if "$" in s else ""
+    n = [float(x.replace(",", "")) for x in re.findall(r"\d[\d,]*(?:\.\d+)?", s)]
+    n = [x for x in n if x >= 1000]
+    if not n:
+        return ""
+    return f"${n[0]:,.0f} – ${n[1]:,.0f}" if len(n) > 1 and n[1] > n[0] else f"${n[0]:,.0f}"

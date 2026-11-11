@@ -161,6 +161,8 @@ class Radar:
             man = wide.stapply_generated()
             if man.get("generated_at") != self.state.get("stapply_gen") or "--force" in ARGS:
                 cs, promote, ids, counts = wide.stapply(man, self.cfg, self.titles)
+                for c in cs:
+                    c["boot"] = not self.state.get("stapply_gen")     # first snapshot: undated postings have unknown age
                 self.cands += cs
                 self.present["via:stapply"] = ids
                 self.report.append({"source": "open dataset A (60+ career systems)", "companies": man.get("stats", {}).get("total_companies"),
@@ -174,6 +176,8 @@ class Radar:
             upd = wide.feashliaa_updated()
             if upd != self.state.get("feash_upd") or "--force" in ARGS:
                 cs, promote, ids = wide.feashliaa(self.titles)
+                for c in cs:
+                    c["boot"] = not self.state.get("feash_upd")
                 self.cands += cs
                 self.present["via:feashliaa"] = ids
                 self.report.append({"source": "open dataset B (28k companies)", "title_match": len(cs), "watch_added": self.promote(promote),
@@ -200,11 +204,21 @@ class Radar:
                 pass
             if c.get("closed"):
                 return "closed"
+        elif c.get("refine") and kind != "drop":           # dataset text is flattened: try the real posting page
+            before = c["desc"]
+            try:
+                c["refine"](c)
+            except Exception:
+                pass
+            if len(c["desc"] or "") < 300 <= len(before or ""):
+                c["desc"] = before
         lines = to_lines(c["desc"])
         text = " ".join(lines)
         kind, why = filters.classify(c["locs"], c["remote"], c["title"], text)
         if kind == "drop":
             return "location"
+        if not filters.software_role(self.titles.is_strong(c["title"]), text):
+            return "not software"
         if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
             return "old"
         deg = filters.degree(lines)
@@ -216,9 +230,10 @@ class Radar:
         return {"v": 2, "id": c["id"], "ats": c["ats"], "src": sources.LABEL.get(c["ats"]) or platforms.NAMES.get(c["ats"]) or c["ats"].title(),
                 "via": "platform" if platform else c.get("via", "direct"), "board": c["board"], "title": c["title"], "company": c["company"],
                 "location": show_loc(c["locs"]), "url": c["url"], "posted": posted, "date_est": bool(c["date_est"] or not c["posted"]),
-                "first_seen": STAMP, "salary": c["salary"] or filters.salary_from(text), "reqs": filters.requirements(lines),
+                "first_seen": STAMP, "salary": filters.tidy_salary(c["salary"]) or filters.salary_from(text), "reqs": filters.requirements(lines),
                 "kind": "platform" if platform else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
-                "degree": deg, "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
+                "degree": deg, "stale": bool(c.get("boot") and (c["date_est"] or not c["posted"])),
+                "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):
         keys = {(norm(j["title"]), norm(j["company"])) for j in self.jobs.values()}
@@ -315,6 +330,9 @@ class Radar:
                 if j["kind"] == "platform" or j["date_est"] or age_hours(j["posted"]) > 24:
                     j["notify"] = "skip"
             self.state["bootstrapped"] = True
+        for j in self.jobs.values():
+            if j.get("stale") and j["notify"] == "pending":
+                j["notify"] = "skip"
         tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
         jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)
         by = Counter(j["kind"] for j in jobs)

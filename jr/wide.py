@@ -44,7 +44,9 @@ def board_of(ats, url):
 
 
 def host_company(name):
-    n = name or ""
+    n = (name or "").strip()
+    if n and n == n.lower() and " " not in n and "." not in n:
+        return pretty(n)
     if "." in n and " " not in n:
         n = re.sub(r"^(jobs|careers|career|www|apply)\.", "", n.lower())
         n = n.split(".")[0]
@@ -85,6 +87,7 @@ def stapply(manifest, cfg, titles):
                  date_est=not posted)
         c["id"] = f"{ats}:{ats_id or u}"
         c["via"] = "stapply"
+        c["refine"] = page_detail
         ids.add(c["id"])
         cands.append(c)
     return cands, promote, ids, dict(counts)
