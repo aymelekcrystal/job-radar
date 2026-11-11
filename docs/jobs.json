@@ -1,5 +1,6 @@
 {
- "updated": "2026-11-10T23:48:25+00:00",
+ "updated": "2026-11-11T00:01:25+00:00",
+ "meta": {},
  "report": [
   {
    "source": "remotive",
@@ -32,6 +33,16 @@
    "fetched": 36
   },
   {
+   "source": "adzuna",
+   "ok": true,
+   "skipped": "anahtar eklenmemis"
+  },
+  {
+   "source": "jobspipe",
+   "ok": true,
+   "skipped": "anahtar eklenmemis"
+  },
+  {
    "source": "greenhouse/anthropic",
    "ok": true,
    "fetched": 679
@@ -43,13 +54,13 @@
   },
   {
    "source": "greenhouse/databricks",
-   "ok": true,
-   "fetched": 921
+   "ok": false,
+   "error": "ReadTimeout: HTTPSConnectionPool(host='boards-api.greenhouse.io', port=443): Read timed out. (read timeout=30)"
   },
   {
    "source": "greenhouse/stripe",
    "ok": true,
-   "fetched": 777
+   "fetched": 778
   },
   {
    "source": "greenhouse/figma",
@@ -94,7 +105,7 @@
   {
    "source": "greenhouse/robinhood",
    "ok": true,
-   "fetched": 155
+   "fetched": 156
   },
   {
    "source": "greenhouse/twilio",
@@ -114,7 +125,7 @@
   {
    "source": "greenhouse/instacart",
    "ok": true,
-   "fetched": 90
+   "fetched": 88
   },
   {
    "source": "greenhouse/reddit",
@@ -145,11 +156,6 @@
    "source": "greenhouse/canonical",
    "ok": true,
    "fetched": 316
-  },
-  {
-   "source": "greenhouse/automattic",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/automattic/jobs"
   },
   {
    "source": "greenhouse/doximity",
@@ -217,11 +223,6 @@
    "fetched": 277
   },
   {
-   "source": "greenhouse/nerdwallet",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/nerdwallet/jobs"
-  },
-  {
    "source": "greenhouse/calendly",
    "ok": true,
    "fetched": 7
@@ -244,17 +245,7 @@
   {
    "source": "greenhouse/fivetran",
    "ok": true,
-   "fetched": 176
-  },
-  {
-   "source": "greenhouse/dbtlabsinc",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/dbtlabsinc/jobs"
-  },
-  {
-   "source": "greenhouse/hashicorp",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hashicorp/jobs"
+   "fetched": 178
   },
   {
    "source": "greenhouse/grafanalabs",
@@ -267,34 +258,9 @@
    "fetched": 19
   },
   {
-   "source": "greenhouse/teladoc",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/teladoc/jobs"
-  },
-  {
-   "source": "greenhouse/hingehealth",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/hingehealth/jobs"
-  },
-  {
    "source": "greenhouse/oscar",
    "ok": true,
    "fetched": 188
-  },
-  {
-   "source": "greenhouse/cerebral",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/cerebral/jobs"
-  },
-  {
-   "source": "greenhouse/headway",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/headway/jobs"
-  },
-  {
-   "source": "greenhouse/springhealth",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/springhealth/jobs"
   },
   {
    "source": "greenhouse/omadahealth",
@@ -312,11 +278,6 @@
    "fetched": 3
   },
   {
-   "source": "greenhouse/chegg",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/chegg/jobs"
-  },
-  {
    "source": "greenhouse/khanacademy",
    "ok": true,
    "fetched": 3
@@ -327,16 +288,6 @@
    "fetched": 81
   },
   {
-   "source": "greenhouse/marqeta",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/marqeta/jobs"
-  },
-  {
-   "source": "greenhouse/bill",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/bill/jobs"
-  },
-  {
    "source": "greenhouse/justworks",
    "ok": true,
    "fetched": 111
@@ -344,17 +295,12 @@
   {
    "source": "greenhouse/appian",
    "ok": true,
-   "fetched": 158
+   "fetched": 159
   },
   {
    "source": "greenhouse/bandwidth",
    "ok": true,
    "fetched": 25
-  },
-  {
-   "source": "greenhouse/redhat",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://boards-api.greenhouse.io/v1/boards/redhat/jobs"
   },
   {
    "source": "greenhouse/sas",
@@ -402,11 +348,6 @@
    "fetched": 16
   },
   {
-   "source": "lever/attentive",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.lever.co/v0/postings/attentive?mode=json"
-  },
-  {
    "source": "lever/veeva",
    "ok": true,
    "fetched": 861
@@ -434,7 +375,7 @@
   {
    "source": "ashby/openai",
    "ok": true,
-   "fetched": 828
+   "fetched": 829
   },
   {
    "source": "ashby/cohere",
@@ -567,11 +508,6 @@
    "fetched": 46
   },
   {
-   "source": "ashby/duckduckgo",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/duckduckgo?includeCompensation=true"
-  },
-  {
    "source": "ashby/1password",
    "ok": true,
    "fetched": 80
@@ -632,11 +568,6 @@
    "fetched": 326
   },
   {
-   "source": "ashby/together",
-   "ok": false,
-   "error": "HTTPError: 404 Client Error: Not Found for url: https://api.ashbyhq.com/posting-api/job-board/together?includeCompensation=true"
-  },
-  {
    "source": "ashby/fireworks",
    "ok": true,
    "fetched": 94
@@ -658,6 +589,30 @@
   }
  ],
  "jobs": [
+  {
+   "id": "himalayas:https://himalayas.app/companies/super-dispatch/jobs/senior-test-automation-engineer",
+   "source": "himalayas",
+   "title": "Senior Test Automation Engineer",
+   "company": "Super Dispatch",
+   "location": "Armenia, Georgia, Kazakhstan, Kyrgyzstan, Uzbekistan",
+   "url": "https://himalayas.app/companies/super-dispatch/jobs/senior-test-automation-engineer?utm_source=api",
+   "posted": "2026-11-10T22:49:51+00:00",
+   "salary": "",
+   "ai": false,
+   "first_seen": "2026-11-11T00:01:25+00:00"
+  },
+  {
+   "id": "himalayas:https://himalayas.app/companies/bright-vision-technologies/jobs/qa-automation-engineer-251512896",
+   "source": "himalayas",
+   "title": "QA Automation Engineer",
+   "company": "Bright Vision Technologies",
+   "location": "United States",
+   "url": "https://himalayas.app/companies/bright-vision-technologies/jobs/qa-automation-engineer-251512896?utm_source=api",
+   "posted": "2026-11-10T22:41:44+00:00",
+   "salary": "$115,000 – $165,000",
+   "ai": false,
+   "first_seen": "2026-11-11T00:01:25+00:00"
+  },
   {
    "id": "himalayas:https://himalayas.app/companies/bright-vision-technologies/jobs/test-automation-lead",
    "source": "himalayas",
@@ -695,18 +650,6 @@
    "first_seen": "2026-11-10T23:46:32+00:00"
   },
   {
-   "id": "himalayas:https://himalayas.app/companies/airtm/jobs/senior-qa-engineer",
-   "source": "himalayas",
-   "title": "Senior QA Engineer",
-   "company": "Airtm",
-   "location": "United States + 58 ulke",
-   "url": "https://himalayas.app/companies/airtm/jobs/senior-qa-engineer?utm_source=api",
-   "posted": "2026-11-10T16:57:24+00:00",
-   "salary": "",
-   "ai": false,
-   "first_seen": "2026-11-10T23:46:32+00:00"
-  },
-  {
    "id": "jobicy:161171",
    "source": "jobicy",
    "title": "QA Engineer",
@@ -722,25 +665,13 @@
    "id": "jobicy:159347",
    "source": "jobicy",
    "title": "Sr. Staff SDET, Customer Engineering",
-   "company": "hims &#038; hers",
+   "company": "hims & hers",
    "location": "USA",
    "url": "https://jobicy.com/jobs/159347-sr-staff-sdet-customer-engineering",
    "posted": "2026-11-06T15:58:27+00:00",
    "salary": "",
    "ai": false,
    "first_seen": "2026-11-10T23:48:25+00:00"
-  },
-  {
-   "id": "greenhouse:anthropic-5468380008",
-   "source": "greenhouse",
-   "title": "Data Center Substation, Protection & Automation Engineer",
-   "company": "Anthropic",
-   "location": "Remote-Friendly, United States",
-   "url": "https://job-boards.greenhouse.io/anthropic/jobs/5468380008",
-   "posted": "2026-10-30T16:29:10+00:00",
-   "salary": "",
-   "ai": false,
-   "first_seen": "2026-11-10T23:46:32+00:00"
   },
   {
    "id": "lever:veeva-0d88dc70-1023-4ee5-a7fe-67eb0b5cb848",
