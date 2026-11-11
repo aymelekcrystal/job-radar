@@ -175,6 +175,22 @@ assert "🟡 CHECK LOCATION · first seen" in m2 and "⚠️ Remote, but country
 m3 = notify.fmt(dict(j, kind="platform", src="Indeed", direct_link=True))
 assert "🔵 FROM INDEED" in m3 and "Indeed → company link" in m3, m3
 
+# ---- several chats ----
+calls = []
+notify.send = lambda text, tok, c: (calls.append((c, text[:12])), True)[1]
+notify.greet_new_chats = lambda tok, chats: None
+import os
+os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"] = "t", "111, -100222"
+stt = {"tg_hello": True, "tg_welcomed": ["*"]}
+jj = [dict(j, id="x1", notify="pending")]
+old_quiet = notify.quiet; notify.quiet = lambda *a: False; old_sleep = notify.time.sleep; notify.time.sleep = lambda s: None
+res = notify.process(jj, stt, cfg)
+eq("multi chat status", res, "sent 1 of 1")
+eq("multi chat calls", [c for c, _ in calls], ["-100222", "111", "-100222"])
+eq("multi chat welcomed", stt["tg_welcomed"], ["111", "0222"])
+notify.quiet, notify.time.sleep = old_quiet, old_sleep
+del os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"]
+
 # ---- end-to-end decision ----
 rd = radar.Radar.__new__(radar.Radar)
 rd.cfg, rd.titles, rd.state, rd.jobs, rd.desc, rd.present = cfg, T, {"seen": {}, "dead": {}}, {}, {}, {}

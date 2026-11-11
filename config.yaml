@@ -53,8 +53,8 @@ workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automat
 amazon_terms: ["quality assurance engineer", "SDET", "test engineer"]
 
 # ---- job platforms: only to top the day up to the target ----
-daily_target: 50
-topup_time: "17:00"
+daily_target: 50                 # company postings + platform postings sent per day
+platform_every_minutes: 60       # LinkedIn/Indeed block callers that ask too often; keep this at 60 or more
 platform_order: [linkedin, indeed, remotive, himalayas, remoteok, jobicy, wwr, workingnomads]
 platform_terms: ["SDET", "QA automation engineer", "QA engineer", "test automation engineer", "AI QA engineer"]
 platform_results: 40

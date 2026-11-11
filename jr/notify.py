@@ -69,6 +69,32 @@ def diagnose(tok):
         return f"diagnose failed: {type(ex).__name__}"
 
 
+def send_all(text, tok, chats):
+    ok = [send(text, tok, c) for c in chats]
+    return any(ok)
+
+
+def greet_new_chats(tok, chats):
+    """A chat or channel the bot was just added to gets a message with its own ID, so it can be added to the settings."""
+    try:
+        base = f"https://api.telegram.org/bot{tok.strip()}"
+        ups = requests.get(base + "/getUpdates", timeout=20, params={"timeout": 0}).json().get("result", [])
+        seen, last = set(), None
+        for u in ups:
+            last = u["update_id"]
+            m = u.get("message") or u.get("channel_post") or u.get("my_chat_member") or {}
+            cid = str((m.get("chat") or {}).get("id") or "")
+            if not cid or cid in chats or cid in seen:
+                continue
+            seen.add(cid)
+            send(f"👋 This chat's ID is <code>{cid}</code>\nTo receive Job Radar postings here, add it to the "
+                 f"TELEGRAM_CHAT_ID setting (several IDs are separated by commas).", tok, cid)
+        if last is not None:
+            requests.get(base + "/getUpdates", timeout=20, params={"offset": last + 1, "timeout": 0})
+    except Exception:
+        pass
+
+
 def quiet(now_et, cfg):
     q0, q1 = cfg.get("quiet_hours", [23, 7])
     return now_et.hour >= q0 or now_et.hour < q1 if q0 > q1 else q0 <= now_et.hour < q1
@@ -85,16 +111,27 @@ def process(jobs, state, cfg, dry=False):
         return f"telegram not configured ({len(pend)} not sent)"
     if dry:
         return f"dry run ({len(pend)} pending)"
+    chats = [c.strip() for c in chat.replace(";", ",").split(",") if c.strip()]
+    greet_new_chats(tok, chats)
+    for c in chats:                                  # a newly added chat gets a welcome once
+        w = state.setdefault("tg_welcomed", [])
+        if "*" in w:                                 # setup before multi-chat support: the first chat was already welcomed
+            w.remove("*"); w.append(chats[0][-4:])
+        if c[-4:] not in w and state.get("tg_hello"):
+            if send("✅ Job Radar is connected. New postings will arrive here as they are found.", tok, c):
+                state["tg_welcomed"].append(c[-4:])
+    chat = chats
     if not state.get("tg_hello"):
-        if send("✅ Job Radar is connected. New postings will arrive here as they are found.", tok, chat):
+        if send_all("✅ Job Radar is connected. New postings will arrive here as they are found.", tok, chat):
             state["tg_hello"] = True
+            state["tg_welcomed"] = [c[-4:] for c in chats]
         else:
             return f"TELEGRAM ERROR: {LAST_ERROR[0]} | {diagnose(tok)} ({len(pend)} waiting)"
     if quiet(now_et, cfg):
         state["held"] = True
         return f"quiet hours ({len(pend)} held)"
     if state.pop("held", None) and len(pend) > 1:
-        send(f"☀️ Good morning — {len(pend)} postings found overnight:", tok, chat)
+        send_all(f"☀️ Good morning — {len(pend)} postings found overnight:", tok, chat)
     cap = cfg.get("max_messages_per_run", 45)
     if len(pend) > cap:                      # a backlog (first wide scan): keep the newest, do not flood
         keep = {j["id"] for j in sorted(pend, key=lambda j: j["posted"], reverse=True)[:cap]}
@@ -104,7 +141,7 @@ def process(jobs, state, cfg, dry=False):
         pend = [j for j in pend if j["id"] in keep]
     sent = 0
     for j in pend:
-        if send(fmt(j), tok, chat):
+        if send_all(fmt(j), tok, chat):
             j["notify"], sent = "sent", sent + 1
         else:
             j["tries"] = j.get("tries", 0) + 1

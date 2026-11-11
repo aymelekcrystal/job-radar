@@ -294,9 +294,9 @@ class Radar:
         boot = self.state.get("boot_done", "")
         have = sum(1 for j in self.jobs.values() if j["kind"] != "platform" and j["first_seen"] > boot
                    and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
-        need = max(0, self.cfg["daily_target"] - have)
-        for j in [j for j in self.jobs.values() if j["kind"] == "platform"]:
-            self.drop(j["id"])
+        sent = sum(1 for j in self.jobs.values() if j["kind"] == "platform" and j["notify"] in ("sent", "pending")
+                   and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
+        need = max(0, self.cfg["daily_target"] - have - sent)
         got = []
         for site in self.cfg["platform_order"]:
             try:
@@ -314,8 +314,8 @@ class Radar:
         for i, j in enumerate(got):
             j["notify"] = "pending" if i < need else "skip"
         self.state["topup_last"] = STAMP
-        self.report.append({"source": "daily top-up", "company_postings_today": have, "target": self.cfg["daily_target"],
-                            "platform_sent": min(need, len(got)), "ok": 1})
+        self.report.append({"source": "platform top-up", "company_postings_today": have, "platform_sent_today": sent + min(need, len(got)),
+                            "target": self.cfg["daily_target"], "new_this_run": len(got), "ok": 1})
 
     # ---------- run ----------
     def run(self):
@@ -330,7 +330,9 @@ class Radar:
             self.workday()
         st = self.decide(self.cands)
         closed = self.prune()
-        if want("topup", slot_due([self.cfg["topup_time"]], self.state.get("topup_last"), self.now_et)):
+        last = self.state.get("topup_last")
+        since = (NOW - datetime.fromisoformat(last)).total_seconds() / 60 if last else 1e9
+        if want("topup", since >= self.cfg.get("platform_every_minutes", 60) - 2 and not notify.quiet(self.now_et, self.cfg)):
             self.topup()
         if not self.state.get("bootstrapped"):
             for j in self.jobs.values():       # first run: do not send the whole backlog
