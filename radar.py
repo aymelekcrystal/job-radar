@@ -291,6 +291,7 @@ class Radar:
                     res.update(notify=old["notify"], first_seen=old["first_seen"], stale=old.get("stale", False))
                     self.drop(old["id"])
                     stats["now direct"] += 1
+                    stats["accepted"] -= 1          # not a new posting, only a better source for a known one
                 elif k in keys or u in urls:
                     stats["duplicate"] += 1
                     continue
