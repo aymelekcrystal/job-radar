@@ -160,7 +160,7 @@ def adzuna(cfg):
     aid, key = os.getenv("ADZUNA_APP_ID"), os.getenv("ADZUNA_APP_KEY")
     if not (aid and key):
         raise Skip("anahtar eklenmemis")
-    due("adzuna", 2)                      # kota: gunde ~70 istek
+    due("adzuna", cfg.get("adzuna_every_hours", 24))
     out = []
     for term in cfg.get("adzuna_titles", []):
         r = get("https://api.adzuna.com/v1/api/jobs/us/search/1",
@@ -172,7 +172,7 @@ def adzuna(cfg):
                 continue
             loc = (j.get("location") or {}).get("display_name") or ""
             out.append(job("adzuna", j.get("id"), re.sub(r"</?strong>", "", j.get("title") or ""),
-                           (j.get("company") or {}).get("display_name"), f"Remote · {loc}, US" if loc else "Remote, US",
+                           (j.get("company") or {}).get("display_name"), "Remote, US" if loc in ("", "US") else f"Remote · {loc}",
                            j.get("redirect_url"), j.get("created"),
                            "" if str(j.get("salary_is_predicted")) == "1" else money(j.get("salary_min"), j.get("salary_max")),
                            remote=True))

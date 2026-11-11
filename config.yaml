@@ -19,6 +19,7 @@ exclude:
   - '\b(hardware|manufacturing|mechanical|electrical|rf|firmware|semiconductor|supplier|food|clinical|pharma|lab)\b'
   - '\bquality assurance (specialist|analyst|auditor|inspector|coordinator)\b'
   - '\b(game|games|localization) tester\b'
+  - '\b(air quality|water quality|optical|on[- ]?site)\b'
   - '\b(physician|nurse|md|cybersecurity|security|substation|data center|penetration)\b'
 
 # Bu kelimeler baslik/etiketlerde gecerse ilan "AI" rozeti alir
@@ -30,8 +31,9 @@ max_age_days: 21
 # Remote is siteleri (acik API / RSS). Kapatmak icin satiri sil.
 boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads, adzuna, jobspipe]
 
-# Adzuna (ucretsiz anahtar; 2 saatte bir). Her satir = baslikta aranacak kelimeler.
-adzuna_titles: [sdet, "qa engineer", "qa automation", "test automation", "quality engineer", "engineer in test"]
+# Adzuna: deneme anahtari toplam 25 istek veriyor (sonrasi ayda 8 GBP). Gunde 1 kez, 3 arama.
+adzuna_every_hours: 24
+adzuna_titles: ["qa engineer", sdet, "test automation"]
 
 # JobsPipe (1.000 kredi, 1 ilan = 1 kredi). Krediyi yavas harcamak icin seyrek ve kucuk.
 jobspipe_every_hours: 6
