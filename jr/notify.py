@@ -182,12 +182,9 @@ def process(jobs, state, cfg, dry=False):
     if state.pop("held", None) and len(pend) > 1:
         send_all(f"☀️ Good morning — {len(pend)} postings found overnight:", tok, chat)
     cap = cfg.get("max_messages_per_run", 45)
-    if len(pend) > cap:                      # a backlog (first wide scan): keep the newest, do not flood
-        keep = {j["id"] for j in sorted(pend, key=lambda j: j["posted"], reverse=True)[:cap]}
-        for j in pend:
-            if j["id"] not in keep:
-                j["notify"] = "skip"
-        pend = [j for j in pend if j["id"] in keep]
+    total = len(pend)
+    pend = pend[:cap]                        # anything beyond the cap stays pending for the next scan
+    gap = 3.1 if any(c.startswith("-") for c in chats) else 1.1    # Telegram allows ~20 messages a minute in a group
     sent = 0
     for j in pend:
         ok = deliver(j, tok, chats, state)
@@ -199,5 +196,5 @@ def process(jobs, state, cfg, dry=False):
             j["tries"] = j.get("tries", 0) + 1
             if j["tries"] >= 5:
                 j["notify"] = "failed"
-        time.sleep(1.1)
-    return f"sent {sent} of {len(pend)}" + (f" (last error: {LAST_ERROR[0]})" if sent < len(pend) and LAST_ERROR[0] else "")
+        time.sleep(gap)
+    return f"sent {sent} of {total}" + (f" (last error: {LAST_ERROR[0]})" if sent < len(pend) and LAST_ERROR[0] else "")
