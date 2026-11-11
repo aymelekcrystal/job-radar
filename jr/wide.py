@@ -88,6 +88,7 @@ def stapply(manifest, cfg, titles):
         c["id"] = f"{ats}:{ats_id or u}"
         c["via"] = "stapply"
         c["refine"] = page_detail
+        c["weak_company"] = " " not in (company or "").strip()
         ids.add(c["id"])
         cands.append(c)
     return cands, promote, ids, dict(counts)

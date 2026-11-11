@@ -102,6 +102,12 @@ class Radar:
                 if status == "ok":
                     st["ok"] += 1; st["jobs"] += n; st["match"] += len(cs)
                     self.state["dead"].pop(key, None)
+                    if cs and cs[0].get("nodate"):          # undated system: on a company's first read, age is unknown
+                        known = self.state.setdefault("nodate_boards", [])
+                        if key not in known:
+                            known.append(key)
+                            for c in cs:
+                                c["newboard"] = True
                     self.cands += cs
                     if ids is not None:
                         self.present[key] = ids
@@ -232,7 +238,7 @@ class Radar:
                 "location": show_loc(c["locs"]), "url": c["url"], "posted": posted, "date_est": bool(c["date_est"] or not c["posted"]),
                 "first_seen": STAMP, "salary": filters.tidy_salary(c["salary"]) or filters.salary_from(text), "reqs": filters.requirements(lines),
                 "kind": "platform" if platform else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
-                "degree": deg, "stale": bool(c.get("boot") and (c["date_est"] or not c["posted"])),
+                "degree": deg, "stale": bool((c.get("boot") or c.get("newboard")) and (c["date_est"] or not c["posted"])),
                 "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):

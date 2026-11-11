@@ -181,6 +181,9 @@ def page_detail(c):
     jp = ld_jobposting(http(c["url"], retries=1).text)
     if not jp:
         return
+    org = jp.get("hiringOrganization")
+    if c.get("weak_company") and isinstance(org, dict) and org.get("name") and len(str(org["name"])) < 60:
+        c["company"] = str(org["name"]).strip()
     if len(jp.get("description") or "") > 300:
         c["desc"] = jp["description"]
     if jp.get("datePosted") and (not c["posted"] or c["date_est"]):
@@ -219,12 +222,38 @@ def breezy(board):
 
 
 # ---------- Rippling ----------
+_RIP_KEYS = []
+
+
 def rippling(board):
     out = []
     for j in http(f"https://api.rippling.com/platform/api/ats/v1/board/{board}/jobs").json():
         wl = (j.get("workLocation") or {}).get("label") or ""
+
+        def detail(c, uuid=j.get("uuid")):
+            try:
+                d = http(f"https://api.rippling.com/platform/api/ats/v1/board/{board}/jobs/{uuid}", retries=1).json()
+            except Exception:
+                return page_detail(c)
+            if not _RIP_KEYS:
+                _RIP_KEYS.append(1)
+                print("rippling detail keys:", sorted(d.keys()), {k: sorted(v.keys()) for k, v in d.items() if isinstance(v, dict)})
+            ds = d.get("description")
+            c["desc"] = "".join(str(v) for v in ds.values() if v) if isinstance(ds, dict) else str(ds or "")
+            for k in ("createdOn", "createdAt", "created_on", "publishedAt", "postedAt", "datePosted"):
+                if d.get(k) and iso(d[k]):
+                    c["posted"], c["date_est"] = iso(d[k]), False
+                    break
+            for l in d.get("workLocations") or []:
+                c["locs"].append((l if isinstance(l, str) else (l.get("label") or l.get("name") or ""), ""))
+            if d.get("companyName"):
+                c["company"] = d["companyName"]
+            if not c["desc"]:
+                page_detail(c)
+
         out.append(cand("rippling", board, j.get("uuid"), j.get("name"), pretty(board), [(wl, "")], j.get("url"), "",
-                        date_est=True, detail=page_detail))
+                        date_est=True, detail=detail))
+        out[-1]["nodate"] = True
     return out, {c["id"] for c in out}
 
 

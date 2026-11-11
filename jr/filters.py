@@ -36,6 +36,9 @@ STRONG_REMOTE_DESC = re.compile(
 _GENERIC = re.compile(r"(?i)remote|work from home|wfh|virtual|anywhere|worldwide|global|worker|role|work|position|n/?a|full[- ]?time|only|based|location|not specified|unavailable")
 
 
+_TITLE_US = re.compile(r"\b(?:US|USA|U\.S\.?|United States)\b")
+
+
 def us_evidence(t):
     if US_RE.search(t) or _ST_US.search(t):
         return True
@@ -52,7 +55,7 @@ def _one(text, country, remote_flag, title):
     t = (text or "").strip()
     c = (country or "").strip().lower()
     is_us_c = c in US_NAMES
-    us = is_us_c or us_evidence(t)
+    us = is_us_c or us_evidence(t) or bool(_TITLE_US.search(title or ""))
     three = _3PART.search(t)
     foreign = (bool(c) and not is_us_c) or (bool(three) and three.group(1) != "US" and not is_us_c) or \
               ((bool(FOREIGN.search(t)) or bool(FOREIGN_CODE.search(t)) or bool(FOREIGN.search(title or ""))) and not us)
