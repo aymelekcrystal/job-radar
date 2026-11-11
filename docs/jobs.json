@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11T03:00:42+00:00",
+ "updated": "2026-11-11T03:11:37+00:00",
  "meta": {
   "jobspipe_last": "2026-11-11T03:00:42+00:00"
  },
@@ -26,8 +26,8 @@
   },
   {
    "source": "weworkremotely",
-   "ok": false,
-   "error": "ReadTimeout: HTTPSConnectionPool(host='weworkremotely.com', port=443): Read timed out. (read timeout=30)"
+   "ok": true,
+   "fetched": 100
   },
   {
    "source": "workingnomads",
@@ -42,7 +42,7 @@
   {
    "source": "jobspipe",
    "ok": true,
-   "fetched": 25
+   "skipped": "sirasi gelmedi (6 saatte bir)"
   },
   {
    "source": "greenhouse/anthropic",
@@ -72,7 +72,7 @@
   {
    "source": "greenhouse/gitlab",
    "ok": true,
-   "fetched": 251
+   "fetched": 252
   },
   {
    "source": "greenhouse/affirm",
@@ -92,7 +92,7 @@
   {
    "source": "greenhouse/coinbase",
    "ok": true,
-   "fetched": 287
+   "fetched": 286
   },
   {
    "source": "greenhouse/discord",
@@ -472,7 +472,7 @@
   {
    "source": "ashby/abridge",
    "ok": true,
-   "fetched": 24
+   "fetched": 23
   },
   {
    "source": "ashby/zapier",
