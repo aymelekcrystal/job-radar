@@ -50,11 +50,11 @@ rotation: {greenhouse: 8, lever: 8, ashby: 12}   # the full company list is cove
 # More career systems: the full list once every N runs (16 runs = 4 hours); companies seen hiring QA are read hourly.
 rotation_wide: {smartrecruiters: 16, bamboohr: 16, workable: 16, rippling: 16, breezy: 16, recruitee: 16,
                 teamtailor: 16, pinpoint: 8, gem: 8, recruiterbox: 8}
-workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4}   # gentler on systems that sit behind one address
+workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6}   # gentler on systems that sit behind one address
 hourly_every_runs: 4
 workday_universe_runs: 96                        # all ~12,000 Workday companies once a day, a slice per run
 workday_universe_terms: ["QA", "SDET", "test engineer"]
-workday_times: ["09:30", "15:00", "21:00"]
+workday_watch_runs: 4                            # Workday companies seen hiring QA: a quarter per run, so each one hourly
 workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automation"]
 amazon_terms: ["quality assurance engineer", "SDET", "test engineer"]
 

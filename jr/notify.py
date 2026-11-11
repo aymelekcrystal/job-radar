@@ -20,7 +20,7 @@ def ago(iso_s, now=None):
 
 def fmt(j, now=None):
     e = html.escape
-    when = f"first seen {ago(j['first_seen'], now)} (post date unknown)" if j.get("date_est") else f"posted {ago(j['posted'], now)}"
+    when = f"first seen {ago(j['first_seen'], now)} (post date unknown)" if (j.get("date_est") or j.get("stale")) else f"posted {ago(j['posted'], now)}"
     head = {"ok": "NEW", "check": "CHECK LOCATION", "platform": "FROM " + j["src"].upper()}[j["kind"]]
     src = f"Company site ({e(j['src'])})" if j["kind"] != "platform" else (f"{e(j['src'])} → company link" if j.get("direct_link") else e(j["src"]))
     out = [f"{ICON[j['kind']]} {head} · {when}", "", f"<b>{e(j['title'])}</b>", f"{e(j['company'])} · {src}", "",

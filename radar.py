@@ -138,8 +138,14 @@ class Radar:
             allb = read_list(ROOT / f"data/boards/{ats}.txt")
             pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
             self.scan(ats, pick, self.cfg.get("workers", {}).get(ats, 10), total=len(allb))
+        wn = self.cfg.get("workday_watch_runs", 4)                      # Workday companies seen hiring: a quarter per run = hourly
+        wlist = read_list(ROOT / "data/watch/workday.txt")
+        self.scan("workday", [b for b in wlist if bucket(b, wn) == run % wn], self.cfg.get("workers", {}).get("workday", 6),
+                  total=len(wlist), label="workday (companies hiring QA)")
+        if hourly:
+            self.workday_verify()
         n = self.cfg.get("workday_universe_runs", 96)                   # every Workday company, a small slice per run
-        wwatch = {b.lower() for b in read_list(ROOT / "data/watch/workday.txt")}
+        wwatch = {b.lower() for b in wlist}
         allw = read_list(ROOT / "data/boards/workday.txt")
         self.scan("workday", [b for b in allw if bucket(b, n) == run % n and b.lower() not in wwatch], 5, total=len(allw),
                   terms=self.cfg.get("workday_universe_terms"), label="workday (all companies, rotating)")
@@ -152,16 +158,19 @@ class Radar:
             except Exception as ex:
                 self.report.append({"source": "amazon", "companies": 1, "scanned": 1, "ok": 0, "errors": 1, "error_types": type(ex).__name__})
 
-    def workday(self):
+    def workday(self):                      # manual full pass: python radar.py --only workday
         self.scan("workday", read_list(ROOT / "data/watch/workday.txt"), 5)
+        self.workday_verify()
+        self.state["workday_last"] = STAMP
+
+    def workday_verify(self):
         gone = 0
         for j in [j for j in self.jobs.values() if j["ats"] == "workday"]:
             tenant, wd, site = j["board"].split("/", 1)[1].split("|")
             path = j["url"].split(f".myworkdayjobs.com/{site}", 1)[-1]
             if sources.workday_open(f"https://{tenant}.{wd}.myworkdayjobs.com/wday/cxs/{tenant}/{site}", path) is False:
                 self.drop(j["id"]); gone += 1
-        self.report[-1]["closed"] = gone
-        self.state["workday_last"] = STAMP
+        self.report.append({"source": "workday (still open check)", "closed": gone, "ok": 1})
 
     def promote(self, promote):
         added = {}
@@ -346,7 +355,7 @@ class Radar:
             self.wide()
         if want("fast", True):
             self.fast()
-        if want("workday", slot_due(self.cfg["workday_times"], self.state.get("workday_last"), self.now_et) or not self.state.get("workday_last")):
+        if want("workday", False):
             self.workday()
         st = self.decide(self.cands)
         closed = self.prune()
@@ -360,9 +369,6 @@ class Radar:
                     j["notify"] = "skip"
             self.state["bootstrapped"] = True
             self.state["boot_done"] = STAMP
-        for j in self.jobs.values():
-            if j.get("stale") and j["notify"] == "pending" and not j.get("force"):
-                j["notify"] = "skip"
         tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
         jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)
         by = Counter(j["kind"] for j in jobs)

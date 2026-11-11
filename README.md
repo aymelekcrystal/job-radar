@@ -10,7 +10,7 @@ Target: remote (US) and Raleigh-area QA / SDET / test automation / AI testing ro
 |---|---|---|
 | Direct scan | Greenhouse, Lever, Ashby: every known company (about 19,000) | whole list every 2-3 hours; companies seen hiring QA every 15 min |
 | Direct scan | SmartRecruiters, BambooHR, Workable, Rippling, Breezy, Recruitee, Teamtailor, Pinpoint, Gem, Recruiterbox (about 19,000 companies), Amazon | whole list every 2-4 hours; companies seen hiring QA hourly |
-| Direct scan | Workday: companies seen hiring QA | 9:30, 15:00, 21:00 ET |
+| Direct scan | Workday: companies seen hiring QA | hourly (a quarter of them every 15 min) |
 | Direct scan | Workday: all ~12,000 companies | once a day, a slice every 15 min |
 | Wide net | Two open datasets for systems without a simple public feed (Oracle, iCIMS, SuccessFactors, Phenom, ADP, JazzHR, Paycom, Jobvite, UKG, Dayforce, ...) | whenever they publish a new snapshot |
 | Platforms | LinkedIn, Indeed and remote job boards, kept separate (own tab) | hourly |
