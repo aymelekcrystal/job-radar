@@ -50,19 +50,44 @@ def duck():
         salary_summary,salary_min,salary_max,posted_at,length(description) AS dlen
         FROM read_parquet('{url}') WHERE regexp_matches(title, '{TITLE}')""")
     print("title-match rows:", con.execute("SELECT count(*) FROM m").fetchone(), f"{time.time()-t:.1f}s")
-    for r in con.execute("""SELECT ats_type,count(*) n, round(avg((posted_at IS NOT NULL)::int),2) dated,
-        round(avg((dlen>200)::int),2) described, round(avg((country_iso IS NOT NULL)::int),2) ctry,
-        round(avg((is_remote)::int),2) remote, count(DISTINCT company) cos, max(posted_at) fresh
-        FROM m GROUP BY 1 ORDER BY 2 DESC""").fetchall():
-        print("  ", r)
-    q = """FROM m WHERE (country_iso='US' OR regexp_matches(location,'(?i)united states|\\busa?\\b|, [A-Z]{2}\\b'))
-           AND (is_remote OR regexp_matches(location,'(?i)remote|raleigh|durham|cary|morrisville|chapel hill'))"""
-    for d in (1, 3, 7, 30):
-        print(f"US remote/Raleigh, posted <= {d}d:", con.execute(f"SELECT count(*) {q} AND posted_at >= now() - INTERVAL {d} DAY").fetchone())
-    print("US remote/Raleigh, no date:", con.execute(f"SELECT count(*) {q} AND posted_at IS NULL").fetchone())
-    print("by ats, 7d:", con.execute(f"SELECT ats_type,count(*) {q} AND posted_at >= now() - INTERVAL 7 DAY GROUP BY 1 ORDER BY 2 DESC").fetchall())
-    for r in con.execute(f"SELECT posted_at,ats_type,title,company,location,country_iso,is_remote,salary_summary,url {q} AND posted_at >= now() - INTERVAL 3 DAY ORDER BY posted_at DESC LIMIT 40").fetchall():
-        print("  ", [str(x)[:60] for x in r])
+    import collections
+    from datetime import datetime, timezone, timedelta
+    cols = [d[0] for d in con.execute("SELECT * FROM m LIMIT 0").description]
+    rows = [dict(zip(cols, r)) for r in con.execute("SELECT * FROM m").fetchall()]
+    print("types:", {k: type(v).__name__ for k, v in rows[0].items()})
+    print("is_remote values:", collections.Counter(str(r["is_remote"]) for r in rows).most_common(5))
+    print("posted_at samples:", [str(r["posted_at"]) for r in rows[:5]])
+    now = datetime.now(timezone.utc)
+    def age(r):
+        v = r["posted_at"]
+        if v in (None, ""): return None
+        try:
+            d = v if isinstance(v, datetime) else datetime.fromisoformat(str(v).replace("Z", "+00:00"))
+            if d.tzinfo is None: d = d.replace(tzinfo=timezone.utc)
+            return (now - d).total_seconds() / 86400
+        except Exception: return None
+    st = collections.defaultdict(lambda: collections.Counter())
+    US = re.compile(r"(?i)united states|\busa?\b|, [A-Z]{2}\b|any state")
+    RAL = re.compile(r"(?i)raleigh|durham|\bcary\b|morrisville|chapel hill|research triangle")
+    hits = []
+    for r in rows:
+        a = r["ats_type"]; c = st[a]; c["n"] += 1; g = age(r); loc = r["location"] or ""
+        c["dated"] += g is not None; c["desc"] += (r["dlen"] or 0) > 200; c["ctry"] += bool(r["country_iso"]); c["sal"] += bool(r["salary_summary"] or r["salary_min"])
+        us = r["country_iso"] == "US" or bool(US.search(loc)); rem = str(r["is_remote"]).lower() == "true" or "remote" in loc.lower()
+        ok = (us and rem) or bool(RAL.search(loc))
+        if ok:
+            c["us_ok"] += 1
+            for d in (1, 3, 7, 30):
+                if g is not None and g <= d: c[f"d{d}"] += 1
+            if g is None: c["nodate"] += 1
+            if g is not None and g <= 3: hits.append((round(g, 1), a, r["title"], r["company"], loc, r["country_iso"], r["is_remote"], r["salary_summary"], r["url"]))
+    tot = collections.Counter()
+    for a, c in sorted(st.items(), key=lambda kv: -kv[1]["n"]):
+        tot.update(c)
+        print(f"  {a:18} n={c['n']:5} dated={c['dated']/c['n']:.2f} desc={c['desc']/c['n']:.2f} ctry={c['ctry']/c['n']:.2f} sal={c['sal']/c['n']:.2f} | us_ok={c['us_ok']:4} 1d={c['d1']:3} 3d={c['d3']:3} 7d={c['d7']:3} 30d={c['d30']:4} nodate={c['nodate']}")
+    print("TOTAL", dict(tot))
+    for h in sorted(hits)[:60]:
+        print("  ", [str(x)[:58] for x in h])
 
 
 def get(url, **kw):
