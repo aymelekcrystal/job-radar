@@ -291,7 +291,8 @@ class Radar:
     # ---------- platforms ----------
     def topup(self):
         today = self.now_et.date()
-        have = sum(1 for j in self.jobs.values() if j["kind"] != "platform"
+        boot = self.state.get("boot_done", "")
+        have = sum(1 for j in self.jobs.values() if j["kind"] != "platform" and j["first_seen"] > boot
                    and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
         need = max(0, self.cfg["daily_target"] - have)
         for j in [j for j in self.jobs.values() if j["kind"] == "platform"]:
@@ -336,6 +337,7 @@ class Radar:
                 if j["kind"] == "platform" or j["date_est"] or age_hours(j["posted"]) > 24:
                     j["notify"] = "skip"
             self.state["bootstrapped"] = True
+            self.state["boot_done"] = STAMP
         for j in self.jobs.values():
             if j.get("stale") and j["notify"] == "pending":
                 j["notify"] = "skip"

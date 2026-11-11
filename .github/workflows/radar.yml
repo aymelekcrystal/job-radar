@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
       - run: pip install -q -r requirements.txt
-      - run: bash scripts/loop.sh "${{ github.event.inputs.args }}"
+      - run: cp scripts/loop.sh "$RUNNER_TEMP/loop.sh" && bash "$RUNNER_TEMP/loop.sh" "${{ github.event.inputs.args }}"
         env:
           GH_TOKEN: ${{ github.token }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

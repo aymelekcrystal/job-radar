@@ -34,9 +34,12 @@ for i in $(seq 1 $tries); do
   sleep 30
 done
 
+sig() { git rev-parse HEAD:scripts/loop.sh HEAD:.github/workflows/$WF HEAD:requirements.txt 2>/dev/null | tr '\n' ' '; }
+START_SIG="$(sig)"
 END=$(( $(date +%s) + 5*3600 + 15*60 ))
 while [ "$(date +%s)" -lt "$END" ]; do
   git pull -q --rebase --autostash || true     # pick up config/code changes between scans
+  if [ "$(sig)" != "$START_SIG" ]; then echo "loop definition changed; restarting"; break; fi
   python radar.py || echo "scan failed (continuing)"
   save
   hour=$(TZ=America/New_York date +%-H)

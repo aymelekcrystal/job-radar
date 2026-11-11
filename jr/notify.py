@@ -35,16 +35,38 @@ def fmt(j, now=None):
     return "\n".join(out)
 
 
+LAST_ERROR = [""]
+
+
 def send(text, tok, chat):
     try:
-        r = requests.post(f"https://api.telegram.org/bot{tok}/sendMessage", timeout=20,
-                          data={"chat_id": chat, "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": "true"})
+        r = requests.post(f"https://api.telegram.org/bot{tok.strip()}/sendMessage", timeout=20,
+                          data={"chat_id": chat.strip(), "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": "true"})
         if r.status_code == 429:
             time.sleep(int(r.json().get("parameters", {}).get("retry_after", 5)) + 1)
             return False
+        if not r.ok:
+            try:
+                LAST_ERROR[0] = f"{r.status_code} {r.json().get('description', '')}"[:120]
+            except Exception:
+                LAST_ERROR[0] = f"HTTP {r.status_code}"
         return r.ok
-    except Exception:
+    except Exception as ex:
+        LAST_ERROR[0] = type(ex).__name__
         return False
+
+
+def diagnose(tok):
+    """Why can't we send? Looks at the bot itself, never prints ids."""
+    try:
+        me = requests.get(f"https://api.telegram.org/bot{tok.strip()}/getMe", timeout=20)
+        if not me.ok:
+            return "token rejected by Telegram"
+        up = requests.get(f"https://api.telegram.org/bot{tok.strip()}/getUpdates", timeout=20).json().get("result", [])
+        chats = {str((u.get("message") or u.get("my_chat_member") or {}).get("chat", {}).get("id")) for u in up} - {"None"}
+        return f"token ok; bot has received messages from {len(chats)} chat(s)"
+    except Exception as ex:
+        return f"diagnose failed: {type(ex).__name__}"
 
 
 def quiet(now_et, cfg):
@@ -66,6 +88,8 @@ def process(jobs, state, cfg, dry=False):
     if not state.get("tg_hello"):
         if send("✅ Job Radar is connected. New postings will arrive here as they are found.", tok, chat):
             state["tg_hello"] = True
+        else:
+            return f"TELEGRAM ERROR: {LAST_ERROR[0]} | {diagnose(tok)} ({len(pend)} waiting)"
     if quiet(now_et, cfg):
         state["held"] = True
         return f"quiet hours ({len(pend)} held)"
@@ -87,4 +111,4 @@ def process(jobs, state, cfg, dry=False):
             if j["tries"] >= 5:
                 j["notify"] = "failed"
         time.sleep(1.1)
-    return f"sent {sent} of {len(pend)}"
+    return f"sent {sent} of {len(pend)}" + (f" (last error: {LAST_ERROR[0]})" if sent < len(pend) and LAST_ERROR[0] else "")
