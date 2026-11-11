@@ -29,7 +29,18 @@ ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative
 max_age_days: 21
 
 # Remote is siteleri (acik API / RSS). Kapatmak icin satiri sil.
-boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads, adzuna, jobspipe]
+boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads, adzuna, jobspipe,
+         bigboard, jobspy]
+
+# bigboard: ~28.000 sirketin kariyer sayfasi (Workday dahil), hazir acik veri seti. Gunde 1 kez guncellenir.
+bigboard_every_hours: 24
+
+# jobspy: Indeed / LinkedIn / ZipRecruiter aramasi (ucretsiz, anahtarsiz). Kapatmak icin boards'tan "jobspy"yi sil.
+jobspy_every_hours: 1
+jobspy_sites: [indeed, linkedin, zip_recruiter]
+jobspy_hours_old: 24
+jobspy_results: 40
+jobspy_terms: ["SDET", "QA automation engineer", "QA engineer", "test automation engineer", "AI QA engineer"]
 
 # Adzuna: deneme anahtari toplam 25 istek veriyor (sonrasi ayda 8 GBP). Gunde 1 kez, 3 arama.
 adzuna_every_hours: 24

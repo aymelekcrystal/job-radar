@@ -219,6 +219,61 @@ def jobspipe(cfg):
     return out
 
 
+def bigboard(cfg):
+    """Feashliaa/job-board-aggregator: ~28.000 sirketin kariyer sayfasi (Workday dahil), gunluk veri."""
+    import gzip
+    due("bigboard", cfg.get("bigboard_every_hours", 24))
+    base = "https://raw.githubusercontent.com/Feashliaa/job-board-data/main/data/chunks/"
+    out = []
+    for name in get(base + "jobs_manifest.json").json().get("chunks", []):
+        r = requests.get(base + name, headers=UA, timeout=120)
+        r.raise_for_status()
+        for j in json.loads(gzip.decompress(r.content)):
+            t = j.get("title") or ""
+            if j.get("is_recruiter") or not matches({"title": t}, cfg):
+                continue
+            out.append(job("bigboard", j.get("url"), t, (j.get("company") or "").title(), j.get("location"),
+                           j.get("url"), j.get("first_seen"), tags=j.get("ats") or ""))
+    return out
+
+
+def jobspy(cfg):
+    """JobSpy kutuphanesi: Indeed / LinkedIn / ZipRecruiter aramalari (anahtar gerektirmez)."""
+    try:
+        from jobspy import scrape_jobs
+    except Exception as ex:
+        raise Skip(f"jobspy kurulu degil ({type(ex).__name__})")
+    due("jobspy", cfg.get("jobspy_every_hours", 1))
+    out, errs, ok = [], [], 0
+    for site in cfg.get("jobspy_sites", ["indeed"]):
+        for term in cfg.get("jobspy_terms", []):
+            kw = dict(site_name=[site], search_term=term, results_wanted=cfg.get("jobspy_results", 40),
+                      hours_old=cfg.get("jobspy_hours_old", 24), country_indeed="USA", verbose=0)
+            if site == "indeed":
+                kw["location"] = "Remote"          # Indeed'de hours_old ile is_remote birlikte calismiyor
+            else:
+                kw.update(location="United States", is_remote=True)
+            try:
+                df = scrape_jobs(**kw)
+                ok += 1
+            except Exception as ex:
+                errs.append(f"{site}: {type(ex).__name__}: {str(ex)[:60]}")
+                break                               # site engelliyorsa diger aramalari deneme
+            for r in df.to_dict("records"):
+                g = lambda k: "" if r.get(k) is None or str(r.get(k)) in ("nan", "NaT", "None") else r.get(k)
+                loc = str(g("location"))
+                sal = money(g("min_amount"), g("max_amount")) if g("interval") in ("yearly", "") else \
+                    (f"{money(g('min_amount'), g('max_amount'))} / {g('interval')}" if g("min_amount") or g("max_amount") else "")
+                out.append(job(site, g("id") or g("job_url"), str(g("title")), str(g("company")),
+                               loc if re.search("remote", loc, re.I) else f"Remote · {loc}" if loc else "Remote, US",
+                               str(g("job_url")), str(g("date_posted")), sal, remote=True))
+            time.sleep(3)
+    print("jobspy:", ok, "arama basarili;", "; ".join(errs) or "hata yok")
+    if not ok:
+        raise RuntimeError("; ".join(errs)[:150])
+    return out
+
+
 # ---------- sirket kariyer sayfalari (ATS) ----------
 def greenhouse(slug):
     js = get(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs").json().get("jobs", [])
@@ -253,15 +308,19 @@ def ashby(slug):
 
 
 BOARDS = {f.__name__: f for f in (remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads,
-                                   adzuna, jobspipe)}
+                                   adzuna, jobspipe, bigboard, jobspy)}
 ATS = {"greenhouse": greenhouse, "lever": lever, "ashby": ashby}
 
 # ---------- filtreler ----------
 US = re.compile(r"\b(usa?|u\.s\.a?\.?|united states|america|americas|north america|worldwide|anywhere|global)\b", re.I)
 US_STATE = re.compile(r",\s*(A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]|DC)\b")
 FOREIGN = re.compile(r"\b(canada|uk|united kingdom|europe|emea|apac|latam|india|germany|france|spain|ireland|poland|"
-                     r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|cet|cest|gmt|"
-                     r"london|berlin|paris|dublin|toronto|bangalore|bengaluru|tokyo|sydney|amsterdam)\b", re.I)
+                     r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|cet|cest|gmt|eu|"
+                     r"london|berlin|paris|dublin|toronto|bangalore|bengaluru|tokyo|sydney|amsterdam|prague|macedonia|armenia|"
+                     r"romania|serbia|ukraine|turkey|italy|sweden|denmark|norway|finland|hungary|czech|bulgaria|greece|"
+                     r"pol|can|ind|british columbia|ontario|quebec|alberta|peru|chile|costa rica|vietnam|china|korea|"
+                     r"pakistan|egypt|nigeria|kenya|south africa|uae|dubai|malaysia|indonesia|thailand|taiwan|"
+                     r"new zealand|switzerland|austria|belgium|lithuania|latvia|estonia|croatia|slovakia|slovenia)\b", re.I)
 
 
 def us_remote(j):
@@ -376,6 +435,8 @@ def main():
             new.append(j)
     # kaynagi o an hata veren ilanlari kaybetme
     failed = {r["source"].split("/")[0] for r in report if not r["ok"] or r.get("skipped")}
+    if "jobspy" in failed:
+        failed |= set(cfg.get("jobspy_sites", []))
     ids = {j["id"] for j in picked}
     keep = [j for j in known.values() if j["id"] not in ids and j["source"] in failed
             and fresh(j, cfg.get("max_age_days", 21)) and matches(j, cfg)]
