@@ -8,7 +8,7 @@ Target: remote (US) and Raleigh-area QA / SDET / test automation / AI testing ro
 
 | Tier | What | How often |
 |---|---|---|
-| Direct scan | Greenhouse, Lever, Ashby: every known company, rotating; companies that hire QA are read on every run | every 15 min |
+| Direct scan | Greenhouse, Lever, Ashby: every known company, rotating; companies that hire QA are read on every run | every 15 min (hourly overnight) |
 | Direct scan | SmartRecruiters, Breezy, Rippling, Recruitee, Amazon | hourly |
 | Direct scan | Workday (companies that hire QA) | 9:30, 15:00, 21:00 ET |
 | Wide net | Two open datasets covering 60+ career systems (Oracle, iCIMS, SuccessFactors, Phenom, ADP, JazzHR, Paycom, BambooHR, Workable, Teamtailor, ...) | whenever they publish a new snapshot |
