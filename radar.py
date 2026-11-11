@@ -311,8 +311,8 @@ class Radar:
                 self.report.append({"source": f"platform: {platforms.NAMES[site]}", "ok": 1, "title_match": len(cs), "accepted": len(new)})
             except Exception as ex:
                 self.report.append({"source": f"platform: {platforms.NAMES[site]}", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:70]}"})
-        for i, j in enumerate(got):
-            j["notify"] = "pending" if i < need else "skip"
+        for i, j in enumerate(got):       # "hold": listed on the web page, not sent to Telegram
+            j["notify"] = ("pending" if i < need else "skip") if self.cfg.get("platform_telegram") else "hold"
         self.state["topup_last"] = STAMP
         self.report.append({"source": "platform top-up", "company_postings_today": have, "platform_sent_today": sent + min(need, len(got)),
                             "target": self.cfg["daily_target"], "new_this_run": len(got), "ok": 1})
