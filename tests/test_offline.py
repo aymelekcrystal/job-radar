@@ -21,4 +21,13 @@ assert not bad, bad
 assert radar.iso(1762800000) and radar.iso(1762800000000) and radar.iso("Tue, 10 Nov 2026 12:00:00 +0000") and radar.iso("2026-11-10T12:00:00Z")
 assert radar.money(120000, 150000) == "$120,000 – $150,000" and radar.money(0, None) == ""
 d = radar.select([dict(cases[0][0]), dict(cases[0][0], id="other:1")], cfg); assert len(d) == 1
+import os
+for k in ("ADZUNA_APP_ID","ADZUNA_APP_KEY","JOBSPIPE_API_KEY"): os.environ.pop(k, None)
+for f in (radar.adzuna, radar.jobspipe):
+    try: f(cfg); raise AssertionError("should skip")
+    except radar.Skip: pass
+radar.META.clear(); radar.due("x", 2)
+try: radar.due("x", 2); raise AssertionError("should skip")
+except radar.Skip: pass
+assert radar._s({"name": "Acme"}) == "Acme" and radar._s("Acme") == "Acme" and radar._s(None) == ""
 print("offline tests ok:", len(cases), "cases")

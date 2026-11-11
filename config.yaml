@@ -28,7 +28,16 @@ ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative
 max_age_days: 21
 
 # Remote is siteleri (acik API / RSS). Kapatmak icin satiri sil.
-boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads]
+boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads, adzuna, jobspipe]
+
+# Adzuna (ucretsiz anahtar; 2 saatte bir). Her satir = baslikta aranacak kelimeler.
+adzuna_titles: [sdet, "qa engineer", "qa automation", "test automation", "quality engineer", "engineer in test"]
+
+# JobsPipe (1.000 kredi, 1 ilan = 1 kredi). Krediyi yavas harcamak icin seyrek ve kucuk.
+jobspipe_every_hours: 6
+jobspipe_limit: 25
+jobspipe_titles: [sdet, "qa engineer", "qa automation engineer", "test automation engineer",
+                  "quality engineer", "software engineer in test", "ai test engineer", "ai quality engineer"]
 
 # Sirket kariyer sayfalari. Slug = kariyer sayfasi URL'indeki sirket adi.
 # Yanlis slug botu durdurmaz; calisma raporunda "FAIL" olarak gorunur.

@@ -141,6 +141,83 @@ def workingnomads(_):
     return out
 
 
+# ---------- anahtar isteyen kaynaklar (kotali; seyrek calisir) ----------
+META = {}   # son calisma zamanlari, jobs.json icinde saklanir
+
+
+class Skip(Exception):
+    """Kaynak bu turda bilerek atlandi (anahtar yok ya da sirasi gelmedi)."""
+
+
+def due(name, hours):
+    last = META.get(name + "_last")
+    if last and NOW - datetime.fromisoformat(last) < timedelta(hours=hours):
+        raise Skip(f"sirasi gelmedi ({hours} saatte bir)")
+    META[name + "_last"] = NOW.isoformat(timespec="seconds")
+
+
+def adzuna(cfg):
+    aid, key = os.getenv("ADZUNA_APP_ID"), os.getenv("ADZUNA_APP_KEY")
+    if not (aid and key):
+        raise Skip("anahtar eklenmemis")
+    due("adzuna", 2)                      # kota: gunde ~70 istek
+    out = []
+    for term in cfg.get("adzuna_titles", []):
+        r = get("https://api.adzuna.com/v1/api/jobs/us/search/1",
+                params={"app_id": aid, "app_key": key, "results_per_page": 50, "title_only": term,
+                        "what": "remote", "max_days_old": 3, "sort_by": "date"}).json()
+        for j in r.get("results", []):
+            text = f"{j.get('title','')} {j.get('description','')}"
+            if not re.search(r"\bremote\b|work from home", text, re.I):
+                continue
+            loc = (j.get("location") or {}).get("display_name") or ""
+            out.append(job("adzuna", j.get("id"), re.sub(r"</?strong>", "", j.get("title") or ""),
+                           (j.get("company") or {}).get("display_name"), f"Remote · {loc}, US" if loc else "Remote, US",
+                           j.get("redirect_url"), j.get("created"),
+                           "" if str(j.get("salary_is_predicted")) == "1" else money(j.get("salary_min"), j.get("salary_max")),
+                           remote=True))
+        time.sleep(2.5)
+    return out
+
+
+def _s(v, *keys):
+    """Alan string de olabilir obje de; ilk dolu metni dondurur."""
+    if isinstance(v, dict):
+        for k in keys or ("name", "display_name", "raw", "text"):
+            if v.get(k):
+                return str(v[k])
+        return ""
+    if isinstance(v, list):
+        return ", ".join(_s(x, *keys) for x in v if x)
+    return str(v or "")
+
+
+def jobspipe(cfg):
+    key = os.getenv("JOBSPIPE_API_KEY")
+    if not key:
+        raise Skip("anahtar eklenmemis")
+    due("jobspipe", cfg.get("jobspipe_every_hours", 6))
+    r = requests.post("https://api.jobspipe.dev/v1/jobs/search", timeout=40,
+                      headers={**UA, "Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                      json={"job_title_or": cfg.get("jobspipe_titles", []), "job_country_code_or": ["US"],
+                            "remote": True, "posted_at_max_age_days": 2, "limit": cfg.get("jobspipe_limit", 25)})
+    if r.status_code in (402, 403, 429):
+        raise Skip(f"kredi/kota bitti olabilir (HTTP {r.status_code})")
+    r.raise_for_status()
+    data = r.json().get("data", [])
+    if data:
+        print("jobspipe alanlari:", sorted(data[0].keys()))
+    out = []
+    for j in data:
+        sal = j.get("salary") or j.get("compensation") or {}
+        sal = money(sal.get("min"), sal.get("max")) if isinstance(sal, dict) else str(sal)
+        out.append(job("jobspipe", j.get("id"), j.get("title") or j.get("job_title"),
+                       _s(j.get("company") or j.get("company_name")),
+                       _s(j.get("location") or j.get("job_location"), "normalized", "name", "display_name", "raw", "city") or "United States",
+                       j.get("apply_url") or j.get("url"), j.get("posted_at"), sal, remote=True))
+    return out
+
+
 # ---------- sirket kariyer sayfalari (ATS) ----------
 def greenhouse(slug):
     js = get(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs").json().get("jobs", [])
@@ -174,7 +251,8 @@ def ashby(slug):
     return out
 
 
-BOARDS = {f.__name__: f for f in (remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads)}
+BOARDS = {f.__name__: f for f in (remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads,
+                                   adzuna, jobspipe)}
 ATS = {"greenhouse": greenhouse, "lever": lever, "ashby": ashby}
 
 # ---------- filtreler ----------
@@ -233,7 +311,7 @@ def telegram(j):
 # ---------- ana akis ----------
 def collect(cfg):
     jobs, report = [], []
-    tasks = [(n, BOARDS[n], None) for n in cfg.get("boards", []) if n in BOARDS]
+    tasks = [(n, BOARDS[n], cfg) for n in cfg.get("boards", []) if n in BOARDS]
     for kind, fn in ATS.items():
         tasks += [(f"{kind}/{s}", fn, s) for s in cfg.get(kind, [])]
     for name, fn, arg in tasks:
@@ -241,6 +319,8 @@ def collect(cfg):
             got = fn(arg)
             jobs += got
             report.append({"source": name, "ok": True, "fetched": len(got)})
+        except Skip as ex:
+            report.append({"source": name, "ok": True, "skipped": str(ex)})
         except Exception as ex:
             report.append({"source": name, "ok": False, "error": f"{type(ex).__name__}: {str(ex)[:120]}"})
         time.sleep(0.2)
@@ -280,6 +360,7 @@ def main():
     cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
     old = json.loads(OUT.read_text()) if OUT.exists() else {"jobs": []}
     known = {j["id"]: j for j in old.get("jobs", [])}
+    META.update(old.get("meta", {}))
     first_run = not known
 
     raw, report = collect(cfg)
@@ -293,14 +374,15 @@ def main():
             j["first_seen"] = stamp
             new.append(j)
     # kaynagi o an hata veren ilanlari kaybetme
-    failed = {r["source"].split("/")[0] for r in report if not r["ok"]}
+    failed = {r["source"].split("/")[0] for r in report if not r["ok"] or r.get("skipped")}
     ids = {j["id"] for j in picked}
     keep = [j for j in known.values() if j["id"] not in ids and j["source"] in failed
             and fresh(j, cfg.get("max_age_days", 21)) and matches(j, cfg)]
     alljobs = sorted(picked + keep, key=lambda j: j["posted"] or j["first_seen"], reverse=True)
 
     for r in report:
-        print(("ok  " if r["ok"] else "FAIL"), r["source"].ljust(28), r.get("fetched", r.get("error")))
+        print(("skip" if r.get("skipped") else "ok  " if r["ok"] else "FAIL"), r["source"].ljust(28),
+              r.get("fetched", r.get("skipped") or r.get("error")))
     print(f"toplam {len(raw)} ilan tarandi · {len(alljobs)} uygun · {len(new)} yeni")
     print(f"basligi uyup konumdan elenen: {len(NEAR)}")
     for n in NEAR[:150]:
@@ -310,11 +392,11 @@ def main():
             print(" -", j["title"], "@", j["company"], "|", j["location"], "|", j["url"])
         return
     OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps({"updated": stamp, "report": report, "jobs": alljobs}, indent=1, ensure_ascii=False))
+    OUT.write_text(json.dumps({"updated": stamp, "meta": META, "report": report, "jobs": alljobs}, indent=1, ensure_ascii=False))
     if not first_run:          # ilk calismada eski ilan yagmuru gonderme
         for j in new:
             telegram(j)
-    if report and not any(r["ok"] for r in report):
+    if report and not any(r["ok"] and not r.get("skipped") for r in report):
         sys.exit("hicbir kaynak cevap vermedi")
 
 

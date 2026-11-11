@@ -81,7 +81,7 @@ function render(){
     : '<div class="empty">Bu filtrede ilan yok.</div>';
   const nNew=data.jobs.filter(j=>isNew(j)&&marks[j.id]!=='hidden').length;
   $('#status').textContent = data.updated ? `${data.jobs.length} ilan · ${nNew} yeni · son tarama ${ago(data.updated)}` : 'henuz tarama yok';
-  $('#rep').innerHTML=(data.report||[]).map(r=>`<tr><td>${esc(r.source)}</td><td class="${r.ok?'':'bad'}">${r.ok?esc(r.fetched)+' ilan':'HATA: '+esc(r.error)}</td></tr>`).join('');
+  $('#rep').innerHTML=(data.report||[]).map(r=>`<tr><td>${esc(r.source)}</td><td class="${r.ok?'':'bad'}">${r.skipped?'atlandi: '+esc(r.skipped):r.ok?esc(r.fetched)+' ilan':'HATA: '+esc(r.error)}</td></tr>`).join('');
 }
 async function load(){
   try{ const r=await fetch('jobs.json?'+Date.now(),{cache:'no-store'}); if(r.ok) data=await r.json(); }
