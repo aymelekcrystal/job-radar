@@ -341,7 +341,7 @@ class Radar:
             self.state["bootstrapped"] = True
             self.state["boot_done"] = STAMP
         for j in self.jobs.values():
-            if j.get("stale") and j["notify"] == "pending":
+            if j.get("stale") and j["notify"] == "pending" and not j.get("force"):
                 j["notify"] = "skip"
         tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
         jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)
