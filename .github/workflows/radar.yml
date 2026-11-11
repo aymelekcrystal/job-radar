@@ -1,29 +1,37 @@
 name: Job Radar
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"   # 15 dakikada bir (GitHub yogunlukta bazi turlari atlar)
+    - cron: "3,18,33,48 * * * *"   # every 15 minutes (GitHub may delay or skip some runs)
   workflow_dispatch:
+    inputs:
+      args:
+        description: "Extra arguments for radar.py (e.g. --only wide --force)"
+        required: false
+        default: ""
 permissions:
   contents: write
-concurrency: radar
+concurrency:
+  group: radar
+  cancel-in-progress: false
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12", cache: pip }
-      - run: pip install -r requirements.txt
-      - run: python radar.py
+      - run: pip install -q -r requirements.txt
+      - run: python radar.py ${{ github.event.inputs.args }}
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
-          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
-          JOBSPIPE_API_KEY: ${{ secrets.JOBSPIPE_API_KEY }}
-      - name: Sonuclari kaydet
+      - name: Save results
         run: |
           git config user.name "job-radar"
           git config user.email "job-radar@users.noreply.github.com"
-          git add docs/jobs.json
-          git diff --cached --quiet || (git commit -m "radar: update jobs" && git push)
+          git add docs/jobs.json docs/desc.json data
+          git diff --cached --quiet && exit 0
+          git commit -q -m "radar: update"
+          git pull -q --rebase --autostash || true
+          git push -q

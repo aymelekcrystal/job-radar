@@ -1,100 +1,121 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Job Radar</title>
 <style>
-:root{--bg:#f4f2ec;--card:#fffdf8;--ink:#1c1b18;--mute:#6f6a5f;--line:#e2ddd0;--acc:#0b6b53;--acc-bg:#dcefe7;--ai:#6a3fb5;--ai-bg:#ebe3f8;--new:#b3470d}
-@media(prefers-color-scheme:dark){:root{--bg:#141412;--card:#1e1d1a;--ink:#edeae2;--mute:#9c968a;--line:#33312c;--acc:#5fd0ae;--acc-bg:#16332b;--ai:#bfa2f2;--ai-bg:#2b2340;--new:#ff9a5c}}
+:root{--bg:#f4f2ec;--card:#fffdf8;--ink:#1c1b18;--mute:#6f6a5f;--line:#e2ddd0;--ok:#0b6b53;--ok-bg:#dcefe7;--ai:#6a3fb5;--ai-bg:#ebe3f8;--warn:#9a5b00;--warn-bg:#f8ecd0;--plat:#1f5fa8;--new:#b3470d}
+@media(prefers-color-scheme:dark){:root{--bg:#141412;--card:#1e1d1a;--ink:#edeae2;--mute:#9c968a;--line:#33312c;--ok:#5fd0ae;--ok-bg:#16332b;--ai:#bfa2f2;--ai-bg:#2b2340;--warn:#f0b955;--warn-bg:#3a2e12;--plat:#7fb2ee;--new:#ff9a5c}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px 10px;z-index:2}
-.wrap{max-width:760px;margin:0 auto}
+.wrap{max-width:780px;margin:0 auto}
 h1{font:700 19px/1.2 ui-serif,Georgia,serif;margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 #status{font:400 12px ui-sans-serif,system-ui;color:var(--mute)}
 .bar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
 .chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-#q{flex:1;min-width:130px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 14px;font:inherit;font-size:14px}
+.chip b{font-weight:600;opacity:.65;margin-left:3px}
+#q{flex:1;min-width:140px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 14px;font:inherit;font-size:14px}
 main{padding:12px 16px 60px}
+h2{font:600 12px ui-sans-serif,system-ui;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);margin:18px 2px 8px}
 .job{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px}
-.job.is-new{border-left:4px solid var(--new)}
+.job.fresh{border-left:4px solid var(--new)}
 .job.done{opacity:.5}
 .job a.t{color:var(--ink);font-weight:650;font-size:16px;text-decoration:none;overflow-wrap:anywhere}
 .job a.t:hover{text-decoration:underline}
 .co{color:var(--mute);margin-top:1px}
 .meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:13px;color:var(--mute)}
-.sal{color:var(--acc);font-weight:600}
-.tag{font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:5px;padding:1px 6px;vertical-align:2px;margin-left:6px}
+.sal{color:var(--ok);font-weight:600}
+.tag{font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:5px;padding:1px 6px;vertical-align:2px;margin-left:6px;white-space:nowrap}
 .tag.ai{background:var(--ai-bg);color:var(--ai)}
-.tag.nw{background:transparent;color:var(--new);border:1px solid var(--new)}
-.act{display:flex;gap:8px;margin-top:10px}
-.act a,.act button{flex:0 0 auto;border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink)}
-.act a{background:var(--acc-bg);border-color:transparent;color:var(--acc);font-weight:600}
+.tag.pl{color:var(--plat);border:1px solid var(--plat)}
+.why{margin-top:8px;font-size:13px;background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:6px 10px}
+ul.req{margin:9px 0 0;padding-left:18px;font-size:13.5px}
+ul.req li{margin:2px 0}
+.act{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.act a,.act button{border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.act a{background:var(--ok-bg);border-color:transparent;color:var(--ok);font-weight:600}
+pre.full{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.5 ui-sans-serif,system-ui;border-top:1px solid var(--line);margin:12px 0 0;padding-top:10px;max-height:420px;overflow:auto}
 .empty{color:var(--mute);text-align:center;padding:40px 10px}
-details{margin-top:24px;color:var(--mute);font-size:12px}
-details table{border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums}
-details td{padding:2px 12px 2px 0}
+details.rep{margin-top:26px;color:var(--mute);font-size:12px}
+.rep .tw{overflow-x:auto}
+.rep table{border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rep td,.rep th{padding:2px 12px 2px 0;text-align:left;font-weight:400}
+.rep th{color:var(--ink)}
 .bad{color:var(--new)}
 </style>
 </head>
 <body>
 <header><div class="wrap">
-  <h1>Job Radar <span id="status">yukleniyor…</span></h1>
+  <h1>Job Radar <span id="status">loading…</span></h1>
+  <div class="bar" id="tabs">
+    <button class="chip" data-f="main" aria-pressed="true">Last 72 h<b id="n-main"></b></button>
+    <button class="chip" data-f="older" aria-pressed="false">Older<b id="n-older"></b></button>
+    <button class="chip" data-f="check" aria-pressed="false">Check<b id="n-check"></b></button>
+    <button class="chip" data-f="platform" aria-pressed="false">Platforms<b id="n-platform"></b></button>
+    <button class="chip" data-f="applied" aria-pressed="false">Applied<b id="n-applied"></b></button>
+  </div>
   <div class="bar">
-    <button class="chip" data-f="all" aria-pressed="true">Hepsi</button>
-    <button class="chip" data-f="new" aria-pressed="false">Yeni</button>
-    <button class="chip" data-f="ai" aria-pressed="false">AI</button>
-    <button class="chip" data-f="applied" aria-pressed="false">Basvurdum</button>
-    <input id="q" type="search" placeholder="Ara: sirket, baslik…" aria-label="Ara">
+    <button class="chip" id="ai" aria-pressed="false">AI only</button>
+    <input id="q" type="search" placeholder="Search title, company, location…" aria-label="Search">
   </div>
 </div></header>
-<main><div class="wrap"><div id="list"></div><details><summary>Kaynak durumu</summary><table id="rep"></table></details></div></main>
+<main><div class="wrap"><div id="list"></div>
+<details class="rep"><summary>Scan report (which career systems were read)</summary><div class="tw"><table id="rep"></table></div><p id="repsum"></p></details>
+</div></main>
 <script>
 const $=s=>document.querySelector(s), LS=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
       save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let data={jobs:[],report:[]}, filter='all', marks=LS('jr-marks')||{}, lastVisit=LS('jr-last')||null;
+let data={jobs:[],report:[]}, desc=null, tab='main', aiOnly=false, marks=LS('jr-marks')||{}, open={};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function ago(iso){ if(!iso) return ''; const m=(Date.now()-new Date(iso))/6e4;
-  if(m<60) return Math.max(1,Math.round(m))+' dk once'; if(m<1440) return Math.round(m/60)+' sa once'; return Math.round(m/1440)+' gun once'; }
-const isNew=j=>lastVisit ? j.first_seen>lastVisit : (Date.now()-new Date(j.first_seen))<864e5;
+const hrs=iso=>(Date.now()-new Date(iso))/36e5;
+function ago(iso){const h=hrs(iso); if(h<1.5) return Math.max(1,Math.round(h*60))+' min ago'; if(h<36) return Math.round(h)+' h ago'; return Math.round(h/24)+' days ago';}
+function tabOf(j){ if(marks[j.id]==='applied') return 'applied'; if(marks[j.id]==='hidden') return null;
+  if(j.kind==='platform') return 'platform'; if(j.kind==='check') return 'check'; return hrs(j.posted)<=72?'main':'older'; }
+function card(j){
+  const url=/^https?:\/\//.test(j.url)?j.url:'#', when=j.date_est?('first seen '+ago(j.first_seen)+' · post date unknown'):('posted '+ago(j.posted));
+  const src=j.kind==='platform'?(j.src+(j.direct_link?' → company link':'')):('Company site · '+j.src);
+  return `<article class="job ${hrs(j.posted)<=24?'fresh':''} ${marks[j.id]==='applied'?'done':''}">
+    <a class="t" href="${esc(url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.ai?'<span class="tag ai">AI</span>':''}${j.kind==='platform'?'<span class="tag pl">PLATFORM</span>':''}
+    <div class="co">${esc(j.company)}</div>
+    <div class="meta"><span>📍 ${esc(j.location||'Not stated')}</span>${j.salary?`<span class="sal">${esc(j.salary)}</span>`:''}<span>${esc(when)}</span><span>${esc(src)}</span></div>
+    ${j.why?`<div class="why">${esc(j.why)}</div>`:''}
+    ${(j.reqs||[]).length?`<ul class="req">${j.reqs.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>`:''}
+    <div class="act"><a href="${esc(url)}" target="_blank" rel="noopener">Apply</a>
+      <button data-id="${esc(j.id)}" data-a="full">${open[j.id]?'Hide description':'Full description'}</button>
+      <button data-id="${esc(j.id)}" data-a="applied">${marks[j.id]==='applied'?'Undo':'Applied'}</button>
+      <button data-id="${esc(j.id)}" data-a="hidden">Hide</button></div>
+    ${open[j.id]?`<pre class="full">${esc(desc===null?'Loading…':(desc[j.id]||'No description text available.'))}</pre>`:''}</article>`;
+}
 function render(){
-  const q=$('#q').value.trim().toLowerCase();
-  const rows=data.jobs.filter(j=>{
-    const m=marks[j.id];
-    if(filter==='applied') return m==='applied';
-    if(m==='hidden') return false;
-    if(filter==='new'&&!isNew(j)) return false;
-    if(filter==='ai'&&!j.ai) return false;
-    return !q || (j.title+' '+j.company+' '+j.location).toLowerCase().includes(q);
-  });
-  $('#list').innerHTML = rows.length ? rows.map(j=>{
-    const url=/^https?:\/\//.test(j.url)?j.url:'#';
-    return `<article class="job ${isNew(j)?'is-new':''} ${marks[j.id]==='applied'?'done':''}">
-      <a class="t" href="${esc(url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.ai?'<span class="tag ai">AI</span>':''}${isNew(j)?'<span class="tag nw">YENI</span>':''}
-      <div class="co">${esc(j.company)}</div>
-      <div class="meta"><span>📍 ${esc(j.location||'Remote')}</span>${j.salary?`<span class="sal">${esc(j.salary)}</span>`:''}<span>${esc(ago(j.posted||j.first_seen))}</span><span>${esc(j.source)}</span></div>
-      <div class="act"><a href="${esc(url)}" target="_blank" rel="noopener">Ilana git</a>
-        <button data-id="${esc(j.id)}" data-m="applied">${marks[j.id]==='applied'?'Geri al':'Basvurdum'}</button>
-        <button data-id="${esc(j.id)}" data-m="hidden">Gizle</button></div></article>`}).join('')
-    : '<div class="empty">Bu filtrede ilan yok.</div>';
-  const nNew=data.jobs.filter(j=>isNew(j)&&marks[j.id]!=='hidden').length;
-  $('#status').textContent = data.updated ? `${data.jobs.length} ilan · ${nNew} yeni · son tarama ${ago(data.updated)}` : 'henuz tarama yok';
-  $('#rep').innerHTML=(data.report||[]).map(r=>`<tr><td>${esc(r.source)}</td><td class="${r.ok?'':'bad'}">${r.skipped?'atlandi: '+esc(r.skipped):r.ok?esc(r.fetched)+' ilan':'HATA: '+esc(r.error)}</td></tr>`).join('');
+  const q=$('#q').value.trim().toLowerCase(), counts={main:0,older:0,check:0,platform:0,applied:0};
+  const rows=data.jobs.filter(j=>{const t=tabOf(j); if(t) counts[t]++; if(t!==tab) return false; if(aiOnly&&!j.ai) return false;
+    return !q||(j.title+' '+j.company+' '+j.location).toLowerCase().includes(q);});
+  for(const k in counts) $('#n-'+k).textContent=counts[k]||'';
+  let h='';
+  if(!rows.length) h='<div class="empty">Nothing in this tab right now.</div>';
+  else if(tab==='main'){ const a=rows.filter(j=>hrs(j.posted)<=24), b=rows.filter(j=>hrs(j.posted)>24);
+    if(a.length) h+='<h2>Last 24 hours</h2>'+a.map(card).join(''); if(b.length) h+='<h2>24 – 72 hours</h2>'+b.map(card).join(''); }
+  else h=rows.map(card).join('');
+  $('#list').innerHTML=h;
+  $('#status').textContent=data.updated?`last scan ${ago(data.updated)}`:'no scan yet';
+  const cols=[['source','System'],['companies','Companies'],['scanned','Read this run'],['postings','Postings'],['title_match','Title match'],['gone','Not found'],['errors','Errors']];
+  $('#rep').innerHTML='<tr>'+cols.map(c=>`<th>${c[1]}</th>`).join('')+'</tr>'+(data.report||[]).map(r=>'<tr>'+cols.map(c=>`<td class="${c[0]==='errors'&&r.errors?'bad':''}">${esc(r[c[0]]??'')}${c[0]==='errors'&&r.error_types?' ('+esc(r.error_types)+')':''}</td>`).join('')+'</tr>').join('');
+  const s=data.summary||{}; $('#repsum').textContent=s.run?`Run ${s.run}: ${s.new} new, ${s.closed} closed. Telegram: ${s.telegram}.`:'';
 }
-async function load(){
-  try{ const r=await fetch('jobs.json?'+Date.now(),{cache:'no-store'}); if(r.ok) data=await r.json(); }
-  catch(e){ $('#status').textContent='veri okunamadi'; return; }
-  render();
-}
+async function load(){ try{const r=await fetch('jobs.json?'+Date.now(),{cache:'no-store'}); if(r.ok) data=await r.json();}catch(e){$('#status').textContent='could not read data';return;} render(); }
+async function loadDesc(){ if(desc!==null) return; try{const r=await fetch('desc.json?'+Date.now(),{cache:'no-store'}); desc=r.ok?await r.json():{};}catch(e){desc={};} render(); }
 document.addEventListener('click',e=>{
-  const c=e.target.closest('.chip'); if(c){ filter=c.dataset.f; document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c)); return render(); }
-  const b=e.target.closest('button[data-id]'); if(b){ const {id,m}=b.dataset; marks[id]===m?delete marks[id]:marks[id]=m; save('jr-marks',marks); render(); }
+  const c=e.target.closest('#tabs .chip'); if(c){tab=c.dataset.f; document.querySelectorAll('#tabs .chip').forEach(x=>x.setAttribute('aria-pressed',x===c)); return render();}
+  if(e.target.id==='ai'){aiOnly=!aiOnly; e.target.setAttribute('aria-pressed',aiOnly); return render();}
+  const b=e.target.closest('button[data-id]'); if(!b) return; const {id,a}=b.dataset;
+  if(a==='full'){open[id]=!open[id]; render(); if(open[id]) loadDesc(); return;}
+  marks[id]===a?delete marks[id]:marks[id]=a; save('jr-marks',marks); render();
 });
 $('#q').addEventListener('input',render);
 load(); setInterval(load,5*60*1000);
-window.addEventListener('pagehide',()=>save('jr-last',new Date().toISOString()));
 </script>
 </body>
 </html>

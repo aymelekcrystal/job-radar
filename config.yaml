@@ -1,71 +1,62 @@
-# Job Radar ayarlari. Gunluk degistirilecek tek dosya burasi.
+# Job Radar settings. This is the only file you normally need to edit.
+# Patterns are regular expressions matched against the job TITLE (case-insensitive).
 
-# Baslikta bunlardan en az biri gecmeli (regex, buyuk/kucuk harf farketmez)
+# A title must match at least one of these.
 include:
   - '\bsdet\b'
   - '\bqa\b'
   - '\bquality (assurance|engineer|engineering)\b'
-  - '\b(software|automation|qa) test(er|ing)?\b'
-  - '\btest (automation|engineer|developer|architect|lead)\b'
+  - '\b(software|automation|qa|api|integration|functional|uat|manual) test(er|ing)?\b'
+  - '\btest (automation|engineer|developer|architect|lead|analyst)\b'
   - '\b(engineer|developer) in test\b'
   - '\b(qa|test|quality) automation\b'
-  - '\b(ai|llm|ml|model|genai) (evals?|evaluation|quality|test|testing|qa) (engineer|analyst|specialist|lead|developer|scientist)\b'
-  - '\beval(s|uation)? engineer\b'
+  - '\bautomation test\b'
+  - '\b(ai|llm|ml|model|genai|agent) (evals?|evaluation|evaluator|quality|test|testing|qa|reliability)\b'
+  - '\beval(s|uation)? (engineer|specialist|analyst)\b'
 
-# Baslikta bunlardan biri gecerse atilir
+# Always rejected.
 exclude:
-  - '\b(intern|internship|apprentice)\b'
+  - '\b(intern|internship|apprentice|co-?op)\b'
   - '\b(director|vp|vice president|head of)\b'
-  - '\b(hardware|manufacturing|mechanical|electrical|rf|firmware|semiconductor|supplier|food|clinical|pharma|lab)\b'
-  - '\bquality assurance (specialist|analyst|auditor|inspector|coordinator)\b'
-  - '\b(game|games|localization) tester\b'
-  - '\b(air quality|water quality|optical|on[- ]?site)\b'
-  - '\b(physician|nurse|md|cybersecurity|security|substation|data center|penetration)\b'
+  - '\b(hardware|firmware|mechanical|electrical|rf|semiconductor|manufacturing|clinical|pharma\w*|food|construction|welding)\b'
+  - '\b(nurse|nursing|physician|penetration|cybersecurity|security|spacecraft|avionics|flight|missile|aerospace|radiac)\b'
+  - '\b(game|games|localization|localisation) (tester|qa)\b'
+  - '\b(air|water) quality\b'
+  - '\b(on[- ]?site only|100% on[- ]?site)\b'
 
-# Bu kelimeler baslik/etiketlerde gecerse ilan "AI" rozeti alir
+# Rejected unless the title also matches "strong" below (keeps software roles, drops factory/compliance "QA").
+exclude_soft:
+  - '\b(compliance|audit|auditor|call|claims|customer|supplier|vendor|regulatory|gmp|gcp|glp|validation|device|materials)\b'
+  - '\b(inspector|technician|coordinator|laboratory|lab|process|production|plant|site|field|facility|facilities|civil)\b'
+  - '\b(mortgage|loan|pharmacy|patient|care|medical|microbiology|chemistry|chemist|packaging|incoming|supply|building)\b'
+  - '\b(data quality|quality assurance (specialist|analyst|supervisor|manager|professional)|coding|optical|battery|structural)\b'
+strong:
+  - '\b(sdet|software|automation|qa (automation )?engineer|test automation|in test|api|ai|llm|ml|genai|web|mobile|platform)\b'
+
+# Gets the "AI" badge.
 ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative', '\beval', '\bagent']
 
-# Kac gunden eski ilanlar ilk taramada alinmasin / listeden dussun
-max_age_days: 21
+# Recruiters / reposting boards that live on company career systems but are not the employer.
+skip_companies: [jobgether, crossover, turing, braintrust, toptal, lensa, dice, actalent, teksystems]
 
-# Remote is siteleri (acik API / RSS). Kapatmak icin satiri sil.
-boards: [remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads, adzuna, jobspipe,
-         bigboard, jobspy]
+# ---- how old ----
+max_age_days: 30          # postings older than this are dropped
+main_window_hours: 72     # the main tab shows this window; older ones go to the second tab
 
-# bigboard: ~28.000 sirketin kariyer sayfasi (Workday dahil), hazir acik veri seti. Gunde 1 kez guncellenir.
-bigboard_every_hours: 24
+# ---- how often (the workflow itself fires every 15 minutes; all times are US Eastern) ----
+rotation: {greenhouse: 8, lever: 8, ashby: 12}   # the full company list is covered once every N runs
+hourly_every_runs: 4                             # SmartRecruiters, Breezy, Rippling, Recruitee, Amazon
+workday_times: ["09:30", "15:00", "21:00"]
+workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automation"]
+amazon_terms: ["quality assurance engineer", "SDET", "test engineer"]
 
-# jobspy: Indeed / LinkedIn / ZipRecruiter aramasi (ucretsiz, anahtarsiz). Kapatmak icin boards'tan "jobspy"yi sil.
-jobspy_every_hours: 1
-jobspy_sites: [indeed, linkedin]   # zip_recruiter GitHub sunucularini engelliyor
-jobspy_hours_old: 24
-jobspy_results: 40
-jobspy_terms: ["SDET", "QA automation engineer", "QA engineer", "test automation engineer", "AI QA engineer"]
+# ---- job platforms: only to top the day up to the target ----
+daily_target: 50
+topup_time: "17:00"
+platform_order: [linkedin, indeed, remotive, himalayas, remoteok, jobicy, wwr, workingnomads]
+platform_terms: ["SDET", "QA automation engineer", "QA engineer", "test automation engineer", "AI QA engineer"]
+platform_results: 40
 
-# Adzuna: deneme anahtari toplam 25 istek veriyor (sonrasi ayda 8 GBP). Gunde 1 kez, 3 arama.
-adzuna_every_hours: 24
-adzuna_titles: ["qa engineer", sdet, "test automation"]
-
-# JobsPipe (1.000 kredi, 1 ilan = 1 kredi). Krediyi yavas harcamak icin seyrek ve kucuk.
-jobspipe_every_hours: 6
-jobspipe_limit: 25
-jobspipe_titles: [sdet, "qa engineer", "qa automation engineer", "test automation engineer",
-                  "quality engineer", "software engineer in test", "ai test engineer", "ai quality engineer"]
-
-# Sirket kariyer sayfalari. Slug = kariyer sayfasi URL'indeki sirket adi.
-# Yanlis slug botu durdurmaz; calisma raporunda "FAIL" olarak gorunur.
-greenhouse: [anthropic, scaleai, databricks, stripe, figma, gitlab, affirm, datadog,
-             cloudflare, coinbase, discord, airtable, robinhood, twilio, okta, pendo,
-             instacart, reddit, duolingo, mongodb, elastic, samsara,
-             canonical, doximity, webflow, gusto, lyft, pinterest, dropbox, asana,
-             brex, chime, sofi, toast, squarespace, roblox, calendly, pagerduty,
-             newrelic, zscaler, fivetran, grafanalabs, sumologic,
-             oscar, omadahealth,
-             coursera, udemy, khanacademy, upstart, justworks,
-             appian, bandwidth, sas, epicgames, lookout, wizinc, abnormalsecurity]
-lever: [spotify, palantir, zoox, outreach, veeva, kraken, wealthfront, ro, binance]
-ashby: [openai, cohere, perplexity, ramp, notion, linear, harvey, elevenlabs, replit,
-        deepgram, runway, sierra, decagon, writer, langchain, modal, baseten, vanta,
-        cursor, abridge, zapier, deel, posthog, supabase, vercel, render, clickup,
-        1password, docker, kong, sentry, mercury, plaid, airwallex, quora,
-        character, suno, lambda, crusoe, fireworks, pinecone, weaviate, llamaindex]
+# ---- Telegram ----
+quiet_hours: [23, 7]      # nothing is sent between 11pm and 7am ET; held postings arrive at 7am
+max_messages_per_run: 45

@@ -1,466 +1,338 @@
 #!/usr/bin/env python3
-"""Job Radar: remote US QA/SDET/AI-testing ilanlarini toplar, docs/jobs.json'a yazar,
-istege bagli Telegram'a bildirir. Kullanim: python radar.py [--dry-run]"""
-import html, json, os, re, sys, time
-import xml.etree.ElementTree as ET
-from datetime import datetime, timezone, timedelta
-from email.utils import parsedate_to_datetime
+"""Job Radar v2: company career sites first.
+
+Usage: python radar.py [--dry-run] [--only fast,workday,wide,topup] [--max-boards N]
+"""
+import hashlib, json, re, sys
+from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
 from pathlib import Path
 
-import requests, yaml
+import yaml
+
+from jr import filters, notify, platforms, sources, wide
+from jr.common import ET, NOW, NotFound, age_hours, iso, to_lines
 
 ROOT = Path(__file__).parent
-OUT = ROOT / "docs" / "jobs.json"
-UA = {"User-Agent": "job-radar/1.0 (personal job alert bot)"}
-NOW = datetime.now(timezone.utc)
+JOBS, DESC, STATE = ROOT / "docs/jobs.json", ROOT / "docs/desc.json", ROOT / "data/state.json"
+STAMP = NOW.isoformat(timespec="seconds")
+ARGS = sys.argv[1:]
 
 
-def get(url, **kw):
-    r = requests.get(url, headers=UA, timeout=30, **kw)
-    r.raise_for_status()
-    return r
+def arg(name, default=None):
+    return ARGS[ARGS.index(name) + 1] if name in ARGS and ARGS.index(name) + 1 < len(ARGS) else default
 
 
-def iso(v):
-    """Her turlu tarihi (epoch, ISO, RFC822) UTC ISO stringe cevirir; olmazsa ''."""
-    if v in (None, ""):
-        return ""
+def load(p, default):
     try:
-        if isinstance(v, (int, float)) or str(v).isdigit():
-            n = float(v)
-            d = datetime.fromtimestamp(n / 1000 if n > 1e11 else n, timezone.utc)
-        else:
-            s = str(v).strip()
-            try:
-                d = datetime.fromisoformat(s.replace("Z", "+00:00"))
-            except ValueError:
-                d = parsedate_to_datetime(s)
-            if d.tzinfo is None:
-                d = d.replace(tzinfo=timezone.utc)
-        return d.astimezone(timezone.utc).isoformat(timespec="seconds")
+        return json.loads(p.read_text())
     except Exception:
-        return ""
+        return default
 
 
-def money(lo, hi, cur="$"):
-    try:
-        lo, hi = int(float(lo or 0)), int(float(hi or 0))
-    except (TypeError, ValueError):
-        return ""
-    if not lo and not hi:
-        return ""
-    f = lambda n: f"{cur}{n:,}"
-    return f"{f(lo)} – {f(hi)}" if lo and hi and lo != hi else f(lo or hi)
+def read_list(p):
+    return [l.strip() for l in p.read_text().splitlines() if l.strip()] if p.exists() else []
 
 
-def job(src, jid, title, company, loc, url, posted="", salary="", tags="", remote=None):
-    u = lambda x: html.unescape(x or "").strip()
-    return {"id": f"{src}:{jid}", "source": src, "title": u(title),
-            "company": u(company), "location": u(loc),
-            "url": url or "", "posted": iso(posted), "salary": salary or "",
-            "tags": tags or "", "remote_flag": remote}
+def bucket(s, n):
+    return int(hashlib.md5(s.encode()).hexdigest()[:8], 16) % n
 
 
-# ---------- remote is siteleri ----------
-def remotive(_):
-    out = []
-    for cat in ("qa", "software-dev"):
-        for j in get("https://remotive.com/api/remote-jobs", params={"category": cat}).json().get("jobs", []):
-            out.append(job("remotive", j["id"], j.get("title"), j.get("company_name"),
-                           j.get("candidate_required_location"), j.get("url"),
-                           j.get("publication_date"), j.get("salary"), " ".join(j.get("tags") or []), True))
-    return out
+def slot_due(times, last_iso, now_et):
+    """True if a scheduled time of day has passed today (ET) and we have not run since it."""
+    last = datetime.fromisoformat(last_iso).astimezone(ET) if last_iso else None
+    for t in times:
+        h, m = map(int, t.split(":"))
+        s = now_et.replace(hour=h, minute=m, second=0, microsecond=0)
+        if now_et >= s and (last is None or last < s):
+            return True
+    return False
 
 
-def remoteok(_):
-    out = []
-    for j in get("https://remoteok.com/api").json():
-        if not isinstance(j, dict) or "position" not in j:
-            continue
-        out.append(job("remoteok", j.get("id"), j.get("position"), j.get("company"),
-                       j.get("location"), j.get("url") or j.get("apply_url"), j.get("date"),
-                       money(j.get("salary_min"), j.get("salary_max")), " ".join(j.get("tags") or []), True))
-    return out
+def norm(s):
+    return re.sub(r"\W+", "", (s or "").lower())
 
 
-def himalayas(_):
-    out, off = [], 0
-    while off < 400:
-        js = get("https://himalayas.app/jobs/api", params={"limit": 20, "offset": off}).json().get("jobs", [])
-        if not js:
-            break
-        for j in js:
-            out.append(job("himalayas", j.get("guid") or j.get("applicationLink"), j.get("title"),
-                           j.get("companyName"), ", ".join(j.get("locationRestrictions") or []),
-                           j.get("applicationLink") or j.get("guid"), j.get("pubDate"),
-                           money(j.get("minSalary"), j.get("maxSalary")),
-                           " ".join(j.get("categories") or []), True))
-        off += len(js)
-        time.sleep(0.3)
-    return out
-
-
-def jobicy(_):
-    out, err = [], None
-    for params in ({"count": 50, "geo": "usa", "industry": "qa"}, {"count": 50, "tag": "qa"},
-                   {"count": 50, "tag": "sdet"}, {"count": 50, "geo": "usa"}):
-        try:
-            js = get("https://jobicy.com/api/v2/remote-jobs", params=params).json().get("jobs", [])
-        except Exception as ex:
-            err = ex
-            continue
-        for j in js:
-            out.append(job("jobicy", j.get("id"), j.get("jobTitle"), j.get("companyName"),
-                           j.get("jobGeo"), j.get("url"), j.get("pubDate"),
-                           money(j.get("annualSalaryMin"), j.get("annualSalaryMax")), "", True))
-        time.sleep(1)
-    if not out and err:
-        raise err
-    return out
-
-
-def weworkremotely(_):
-    out = []
-    root = ET.fromstring(get("https://weworkremotely.com/remote-jobs.rss").content)
-    for it in root.iter("item"):
-        t = it.findtext("title") or ""
-        company, _, title = t.partition(": ")
-        if not title:
-            company, title = "", t
-        out.append(job("wwr", it.findtext("guid") or it.findtext("link"), title, company,
-                       it.findtext("region"), it.findtext("link"), it.findtext("pubDate"),
-                       "", it.findtext("category"), True))
-    return out
-
-
-def workingnomads(_):
-    out = []
-    for j in get("https://www.workingnomads.com/api/exposed_jobs/").json():
-        out.append(job("workingnomads", j.get("url"), j.get("title"), j.get("company_name"),
-                       j.get("location"), j.get("url"), j.get("pub_date"), "", j.get("tags"), True))
-    return out
-
-
-# ---------- anahtar isteyen kaynaklar (kotali; seyrek calisir) ----------
-META = {}   # son calisma zamanlari, jobs.json icinde saklanir
-
-
-class Skip(Exception):
-    """Kaynak bu turda bilerek atlandi (anahtar yok ya da sirasi gelmedi)."""
-
-
-def due(name, hours):
-    last = META.get(name + "_last")
-    if last and NOW - datetime.fromisoformat(last) < timedelta(hours=hours):
-        raise Skip(f"sirasi gelmedi ({hours} saatte bir)")
-    META[name + "_last"] = NOW.isoformat(timespec="seconds")
-
-
-def adzuna(cfg):
-    aid, key = os.getenv("ADZUNA_APP_ID"), os.getenv("ADZUNA_APP_KEY")
-    if not (aid and key):
-        raise Skip("anahtar eklenmemis")
-    due("adzuna", cfg.get("adzuna_every_hours", 24))
-    out = []
-    for term in cfg.get("adzuna_titles", []):
-        r = get("https://api.adzuna.com/v1/api/jobs/us/search/1",
-                params={"app_id": aid, "app_key": key, "results_per_page": 50, "title_only": term,
-                        "what": "remote", "max_days_old": 3, "sort_by": "date"}).json()
-        for j in r.get("results", []):
-            text = f"{j.get('title','')} {j.get('description','')}"
-            if not re.search(r"\bremote\b|work from home", text, re.I):
-                continue
-            loc = (j.get("location") or {}).get("display_name") or ""
-            out.append(job("adzuna", j.get("id"), re.sub(r"</?strong>", "", j.get("title") or ""),
-                           (j.get("company") or {}).get("display_name"), "Remote, US" if loc in ("", "US") else f"Remote · {loc}",
-                           j.get("redirect_url"), j.get("created"),
-                           "" if str(j.get("salary_is_predicted")) == "1" else money(j.get("salary_min"), j.get("salary_max")),
-                           remote=True))
-        time.sleep(2.5)
-    return out
-
-
-def _s(v, *keys):
-    """Alan string de olabilir obje de; ilk dolu metni dondurur."""
-    if isinstance(v, dict):
-        for k in keys or ("name", "display_name", "raw", "text"):
-            if v.get(k):
-                return str(v[k])
-        return ""
-    if isinstance(v, list):
-        return ", ".join(_s(x, *keys) for x in v if x)
-    return str(v or "")
-
-
-def jobspipe(cfg):
-    key = os.getenv("JOBSPIPE_API_KEY")
-    if not key:
-        raise Skip("anahtar eklenmemis")
-    due("jobspipe", cfg.get("jobspipe_every_hours", 6))
-    r = requests.post("https://api.jobspipe.dev/v1/jobs/search", timeout=40,
-                      headers={**UA, "Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-                      json={"job_title_or": cfg.get("jobspipe_titles", []), "job_country_code_or": ["US"],
-                            "remote": True, "posted_at_max_age_days": 2, "limit": cfg.get("jobspipe_limit", 25)})
-    if r.status_code in (402, 403, 429):
-        raise Skip(f"kredi/kota bitti olabilir (HTTP {r.status_code})")
-    r.raise_for_status()
-    data = r.json().get("data", [])
-    if data:
-        print("jobspipe alanlari:", sorted(data[0].keys()))
-    out = []
-    for j in data:
-        sal = j.get("salary_string") or money(j.get("min_annual_salary_usd") or j.get("min_annual_salary"),
-                                              j.get("max_annual_salary_usd") or j.get("max_annual_salary"))
-        out.append(job("jobspipe", j.get("id"), j.get("job_title") or j.get("title"),
-                       _s(j.get("company") or j.get("company_object")),
-                       _s(j.get("short_location") or j.get("location") or j.get("long_location")) or "United States",
-                       j.get("final_url") or j.get("url") or j.get("source_url"),
-                       j.get("date_posted") or j.get("discovered_at"), sal, remote=True))
-    return out
-
-
-def bigboard(cfg):
-    """Feashliaa/job-board-aggregator: ~28.000 sirketin kariyer sayfasi (Workday dahil), gunluk veri."""
-    import gzip
-    due("bigboard", cfg.get("bigboard_every_hours", 24))
-    base = "https://raw.githubusercontent.com/Feashliaa/job-board-data/main/data/chunks/"
-    out = []
-    for name in get(base + "jobs_manifest.json").json().get("chunks", []):
-        r = requests.get(base + name, headers=UA, timeout=120)
-        r.raise_for_status()
-        for j in json.loads(gzip.decompress(r.content)):
-            t = j.get("title") or ""
-            if j.get("is_recruiter") or not matches({"title": t}, cfg):
-                continue
-            out.append(job("bigboard", j.get("url"), t, (j.get("company") or "").title(), j.get("location"),
-                           j.get("url"), j.get("first_seen"), tags=j.get("ats") or ""))
-    return out
-
-
-def jobspy(cfg):
-    """JobSpy kutuphanesi: Indeed / LinkedIn / ZipRecruiter aramalari (anahtar gerektirmez)."""
-    try:
-        from jobspy import scrape_jobs
-    except Exception as ex:
-        raise Skip(f"jobspy kurulu degil ({type(ex).__name__})")
-    due("jobspy", cfg.get("jobspy_every_hours", 1))
-    out, errs, ok = [], [], 0
-    for site in cfg.get("jobspy_sites", ["indeed"]):
-        for term in cfg.get("jobspy_terms", []):
-            kw = dict(site_name=[site], search_term=term, results_wanted=cfg.get("jobspy_results", 40),
-                      hours_old=cfg.get("jobspy_hours_old", 24), country_indeed="USA", verbose=0)
-            if site == "indeed":
-                kw["location"] = "Remote"          # Indeed'de hours_old ile is_remote birlikte calismiyor
-            else:
-                kw.update(location="United States", is_remote=True)
-            try:
-                df = scrape_jobs(**kw)
-                ok += 1
-            except Exception as ex:
-                errs.append(f"{site}: {type(ex).__name__}: {str(ex)[:60]}")
-                break                               # site engelliyorsa diger aramalari deneme
-            for r in df.to_dict("records"):
-                g = lambda k: "" if r.get(k) is None or str(r.get(k)) in ("nan", "NaT", "None") else r.get(k)
-                loc = str(g("location"))
-                sal = money(g("min_amount"), g("max_amount")) if g("interval") in ("yearly", "") else \
-                    (f"{money(g('min_amount'), g('max_amount'))} / {g('interval')}" if g("min_amount") or g("max_amount") else "")
-                out.append(job(site, g("id") or g("job_url"), str(g("title")), str(g("company")),
-                               loc if re.search("remote", loc, re.I) else f"Remote · {loc}" if loc else "Remote, US",
-                               str(g("job_url")), str(g("date_posted")), sal, remote=True))
-            time.sleep(3)
-    print("jobspy:", ok, "arama basarili;", "; ".join(errs) or "hata yok")
-    if not ok:
-        raise RuntimeError("; ".join(errs)[:150])
-    return out
-
-
-# ---------- sirket kariyer sayfalari (ATS) ----------
-def greenhouse(slug):
-    js = get(f"https://boards-api.greenhouse.io/v1/boards/{slug}/jobs").json().get("jobs", [])
-    return [job("greenhouse", f"{slug}-{j['id']}", j.get("title"), j.get("company_name") or slug.title(),
-                (j.get("location") or {}).get("name"), j.get("absolute_url"),
-                j.get("first_published") or j.get("updated_at")) for j in js]
-
-
-def lever(slug):
-    js = get(f"https://api.lever.co/v0/postings/{slug}", params={"mode": "json"}).json()
-    out = []
-    for j in js:
-        c = j.get("categories") or {}
-        sr = j.get("salaryRange") or {}
-        out.append(job("lever", f"{slug}-{j['id']}", j.get("text"), slug.title(),
-                       c.get("location") or ", ".join(c.get("allLocations") or []), j.get("hostedUrl"),
-                       j.get("createdAt"), money(sr.get("min"), sr.get("max")),
-                       remote=True if j.get("workplaceType") == "remote" else None))
-    return out
-
-
-def ashby(slug):
-    d = get(f"https://api.ashbyhq.com/posting-api/job-board/{slug}", params={"includeCompensation": "true"}).json()
-    out = []
-    for j in d.get("jobs", []):
-        comp = (j.get("compensation") or {}).get("scrapeableCompensationSalarySummary") or \
-               (j.get("compensation") or {}).get("compensationTierSummary") or ""
-        out.append(job("ashby", f"{slug}-{j['id']}", j.get("title"), slug.title(), j.get("location"),
-                       j.get("jobUrl"), j.get("publishedAt"), comp,
-                       remote=True if j.get("isRemote") else None))
-    return out
-
-
-BOARDS = {f.__name__: f for f in (remotive, remoteok, himalayas, jobicy, weworkremotely, workingnomads,
-                                   adzuna, jobspipe, bigboard, jobspy)}
-ATS = {"greenhouse": greenhouse, "lever": lever, "ashby": ashby}
-
-# ---------- filtreler ----------
-US = re.compile(r"\b(usa?|u\.s\.a?\.?|united states|america|americas|north america|worldwide|anywhere|global)\b", re.I)
-US_STATE = re.compile(r",\s*(A[LKZR]|C[AOT]|DE|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|UT|V[AT]|W[AIVY]|DC)\b")
-FOREIGN = re.compile(r"\b(canada|uk|united kingdom|europe|emea|apac|latam|india|germany|france|spain|ireland|poland|"
-                     r"brazil|mexico|australia|japan|singapore|israel|netherlands|portugal|argentina|colombia|philippines|cet|cest|gmt|eu|"
-                     r"london|berlin|paris|dublin|toronto|bangalore|bengaluru|tokyo|sydney|amsterdam|prague|macedonia|armenia|"
-                     r"romania|serbia|ukraine|turkey|italy|sweden|denmark|norway|finland|hungary|czech|bulgaria|greece|"
-                     r"pol|can|ind|british columbia|ontario|quebec|alberta|peru|chile|costa rica|vietnam|china|korea|"
-                     r"pakistan|egypt|nigeria|kenya|south africa|uae|dubai|malaysia|indonesia|thailand|taiwan|"
-                     r"new zealand|switzerland|austria|belgium|lithuania|latvia|estonia|croatia|slovakia|slovenia)\b", re.I)
-
-
-def us_remote(j):
-    """True: US'ten remote calisilabilir gorunuyor. Emin olunamayan ilanlar elenir."""
-    loc = j["location"]
-    is_us = bool(US.search(loc) or US_STATE.search(loc))
-    if j["remote_flag"]:                       # remote sitesi ya da ATS 'remote' isareti
-        return is_us or not loc or not FOREIGN.search(loc)
-    if not re.search(r"remote", loc, re.I):    # ATS: konumda 'remote' yazmali
-        return False
-    return is_us or not FOREIGN.search(loc)
-
-
-def matches(j, cfg):
-    t = j["title"]
-    if any(re.search(p, t, re.I) for p in cfg["exclude"]):
-        return False
-    return any(re.search(p, t, re.I) for p in cfg["include"])
-
-
-def fresh(j, days):
-    if not j["posted"]:
-        return True
-    return NOW - datetime.fromisoformat(j["posted"]) <= timedelta(days=days)
-
-
-# ---------- bildirim ----------
-def telegram(j):
-    tok, chat = os.getenv("TELEGRAM_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
-    if not (tok and chat):
-        return
-    e = html.escape
-    lines = [f"<b>{e(j['title'])}</b>", f"@ {e(j['company'])}", f"📍 {e(j['location'] or 'Remote')}"]
-    if j["salary"]:
-        lines.append(f"💰 {e(j['salary'])}")
-    if j.get("ai"):
-        lines.append("🤖 AI")
-    lines.append(f"{e(j['source'])} · {j['url']}")
-    try:
-        requests.post(f"https://api.telegram.org/bot{tok}/sendMessage", timeout=20,
-                      data={"chat_id": chat, "text": "\n".join(lines), "parse_mode": "HTML",
-                            "disable_web_page_preview": "true"})
-        time.sleep(0.4)
-    except Exception as ex:
-        print("telegram error:", ex)
-
-
-# ---------- ana akis ----------
-def collect(cfg):
-    jobs, report = [], []
-    tasks = [(n, BOARDS[n], cfg) for n in cfg.get("boards", []) if n in BOARDS]
-    for kind, fn in ATS.items():
-        tasks += [(f"{kind}/{s}", fn, s) for s in cfg.get(kind, [])]
-    for name, fn, arg in tasks:
-        try:
-            got = fn(arg)
-            jobs += got
-            report.append({"source": name, "ok": True, "fetched": len(got)})
-        except Skip as ex:
-            report.append({"source": name, "ok": True, "skipped": str(ex)})
-        except Exception as ex:
-            report.append({"source": name, "ok": False, "error": f"{type(ex).__name__}: {str(ex)[:120]}"})
-        time.sleep(0.2)
-    return jobs, report
-
-
-NEAR = []  # basligi uyan ama konumu yuzunden elenenler (ayar yaparken bakmak icin)
-
-
-def short_loc(loc):
-    parts = [p.strip() for p in loc.split(",")]
-    if len(parts) > 5 and len(loc) > 90:
-        us = any(p.lower() in ("united states", "usa", "us") for p in parts)
-        return f"United States + {len(parts) - 1} ulke" if us else f"{parts[0]} + {len(parts) - 1} ulke"
-    return loc
-
-
-def select(raw, cfg):
+def show_loc(locs):
     seen, out = set(), []
-    for j in raw:
-        key = (re.sub(r"\W+", "", j["title"].lower()), re.sub(r"\W+", "", j["company"].lower()))
-        if not j["url"] or j["id"] in seen or key in seen:
-            continue
-        if matches(j, cfg) and not us_remote(j) and fresh(j, cfg.get("max_age_days", 21)):
-            NEAR.append(f"{j['source']} | {j['title']} | {j['company']} | {j['location'][:70]}")
-        if matches(j, cfg) and us_remote(j) and fresh(j, cfg.get("max_age_days", 21)):
-            seen.update((j["id"], key))
-            j["ai"] = any(re.search(p, j["title"] + " " + j["tags"], re.I) for p in cfg.get("ai_terms", []))
-            j.pop("remote_flag"); j.pop("tags")
-            j["location"] = short_loc(j["location"])
-            out.append(j)
-    return out
+    for t, c in locs:
+        t = t or c
+        if t and t.lower() not in seen:
+            seen.add(t.lower())
+            out.append(t)
+    return out[0] + (f" (+{len(out) - 1} more)" if len(out) > 1 else "") if out else ""
 
 
-def main():
-    dry = "--dry-run" in sys.argv
-    cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
-    old = json.loads(OUT.read_text()) if OUT.exists() else {"jobs": []}
-    known = {j["id"]: j for j in old.get("jobs", [])}
-    META.update(old.get("meta", {}))
-    first_run = not known
+class Radar:
+    def __init__(self):
+        self.cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
+        self.titles = filters.Titles(self.cfg)
+        self.state = load(STATE, {})
+        self.state.setdefault("dead", {})
+        self.state.setdefault("seen", {})
+        self.state["run"] = self.state.get("run", 0) + 1
+        self.jobs = {j["id"]: j for j in load(JOBS, {}).get("jobs", []) if j.get("v") == 2}
+        self.desc = load(DESC, {})
+        self.report, self.cands, self.present = [], [], {}
+        self.max_boards = int(arg("--max-boards", 0) or 0)
+        self.now_et = NOW.astimezone(ET)
 
-    raw, report = collect(cfg)
-    picked = select(raw, cfg)
-    stamp = NOW.isoformat(timespec="seconds")
-    new = []
-    for j in picked:
-        if j["id"] in known:
-            j["first_seen"] = known[j["id"]].get("first_seen", stamp)
-        else:
-            j["first_seen"] = stamp
-            new.append(j)
-    # kaynagi o an hata veren ilanlari kaybetme
-    failed = {r["source"].split("/")[0] for r in report if not r["ok"] or r.get("skipped")}
-    if "jobspy" in failed:
-        failed |= set(cfg.get("jobspy_sites", []))
-    ids = {j["id"] for j in picked}
-    keep = [j for j in known.values() if j["id"] not in ids and j["source"] in failed
-            and fresh(j, cfg.get("max_age_days", 21)) and matches(j, cfg)]
-    alljobs = sorted(picked + keep, key=lambda j: j["posted"] or j["first_seen"], reverse=True)
+    # ---------- stage 1: read boards ----------
+    def _read(self, ats, board):
+        try:
+            if ats == "workday":
+                cs, ids = sources.workday(board, self.cfg["workday_terms"], self.titles.ok)
+            else:
+                cs, ids = sources.SIMPLE[ats](board)
+            return ats, board, "ok", [c for c in cs if self.titles.ok(c["title"])], ids, len(cs)
+        except NotFound:
+            return ats, board, "404", [], None, 0
+        except Exception as ex:
+            return ats, board, f"{type(ex).__name__}: {str(ex)[:40]}", [], None, 0
 
-    for r in report:
-        print(("skip" if r.get("skipped") else "ok  " if r["ok"] else "FAIL"), r["source"].ljust(28),
-              r.get("fetched", r.get("skipped") or r.get("error")))
-    print(f"toplam {len(raw)} ilan tarandi · {len(alljobs)} uygun · {len(new)} yeni")
-    print(f"basligi uyup konumdan elenen: {len(NEAR)}")
-    for n in NEAR[:150]:
-        print("  near:", n)
-    if dry:
-        for j in new[:40]:
-            print(" -", j["title"], "@", j["company"], "|", j["location"], "|", j["url"])
-        return
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps({"updated": stamp, "meta": META, "report": report, "jobs": alljobs}, indent=1, ensure_ascii=False))
-    if not first_run:          # ilk calismada eski ilan yagmuru gonderme
-        for j in new:
-            telegram(j)
-    if report and not any(r["ok"] and not r.get("skipped") for r in report):
-        sys.exit("hicbir kaynak cevap vermedi")
+    def scan(self, ats, boards, workers, total=None):
+        boards = [b for b in boards if self.state["dead"].get(f"{ats}/{b}", 0) < 3]
+        if self.max_boards:
+            boards = boards[: self.max_boards]
+        st = Counter()
+        with ThreadPoolExecutor(workers) as ex:
+            for a, b, status, cs, ids, n in ex.map(lambda b: self._read(ats, b), boards):
+                key = f"{a}/{b}"
+                if status == "ok":
+                    st["ok"] += 1; st["jobs"] += n; st["match"] += len(cs)
+                    self.state["dead"].pop(key, None)
+                    self.cands += cs
+                    if ids is not None:
+                        self.present[key] = ids
+                elif status == "404":
+                    st["gone"] += 1
+                    self.state["dead"][key] = self.state["dead"].get(key, 0) + 1
+                else:
+                    st["err"] += 1; st["e:" + status.split(":")[0]] += 1
+        errs = ", ".join(f"{k[2:]}×{v}" for k, v in st.items() if k.startswith("e:"))
+        self.report.append({"source": ats, "companies": total or len(boards), "scanned": len(boards), "ok": st["ok"], "gone": st["gone"],
+                            "errors": st["err"], "error_types": errs, "postings": st["jobs"], "title_match": st["match"]})
+
+    def fast(self):
+        run = self.state["run"]
+        for ats, n in self.cfg["rotation"].items():
+            watch = set(read_list(ROOT / f"data/watch/{ats}.txt"))
+            allb = read_list(ROOT / f"data/boards/{ats}.txt")
+            pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
+            self.scan(ats, pick, 16, total=len(set(allb) | watch))
+        if run % self.cfg.get("hourly_every_runs", 4) == 0 or "--all" in ARGS:
+            for ats in ("smartrecruiters", "breezy", "rippling", "recruitee"):
+                self.scan(ats, read_list(ROOT / f"data/watch/{ats}.txt"), 8)
+            try:
+                cs, _ = sources.amazon(self.cfg["amazon_terms"])
+                keep = [c for c in cs if self.titles.ok(c["title"])]
+                self.cands += keep
+                self.report.append({"source": "amazon", "companies": 1, "scanned": 1, "ok": 1, "postings": len(cs), "title_match": len(keep)})
+            except Exception as ex:
+                self.report.append({"source": "amazon", "companies": 1, "scanned": 1, "ok": 0, "errors": 1, "error_types": type(ex).__name__})
+
+    def workday(self):
+        self.scan("workday", read_list(ROOT / "data/watch/workday.txt"), 5)
+        gone = 0
+        for j in [j for j in self.jobs.values() if j["ats"] == "workday"]:
+            tenant, wd, site = j["board"].split("/", 1)[1].split("|")
+            path = j["url"].split(f".myworkdayjobs.com/{site}", 1)[-1]
+            if sources.workday_open(f"https://{tenant}.{wd}.myworkdayjobs.com/wday/cxs/{tenant}/{site}", path) is False:
+                self.drop(j["id"]); gone += 1
+        self.report[-1]["closed"] = gone
+        self.state["workday_last"] = STAMP
+
+    def promote(self, promote):
+        added = {}
+        for ats, boards in promote.items():
+            p = ROOT / f"data/watch/{ats}.txt"
+            cur = set(read_list(p))
+            low = {b.lower() for b in cur}
+            new = {b for b in boards if b.lower() not in low and re.fullmatch(r"[A-Za-z0-9_.|\-]+", b)}
+            if new:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text("\n".join(sorted(cur | new)) + "\n")
+                added[ats] = len(new)
+        return added
+
+    def wide(self):
+        try:
+            man = wide.stapply_generated()
+            if man.get("generated_at") != self.state.get("stapply_gen") or "--force" in ARGS:
+                cs, promote, ids, counts = wide.stapply(man, self.cfg, self.titles)
+                self.cands += cs
+                self.present["via:stapply"] = ids
+                self.report.append({"source": "open dataset A (60+ career systems)", "companies": man.get("stats", {}).get("total_companies"),
+                                    "postings": man.get("stats", {}).get("total_jobs"), "title_match": sum(counts.values()),
+                                    "by_system": dict(sorted(counts.items(), key=lambda kv: -kv[1])),
+                                    "watch_added": self.promote(promote), "snapshot": man.get("generated_at"), "ok": 1})
+                self.state["stapply_gen"] = man.get("generated_at")
+        except Exception as ex:
+            self.report.append({"source": "open dataset A (60+ career systems)", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:80]}"})
+        try:
+            upd = wide.feashliaa_updated()
+            if upd != self.state.get("feash_upd") or "--force" in ARGS:
+                cs, promote, ids = wide.feashliaa(self.titles)
+                self.cands += cs
+                self.present["via:feashliaa"] = ids
+                self.report.append({"source": "open dataset B (28k companies)", "title_match": len(cs), "watch_added": self.promote(promote),
+                                    "snapshot": upd, "ok": 1})
+                self.state["feash_upd"] = upd
+        except Exception as ex:
+            self.report.append({"source": "open dataset B (28k companies)", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:80]}"})
+
+    # ---------- stage 2: decide ----------
+    def judge(self, c, platform=False):
+        """Returns a job record, or a rejection reason string."""
+        if norm(c["company"]) in {norm(s) for s in self.titles.skip} or c["board"].split("/", 1)[-1].lower() in self.titles.skip:
+            return "recruiter"
+        if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
+            return "old"
+        kind, why = filters.classify(c["locs"], c["remote"], c["title"], " ".join(to_lines(c["desc"])) if c["desc"] else "")
+        if kind == "drop" and not c.get("multi"):
+            return "location"
+        if c.get("detail") and not c["desc"]:
+            c["_detailed"] = True
+            try:
+                c["detail"](c)
+            except Exception:
+                pass
+            if c.get("closed"):
+                return "closed"
+        lines = to_lines(c["desc"])
+        text = " ".join(lines)
+        kind, why = filters.classify(c["locs"], c["remote"], c["title"], text)
+        if kind == "drop":
+            return "location"
+        if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
+            return "old"
+        deg = filters.degree(lines)
+        if deg == "required":
+            return "degree"
+        if not lines and not platform:
+            kind, why = "check", (why + "; " if why and kind == "check" else "") + "Description could not be read"
+        posted = c["posted"] or STAMP
+        return {"v": 2, "id": c["id"], "ats": c["ats"], "src": sources.LABEL.get(c["ats"]) or platforms.NAMES.get(c["ats"]) or c["ats"].title(),
+                "via": "platform" if platform else c.get("via", "direct"), "board": c["board"], "title": c["title"], "company": c["company"],
+                "location": show_loc(c["locs"]), "url": c["url"], "posted": posted, "date_est": bool(c["date_est"] or not c["posted"]),
+                "first_seen": STAMP, "salary": c["salary"] or filters.salary_from(text), "reqs": filters.requirements(lines),
+                "kind": "platform" if platform else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
+                "degree": deg, "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
+
+    def decide(self, cands, platform=False):
+        keys = {(norm(j["title"]), norm(j["company"])) for j in self.jobs.values()}
+        urls = {j["url"].split("?")[0].rstrip("/").lower() for j in self.jobs.values()}
+        todo, seen_ids = [], set()
+        for c in cands:
+            if c["id"] in self.jobs:
+                self.jobs[c["id"]]["last_seen"] = STAMP
+                continue
+            if c["id"] in self.state["seen"] or c["id"] in seen_ids or not c["url"]:
+                continue
+            seen_ids.add(c["id"])
+            todo.append(c)
+        stats = Counter()
+        with ThreadPoolExecutor(8) as ex:
+            for c, res in zip(todo, ex.map(lambda c: self.judge(c, platform), todo)):
+                if isinstance(res, str):
+                    stats[res] += 1
+                    if c.get("_detailed") or res == "degree":
+                        self.state["seen"][c["id"]] = STAMP[:10]
+                    continue
+                k, u = (norm(res["title"]), norm(res["company"])), res["url"].split("?")[0].rstrip("/").lower()
+                if k in keys or u in urls:
+                    stats["duplicate"] += 1
+                    continue
+                keys.add(k); urls.add(u)
+                self.desc[res["id"]] = res.pop("_text")
+                self.jobs[res["id"]] = res
+                stats["accepted"] += 1
+        return stats
+
+    def drop(self, jid):
+        self.jobs.pop(jid, None)
+        self.desc.pop(jid, None)
+
+    def prune(self):
+        closed = 0
+        for j in list(self.jobs.values()):
+            ids = self.present.get(j["board"]) if j["via"] == "direct" else self.present.get("via:" + j["via"])
+            lim = 3 * 24 if j["kind"] == "platform" else self.cfg["max_age_days"] * 24
+            if ids is not None and j["id"] not in ids and j.get("first_seen") != STAMP:
+                self.drop(j["id"]); closed += 1
+            elif age_hours(j["posted"]) > lim or not self.titles.ok(j["title"]):
+                self.drop(j["id"])
+        cut = iso(NOW - timedelta(days=45))[:10]
+        self.state["seen"] = {k: v for k, v in self.state["seen"].items() if v >= cut}
+        return closed
+
+    # ---------- platforms ----------
+    def topup(self):
+        today = self.now_et.date()
+        have = sum(1 for j in self.jobs.values() if j["kind"] != "platform"
+                   and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
+        need = max(0, self.cfg["daily_target"] - have)
+        for j in [j for j in self.jobs.values() if j["kind"] == "platform"]:
+            self.drop(j["id"])
+        got = []
+        for site in self.cfg["platform_order"]:
+            try:
+                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.ok(c["title"])]
+                before = set(self.jobs)
+                st = self.decide(cs, platform=True)
+                new = [self.jobs[i] for i in list(self.jobs) if i not in before]
+                for j in [j for j in new if age_hours(j["posted"]) > 36]:
+                    self.drop(j["id"])
+                new = [j for j in new if j["id"] in self.jobs]
+                got += new
+                self.report.append({"source": f"platform: {platforms.NAMES[site]}", "ok": 1, "title_match": len(cs), "accepted": len(new)})
+            except Exception as ex:
+                self.report.append({"source": f"platform: {platforms.NAMES[site]}", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:70]}"})
+        for i, j in enumerate(got):
+            j["notify"] = "pending" if i < need else "skip"
+        self.state["topup_last"] = STAMP
+        self.report.append({"source": "daily top-up", "company_postings_today": have, "target": self.cfg["daily_target"],
+                            "platform_sent": min(need, len(got)), "ok": 1})
+
+    # ---------- run ----------
+    def run(self):
+        only = set((arg("--only") or "").split(",")) - {""}
+        dry = "--dry-run" in ARGS
+        want = lambda t, due: (t in only) if only else due
+        if want("wide", True):
+            self.wide()
+        if want("fast", True):
+            self.fast()
+        if want("workday", slot_due(self.cfg["workday_times"], self.state.get("workday_last"), self.now_et) or not self.state.get("workday_last")):
+            self.workday()
+        st = self.decide(self.cands)
+        closed = self.prune()
+        if want("topup", slot_due([self.cfg["topup_time"]], self.state.get("topup_last"), self.now_et)):
+            self.topup()
+        if not self.state.get("bootstrapped"):
+            for j in self.jobs.values():       # first run: do not send the whole backlog
+                if j["kind"] == "platform" or j["date_est"] or age_hours(j["posted"]) > 24:
+                    j["notify"] = "skip"
+            self.state["bootstrapped"] = True
+        tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
+        jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)
+        by = Counter(j["kind"] for j in jobs)
+        summary = {"run": self.state["run"], "new": st.get("accepted", 0), "closed": closed, "rejected": {k: v for k, v in st.items() if k != "accepted"},
+                   "listed": dict(by), "telegram": tg}
+        for r in self.report:
+            print(json.dumps(r, ensure_ascii=False))
+        print("SUMMARY", json.dumps(summary, ensure_ascii=False))
+        if dry:
+            for j in jobs[:60]:
+                print(f" [{j['kind']}] {j['posted'][:16]} | {j['title'][:50]} | {j['company'][:22]} | {j['location'][:40]} | {j['src']} | {j['salary']} | deg={j['degree']} | reqs={len(j['reqs'])}")
+            return
+        JOBS.parent.mkdir(exist_ok=True)
+        JOBS.write_text(json.dumps({"updated": STAMP, "summary": summary, "report": self.report, "jobs": jobs}, indent=1, ensure_ascii=False))
+        DESC.write_text(json.dumps({k: v for k, v in sorted(self.desc.items()) if k in self.jobs}, ensure_ascii=False))
+        STATE.parent.mkdir(exist_ok=True)
+        STATE.write_text(json.dumps(self.state, indent=1, sort_keys=True, ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    main()
+    Radar().run()
