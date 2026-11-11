@@ -177,7 +177,9 @@ assert "🔵 FROM INDEED" in m3 and "Indeed → company link" in m3, m3
 
 # ---- several chats ----
 calls = []
-notify.send = lambda text, tok, c: (calls.append((c, text[:12])), True)[1]
+notify.send = lambda text, tok, c, thread=None: (calls.append((c, thread)), True)[1]
+notify.api = lambda tok, method, **p: ({"ok": True, "result": {"is_forum": p.get("chat_id") == "-100222"}} if method == "getChat"
+                                         else {"ok": True, "result": {"message_thread_id": {"🟢": 5, "🟡": 6, "🔵": 7}[p["name"][0]]}})
 notify.greet_new_chats = lambda tok, chats: None
 import os
 os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"] = "t", "111, -100222"
@@ -186,7 +188,15 @@ jj = [dict(j, id="x1", notify="pending")]
 old_quiet = notify.quiet; notify.quiet = lambda *a: False; old_sleep = notify.time.sleep; notify.time.sleep = lambda s: None
 res = notify.process(jj, stt, cfg)
 eq("multi chat status", res, "sent 1 of 1")
-eq("multi chat calls", [c for c, _ in calls], ["-100222", "111", "-100222"])
+eq("multi chat calls", calls, [("-100222", None), ("111", None), ("-100222", 5)])
+calls.clear()
+pj = [dict(j, id="p1", kind="platform", src="LinkedIn", notify="hold"), dict(j, id="c1", kind="check", why="x", notify="pending")]
+eq("topics status", notify.process(pj, stt, cfg), "sent 2 of 2")
+eq("topics routing", calls, [("111", None), ("-100222", 6), ("-100222", 7)])
+os.environ["TELEGRAM_CHAT_ID"] = "111"
+pj2 = [dict(j, id="p2", kind="platform", src="LinkedIn", notify="pending")]
+notify.process(pj2, stt, cfg); eq("platform held without tabs", pj2[0]["notify"], "hold")
+os.environ["TELEGRAM_CHAT_ID"] = "111, -100222"
 eq("multi chat welcomed", stt["tg_welcomed"], ["111", "0222"])
 notify.quiet, notify.time.sleep = old_quiet, old_sleep
 del os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"]

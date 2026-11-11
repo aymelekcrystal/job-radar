@@ -38,10 +38,54 @@ def fmt(j, now=None):
 LAST_ERROR = [""]
 
 
-def send(text, tok, chat):
+TOPICS = (("ok", "🟢 Company sites"), ("check", "🟡 Check location"), ("platform", "🔵 Platforms"))
+
+
+def api(tok, method, **params):
     try:
-        r = requests.post(f"https://api.telegram.org/bot{tok.strip()}/sendMessage", timeout=20,
-                          data={"chat_id": chat.strip(), "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": "true"})
+        return requests.post(f"https://api.telegram.org/bot{tok.strip()}/{method}", timeout=20, data=params).json()
+    except Exception as ex:
+        return {"ok": False, "description": type(ex).__name__}
+
+
+def topics_for(tok, chat, state):
+    """For a group with Topics switched on: the three tab ids (created once). None for an ordinary chat."""
+    saved = state.setdefault("tg_topics", {})
+    key = chat[-6:]
+    if key in saved:
+        return saved[key]
+    info = api(tok, "getChat", chat_id=chat)
+    if not (info.get("result") or {}).get("is_forum"):
+        return None
+    ids = {}
+    for kind, name in TOPICS:
+        r = api(tok, "createForumTopic", chat_id=chat, name=name)
+        if r.get("ok"):
+            ids[kind] = r["result"]["message_thread_id"]
+        else:
+            LAST_ERROR[0] = f"cannot create tab: {r.get('description', '')}"[:120]
+            return None
+    saved[key] = ids
+    return ids
+
+
+def deliver(j, tok, chats, state):
+    """Sends one posting to every chat that takes it. Returns True/False, or None if no chat takes this kind."""
+    results = []
+    for c in chats:
+        tp = topics_for(tok, c, state)
+        if j["kind"] == "platform" and not tp:
+            continue                                   # platform postings only go to their own tab
+        results.append(send(fmt(j), tok, c, thread=(tp or {}).get(j["kind"])))
+    return any(results) if results else None
+
+
+def send(text, tok, chat, thread=None):
+    try:
+        data = {"chat_id": chat.strip(), "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": "true"}
+        if thread:
+            data["message_thread_id"] = thread
+        r = requests.post(f"https://api.telegram.org/bot{tok.strip()}/sendMessage", timeout=20, data=data)
         if r.status_code == 429:
             time.sleep(int(r.json().get("parameters", {}).get("retry_after", 5)) + 1)
             return False
@@ -127,6 +171,11 @@ def process(jobs, state, cfg, dry=False):
             state["tg_welcomed"] = [c[-4:] for c in chats]
         else:
             return f"TELEGRAM ERROR: {LAST_ERROR[0]} | {diagnose(tok)} ({len(pend)} waiting)"
+    forum = any(topics_for(tok, c, state) for c in chats)
+    for j in jobs:                                     # platform postings wait until a Platforms tab exists
+        if j["kind"] == "platform" and j.get("notify") in ("hold", "pending"):
+            j["notify"] = "pending" if forum else "hold"
+    pend = sorted((j for j in jobs if j.get("notify") == "pending"), key=lambda j: (j["kind"] == "platform", j["posted"]))
     if quiet(now_et, cfg):
         state["held"] = True
         return f"quiet hours ({len(pend)} held)"
@@ -141,8 +190,11 @@ def process(jobs, state, cfg, dry=False):
         pend = [j for j in pend if j["id"] in keep]
     sent = 0
     for j in pend:
-        if send_all(fmt(j), tok, chat):
+        ok = deliver(j, tok, chats, state)
+        if ok:
             j["notify"], sent = "sent", sent + 1
+        elif ok is None:
+            j["notify"] = "hold"
         else:
             j["tries"] = j.get("tries", 0) + 1
             if j["tries"] >= 5:
