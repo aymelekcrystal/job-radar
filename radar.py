@@ -405,11 +405,14 @@ class Radar:
                 print("  cannot tell which career system this link belongs to"); continue
             lists = [f.stem for f in (ROOT / "data").glob("*/" + ats + ".txt") if board.lower() in {b.lower() for b in read_list(f)}]
             print("  in company lists:", lists or "NO (the bot does not know this company)")
-            if ats == "workday" or ats in sources.SEARCH:
-                ok_all = lambda t: True
-                cs, _ = (sources.workday if ats == "workday" else sources.SEARCH[ats])(board, self.cfg.get("workday_terms" if ats == "workday" else "search_terms"), ok_all)
-            else:
-                cs, _ = sources.SIMPLE[ats](board)
+            try:
+                if ats == "workday" or ats in sources.SEARCH:
+                    ok_all = lambda t: True
+                    cs, _ = (sources.workday if ats == "workday" else sources.SEARCH[ats])(board, self.cfg.get("workday_terms" if ats == "workday" else "search_terms"), ok_all)
+                else:
+                    cs, _ = sources.SIMPLE[ats](board)
+            except Exception as ex:
+                print(f"  could not read this company: {type(ex).__name__}: {str(ex)[:80]}"); continue
             print(f"  postings read: {len(cs)}")
             for c in cs:
                 if not loose.search(c["title"]):
