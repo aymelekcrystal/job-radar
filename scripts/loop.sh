@@ -34,6 +34,13 @@ for i in $(seq 1 $tries); do
   sleep 30
 done
 
+next() {
+  [ -n "${NEXT_DONE:-}" ] && return 0
+  NEXT_DONE=1
+  for i in 1 2 3; do gh workflow run "$WF" --ref main && { echo "next run started"; return 0; }; sleep 10; done
+}
+trap next EXIT TERM          # whatever happens, hand over to a fresh run
+
 sig() { git rev-parse HEAD:scripts/loop.sh HEAD:.github/workflows/$WF HEAD:requirements.txt 2>/dev/null | tr '\n' ' '; }
 START_SIG="$(sig)"
 END=$(( $(date +%s) + 5*3600 + 15*60 ))
@@ -46,6 +53,7 @@ while [ "$(date +%s)" -lt "$END" ]; do
   step=900; { [ "$hour" -ge 23 ] || [ "$hour" -lt 7 ]; } && step=3600   # hourly overnight
   now=$(date +%s); wait=$(( step - now % step ))
   [ "$wait" -lt 120 ] && wait=$(( wait + step ))
+  if [ $(( now + wait )) -ge "$END" ]; then break; fi   # never sleep past the end: the job would be killed before restarting
   sleep "$wait"
 done
-gh workflow run "$WF" --ref main && echo "next run started"
+next
