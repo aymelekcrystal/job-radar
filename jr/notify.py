@@ -185,8 +185,9 @@ def process(jobs, state, cfg, dry=False):
     if dry:
         return f"dry run ({len(pend)} pending)"
     chats = [c.strip() for c in chat.replace(";", ",").split(",") if c.strip()]
-    try:                                             # tabs the owner created by hand (recorded by poll.py)
-        state["tg_named"] = json.loads(TG_FILE.read_text()).get("named", {})
+    try:                                             # tabs the owner created by hand (recorded by poll.py); never forget one
+        for k, v in json.loads(TG_FILE.read_text()).get("named", {}).items():
+            state.setdefault("tg_named", {}).setdefault(k, {}).update(v)
     except Exception:
         pass
     for c in chats:                                  # a newly added chat gets a welcome once

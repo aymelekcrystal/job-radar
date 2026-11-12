@@ -426,7 +426,27 @@ class Radar:
                 print(f"  {why:22} | {c['title'][:60]} | {show_loc(c['locs'])[:50]} | posted {c['posted'][:10] or '?'}{listed}")
 
     # ---------- run ----------
+    def ping(self):
+        """python radar.py --ping : sends a test message to every configured chat and prints what Telegram says."""
+        import os
+        tok = os.getenv("TELEGRAM_TOKEN", "").strip()
+        chats = [c.strip() for c in os.getenv("TELEGRAM_CHAT_ID", "").replace(";", ",").split(",") if c.strip()]
+        print("chats configured:", len(chats))
+        me = notify.api(tok, "getMe").get("result", {})
+        for i, c in enumerate(chats, 1):
+            info = notify.api(tok, "getChat", chat_id=c).get("result", {})
+            mem = notify.api(tok, "getChatMember", chat_id=c, user_id=me.get("id", 0)).get("result", {})
+            print(f"chat {i}: type={info.get('type')} title={info.get('title') or '(private chat)'} topics={info.get('is_forum')} "
+                  f"bot_status={mem.get('status')} can_manage_topics={mem.get('can_manage_topics')}")
+            for label, thread in (("main", None), ("tab", (notify.topics_for(tok, c, self.state) or {}).get("platform"))):
+                if label == "tab" and not thread:
+                    continue
+                ok = notify.send(f"🔔 Job Radar test message ({label}). If you can read this, notifications reach this chat.", tok, c, thread=thread)
+                print(f"   send to {label}: {'OK' if ok else 'FAILED ' + notify.LAST_ERROR[0]}")
+
     def run(self):
+        if "--ping" in ARGS:
+            return self.ping()
         if arg("--trace"):
             return self.trace(arg("--trace"))
         only = set((arg("--only") or "").split(",")) - {""}
