@@ -12,7 +12,8 @@ LABEL = {"greenhouse": "Greenhouse", "lever": "Lever", "ashby": "Ashby", "workda
          "smartrecruiters": "SmartRecruiters", "breezy": "Breezy", "rippling": "Rippling", "recruitee": "Recruitee",
          "amazon": "Amazon Jobs", "bamboohr": "BambooHR", "workable": "Workable", "pinpoint": "Pinpoint",
          "recruiterbox": "Recruiterbox", "teamtailor": "Teamtailor", "gem": "Gem", "oracle": "Oracle Cloud",
-         "ukg": "UKG", "jibe": "Jibe", "icims": "iCIMS", "adp": "ADP"}
+         "ukg": "UKG", "jibe": "Jibe", "icims": "iCIMS", "adp": "ADP", "paycom": "Paycom", "dayforce": "Dayforce",
+         "paylocity": "Paylocity", "successfactors": "SuccessFactors", "personio": "Personio", "jobvite": "Jobvite"}
 
 
 def cand(ats, board, jid, title, company, locs, url, posted="", remote=None, salary="", desc="", date_est=False, detail=None):
@@ -596,8 +597,129 @@ def adp(board):
     return out, {c["id"] for c in out}
 
 
-SEARCH = {"oracle": oracle, "ukg": ukg, "jibe": jibe, "icims": icims}   # readers that take search terms
+# ---------- Paycom (session from the portal page, then keyword search) ----------
+def paycom(board, terms, title_ok):
+    import base64, json as _json
+    portal = f"https://www.paycomonline.net/v4/ats/web.php/portal/{board}/career-page"
+    m = re.search(r"var configsFromHost = (\{.*?\});\s*var Mountable", http(portal, retries=1).text, re.S)
+    if not m:
+        raise RuntimeError("no portal config")
+    cfgp = _json.loads(m.group(1))
+    lib = _json.loads(cfgp.get("libConfig") or "{}")
+    svc = (lib.get("atsPortalMantleServiceUrl") or "").rstrip("/")
+    if not re.match(r"^https://[a-z0-9.\-]+\.paycomonline\.(net|com)(/|$)", svc):
+        raise RuntimeError("unexpected service address")
+    hdr = {"Authorization": cfgp.get("sessionJWT") or "", "Locale": lib.get("locale") or "en-US", "Translation-Highlights": "false",
+           "Portal-Host-Referrer": portal, "Content-Type": "application/json"}
+    seen, out = set(), []
+    for term in terms:
+        d = http(svc + "/api/ats/job-posting-previews/search", method="POST", retries=1, headers=hdr,
+                 json={"skip": 0, "take": 50, "filtersForQuery": {"distanceFrom": 0, "workEnvironments": [], "positionTypes": [],
+                       "educationLevels": [], "categories": [], "travelTypes": [], "shiftTypes": [], "otherFilters": [],
+                       "keywordSearchText": term, "location": "", "sortOption": ""}}).json()
+        for j in d.get("jobPostingPreviews") or d.get("jobs") or d.get("results") or []:
+            jid = str(j.get("jobId") or "")
+            if not jid or jid in seen or not title_ok(j.get("jobTitle")):
+                continue
+            seen.add(jid)
+            loc = j.get("locations") if isinstance(j.get("locations"), str) else ", ".join(map(str, j.get("locations") or []))
+            env = str(j.get("workEnvironment") or j.get("remoteType") or "").lower()
+            out.append(cand("paycom", board, jid, j.get("jobTitle"), j.get("companyName") or "Paycom employer", [(loc, "")],
+                            f"https://www.paycomonline.net/v4/ats/web.php/portal/{board}/jobs/{jid}", j.get("postedOn"),
+                            remote=True if "remote" in env else None, desc=j.get("description") or "", detail=page_detail))
+            out[-1]["weak_company"] = True
+    return out, None
 
-SIMPLE = {"adp": adp, "bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
+
+SEARCH = {"paycom": paycom, "oracle": oracle, "ukg": ukg, "jibe": jibe, "icims": icims}   # readers that take search terms
+
+# ---------- Dayforce ----------
+def dayforce(board):
+    tenant, code = board.split("|")
+    rows = http(f"https://www.dayforcehcm.com/api/{tenant}/V1/JobFeeds", retries=1,
+                params={"includeActivePostingOnly": "true", "internalJobBoardCode": code}).json()
+    out, seen = [], set()
+    for j in rows if isinstance(rows, list) else []:
+        ref = str(j.get("ReferenceNumber") or j.get("JobPostingId") or "")
+        if not ref or ref in seen:
+            continue
+        seen.add(ref)
+        posted = next((j[k] for k in ("PostingStartTimestampUTC", "PostingStartDate", "DatePosted", "PostedDate", "StartDate") if j.get(k)), "")
+        out.append(cand("dayforce", board, ref, j.get("Title"), j.get("CompanyName") or j.get("ParentCompanyName") or pretty(tenant),
+                        [(", ".join(x for x in (j.get("City"), j.get("State")) if x), "United States" if str(j.get("Country", "")).upper() in ("US", "USA") else j.get("Country") or "")],
+                        f"https://jobs.dayforcehcm.com/{j.get('CultureCode') or 'en-US'}/{tenant}/{code}/jobs/{ref}", posted,
+                        remote=True if j.get("IsVirtualLocation") else None, desc=j.get("Description") or "", date_est=not posted))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Paylocity ----------
+def paylocity(board):
+    import json as _json
+    txt = http(f"https://recruiting.paylocity.com/Recruiting/Jobs/All/{board}", retries=1).text
+    m = re.search(r"\bwindow\.pageData\s*=\s*", txt)
+    if not m:
+        raise RuntimeError("no page data")
+    data, _ = _json.JSONDecoder().raw_decode(txt[m.end():])
+    out = []
+    for j in data.get("Jobs") or []:
+        if j.get("IsInternal"):
+            continue
+        jid = j.get("JobId")
+        out.append(cand("paylocity", board, jid, j.get("JobTitle"), data.get("CompanyName") or "Paylocity employer",
+                        [(j.get("LocationName") or "", "")], f"https://recruiting.paylocity.com/Recruiting/Jobs/Details/{jid}",
+                        j.get("PublishedDate"), remote=True if j.get("IsRemote") else None, detail=page_detail))
+    return out, {c["id"] for c in out}
+
+
+# ---------- SuccessFactors (Recruiting Marketing RSS feed) ----------
+def successfactors(board):
+    import xml.etree.ElementTree as ET
+    G = "{http://base.google.com/ns/1.0}"
+    root = ET.fromstring(http(f"https://{board}/sitemal.xml", retries=1).content)
+    out = []
+    for it in root.iter("item"):
+        link = (it.findtext("link") or "").strip()
+        jid = it.findtext(G + "id") or it.findtext("guid") or link
+        title = re.sub(r"\s*\([^)]*\)\s*$", "", (it.findtext("title") or "").strip())
+        out.append(cand("successfactors", board, jid, title, it.findtext(G + "employer") or pretty(board.split(".")[0]),
+                        [(it.findtext(G + "location") or "", "")], link, it.findtext("pubDate"), desc=it.findtext("description") or ""))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Personio ----------
+def personio(board):
+    rows = http(f"https://{board}.jobs.personio.com/search.json", retries=1).json()
+    out = []
+    for j in rows if isinstance(rows, list) else rows.get("jobs") or []:
+        jid = j.get("id")
+        office = j.get("office") if isinstance(j.get("office"), str) else (j.get("office") or {}).get("name", "")
+        out.append(cand("personio", board, jid, j.get("name") or j.get("title"), j.get("subcompany") or pretty(board), [(office, "")],
+                        f"https://{board}.jobs.personio.com/job/{jid}", j.get("createdAt") or j.get("created_at"),
+                        desc="".join(f"<h3>{d.get('name','')}</h3>{d.get('value','')}" for d in j.get("jobDescriptions") or [] if isinstance(d, dict)),
+                        detail=page_detail))
+    return out, {c["id"] for c in out}
+
+
+# ---------- Jobvite ----------
+def jobvite(board):
+    txt = http(f"https://jobs.jobvite.com/{board}/search", retries=1, params={"q": ""}).text
+    out, seen = [], set()
+    for m in re.finditer(r'<a[^>]+href="(/[^"]*/job/([A-Za-z0-9_-]+))[^"]*"[^>]*>(.*?)</a>', txt, re.S):
+        jid = m.group(2)
+        title = re.sub(r"<[^>]+>|\s+", " ", m.group(3)).strip()
+        if jid in seen or not title:
+            continue
+        seen.add(jid)
+        row = txt[m.end():m.end() + 600]
+        loc = re.search(r'jv-job-list-location[^>]*>(.*?)</', row, re.S)
+        out.append(cand("jobvite", board, jid, __import__("html").unescape(title), pretty(board),
+                        [(re.sub(r"<[^>]+>|\s+", " ", loc.group(1)).strip() if loc else "", "")],
+                        f"https://jobs.jobvite.com{m.group(1)}", "", date_est=True, detail=page_detail))
+        out[-1]["nodate"] = True
+    return out, {c["id"] for c in out}
+
+
+SIMPLE = {"dayforce": dayforce, "paylocity": paylocity, "successfactors": successfactors, "personio": personio, "jobvite": jobvite,
+          "adp": adp, "bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
           "teamtailor": teamtailor, "gem": gem, "greenhouse": greenhouse, "lever": lever, "ashby": ashby, "smartrecruiters": smartrecruiters,
           "breezy": breezy, "rippling": rippling, "recruitee": recruitee}

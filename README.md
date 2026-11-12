@@ -12,7 +12,8 @@ Target: remote (US) and Raleigh-area QA / SDET / test automation / AI testing ro
 | Direct scan | SmartRecruiters, BambooHR, Workable, Rippling, Breezy, Recruitee, Teamtailor, Pinpoint, Gem, Recruiterbox (about 19,000 companies), Amazon | whole list every 2-4 hours; companies seen hiring QA hourly |
 | Direct scan | Workday: companies seen hiring QA | hourly (a quarter of them every 15 min) |
 | Direct scan | Workday: all ~12,000 companies | once a day, a slice every 15 min |
-| Wide net | Two open datasets for systems without a simple public feed (Oracle, iCIMS, SuccessFactors, Phenom, ADP, JazzHR, Paycom, Jobvite, UKG, Dayforce, ...) | whenever they publish a new snapshot |
+| Direct scan | Oracle Cloud, iCIMS, UKG, Jibe, ADP, Paycom, Dayforce, Paylocity, SuccessFactors, Personio, Jobvite (about 16,000 companies) | whole list every 1-12 hours; companies seen hiring QA hourly |
+| Wide net | Two open datasets, for everything else (Phenom, JazzHR, Taleo, Cornerstone, Eightfold, Avature, ...) and as a safety net | daily |
 | Platforms | LinkedIn, Indeed and remote job boards, kept separate (own tab) | hourly |
 
 Rules: US remote must be stated (unclear ones go to the "Check" tab), postings that require a degree with no
