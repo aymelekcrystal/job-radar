@@ -64,7 +64,7 @@ rotation_wide: {smartrecruiters: 16, bamboohr: 16, workable: 16, rippling: 16, b
                 oracle: 16, ukg: 8, jibe: 4, icims: 16, adp: 8,
                 paycom: 48, successfactors: 16, personio: 32, dayforce: 8, paylocity: 4, jobvite: 4}
 workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6, oracle: 6, ukg: 4, jibe: 4, icims: 6, adp: 4,
-          paycom: 6, successfactors: 6, personio: 6, dayforce: 4, paylocity: 4, jobvite: 4}
+          paycom: 6, successfactors: 6, personio: 6, dayforce: 4, paylocity: 2, jobvite: 4}
 search_terms: ["QA", "quality", "test", "SDET"]  # for systems searched by keyword (Oracle, UKG, Jibe, iCIMS)   # gentler on systems that sit behind one address
 hourly_every_runs: 4
 workday_universe_runs: 48                        # all Workday companies twice a day, a slice per run (dead addresses drop out)
