@@ -19,7 +19,8 @@ NOT_COMPANY = {"eures", "bundesagentur", "arbetsformedlingen", "welcometothejung
                "programathor", "getonbrd", "ycombinator", "wellfound", "weworkremotely", "builtin", "mercor", "manfred",
                "join_com", "infojobs_es", "jobs_cz", "seek", "thehub", "remoteok", "usajobs"}
 WATCHED = ("greenhouse", "lever", "ashby", "workday", "smartrecruiters", "breezy", "rippling", "recruitee",
-           "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem", "oracle", "icims", "ukg")
+           "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem", "oracle", "icims", "ukg",
+           "paycom", "dayforce", "paylocity", "personio", "jobvite")
 _WD = re.compile(r"https://([^./]+)\.(wd\d+)\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?([^/?#]+)")
 _URL = {
     "greenhouse": re.compile(r"greenhouse\.io/(?:embed/job_board\?for=)?([A-Za-z0-9_.\-]+)"),
@@ -36,6 +37,10 @@ _URL = {
     "teamtailor": re.compile(r"https?://([A-Za-z0-9\-]+)\.teamtailor\.com"),
     "gem": re.compile(r"jobs\.gem\.com/([^/?#]+)"),
     "jibe": re.compile(r"https?://([a-z0-9.\-]+)/jobs/\d"),
+    "paycom": re.compile(r"paycomonline\.(?:net|com)/v4/ats/web\.php/portal/([0-9A-Fa-f]{32})"),
+    "paylocity": re.compile(r"recruiting\.paylocity\.com/Recruiting/Jobs/All/([0-9A-Fa-f\-]{36})"),
+    "personio": re.compile(r"https?://([a-z0-9\-]+)\.jobs\.personio\.(?:com|de)"),
+    "jobvite": re.compile(r"jobs\.jobvite\.com/([A-Za-z0-9_\-]+)"),
 }
 
 
@@ -44,7 +49,7 @@ _ICI = re.compile(r"https?://([a-z0-9.\-]+\.icims\.com)", re.I)
 _UKG = re.compile(r"https://([a-z0-9.\-]+)/([A-Za-z0-9]+)/JobBoard/([0-9a-fA-F\-]{36})")
 
 
-PROVEN = set(WATCHED) - {"oracle", "icims", "ukg"}    # direct readers that replace the dataset copy entirely
+PROVEN = set(WATCHED) - {"oracle", "icims", "ukg", "paycom", "dayforce", "paylocity", "personio", "jobvite"}    # direct readers that replace the dataset copy entirely
 
 
 def board_of(ats, url):
@@ -60,6 +65,9 @@ def board_of(ats, url):
         return f"{m.group(1).lower()}|{m.group(2)}|{m.group(3).lower()}" if m else None
     if ats == "jibe":
         return None
+    if ats == "dayforce":
+        m = re.search(r"dayforcehcm\.com/(?:[a-z]{2}-[A-Z]{2}/)?([A-Za-z0-9_\-]+)/([A-Za-z0-9_\-]+)", url)
+        return f"{m.group(1).lower()}|{m.group(2)}" if m else None
     if ats == "workday":
         m = _WD.match(url)
         return "|".join(m.groups()) if m else None
@@ -67,7 +75,7 @@ def board_of(ats, url):
     if not m:
         return None
     b = requests.utils.unquote(m.group(1))
-    return b if ats in ("smartrecruiters",) else b.lower()
+    return b if ats in ("smartrecruiters", "jobvite") else b.lower()
 
 
 def host_company(name):
