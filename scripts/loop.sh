@@ -47,6 +47,7 @@ START_SIG="$(sig)"
 END=$(( $(date +%s) + 5*3600 + 15*60 ))
 [ -f docs/applied.json ] || echo "[]" > docs/applied.json
 python poll.py "$END" & POLL=$!                 # answers the Telegram "Applied" button within seconds
+(timeout 1800 python radar.py --sync-lists > /tmp/sync.log 2>&1; echo "lists sync finished ($?)") &   # new companies, daily
 while [ "$(date +%s)" -lt "$END" ]; do
   git pull -q --rebase --autostash || true     # pick up config/code changes between scans
   if [ "$(sig)" != "$START_SIG" ]; then echo "loop definition changed; restarting"; break; fi

@@ -209,9 +209,7 @@ class Radar:
         return added
 
     def sync_lists(self, man):
-        """Once a day: pull every open company list again so new companies join without anyone asking."""
-        if self.state.get("lists_day") == STAMP[:10] and "--sync" not in ARGS:
-            return
+        """python radar.py --sync-lists : pull every open company list again (run by the loop once a day, in the background)."""
         found = defaultdict(set)
         steps = [("open lists", lists.from_open_lists), ("other lists", lists.from_other_lists)]
         if man:
@@ -226,17 +224,15 @@ class Radar:
                 done.append(f"{name} failed ({type(ex).__name__})")
         added = lists.add(found)
         sizes = {f.stem: len(read_list(f)) for f in sorted((ROOT / "data/boards").glob("*.txt"))}
-        self.report.append({"source": "company lists sync", "ok": 1, "steps": ", ".join(done), "added": added,
-                            "companies_total": sum(sizes.values()), "per_system": sizes})
-        self.state["lists_day"] = STAMP[:10]
+        rep = {"source": "company lists sync", "ok": 1, "when": STAMP, "steps": ", ".join(done), "added": added,
+               "companies_total": sum(sizes.values()), "per_system": sizes}
+        (ROOT / "data/lists_report.json").write_text(json.dumps(rep, indent=1))
+        print(json.dumps(rep))
 
     def wide(self):
-        man = None
-        try:
-            man = wide.stapply_generated()
-        except Exception:
-            pass
-        self.sync_lists(man)
+        last = load(ROOT / "data/lists_report.json", None)
+        if last:
+            self.report.append(last)
         try:
             man = wide.stapply_generated()
             if man.get("generated_at") != self.state.get("stapply_gen") or "--force" in ARGS:
@@ -490,6 +486,13 @@ class Radar:
                 print(f"   send to {label}: {'OK' if ok else 'FAILED ' + notify.LAST_ERROR[0]}")
 
     def run(self):
+        if "--sync-lists" in ARGS:
+            man = None
+            try:
+                man = wide.stapply_generated()
+            except Exception:
+                pass
+            return self.sync_lists(man)
         if "--ping" in ARGS:
             return self.ping()
         if arg("--trace"):

@@ -91,7 +91,9 @@ def add(found):
         low = {b.lower() for b in cur}
         new = {b for b in ids if b and OK.fullmatch(b) and b.lower() not in low}
         if new:
-            f.write_text("\n".join(sorted(cur | new)) + "\n")
+            tmp = f.with_suffix(".tmp")
+            tmp.write_text("\n".join(sorted(cur | new)) + "\n")
+            tmp.replace(f)                       # atomic: a scan reading the list never sees half a file
             added[ats] = len(new)
     return added
 
@@ -153,9 +155,13 @@ def from_dataset(manifest):
     """Every company that has any posting in the open dataset, for every system we read directly."""
     import duckdb
     con = duckdb.connect()
-    con.execute("INSTALL httpfs; LOAD httpfs;")
-    rows = con.execute("SELECT lower(ats_type), any_value(url), any_value(apply_url) FROM read_parquet(?) "
-                       "GROUP BY 1, regexp_extract(url, '^https?://[^/]+(/[^/?#]+){0,3}')", [manifest["all"]["parquet"]]).fetchall()
+    con.execute("INSTALL httpfs; LOAD httpfs; SET threads TO 4; SET memory_limit = '4GB';")
+    rows = []
+    for ats, art in (manifest.get("by_ats") or {}).items():          # one small file per system instead of the whole dataset
+        if ats.lower() not in SYSTEMS or not art.get("parquet"):
+            continue
+        rows += con.execute("SELECT lower(ats_type), any_value(url), any_value(apply_url) FROM read_parquet(?) "
+                            "GROUP BY 1, regexp_extract(url, '^https?://[^/]+(/[^/?#]+){0,3}')", [art["parquet"]]).fetchall()
     found = {}
     for ats, url, apply_url in rows:
         if ats in SYSTEMS:
