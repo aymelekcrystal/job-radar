@@ -11,7 +11,7 @@ from pathlib import Path
 
 import yaml
 
-from jr import filters, notify, platforms, sources, wide
+from jr import filters, lists, notify, platforms, sources, wide
 from jr.common import ET, NOW, NotFound, age_hours, iso, to_lines
 
 ROOT = Path(__file__).parent
@@ -116,7 +116,7 @@ class Radar:
                             known.append(key)
                             for c in cs:
                                 c["newboard"] = True
-                    self.cands += cs
+                    self.cands.extend(cs)
                     if ids is not None:
                         self.present[key] = ids
                 elif status == "404":
@@ -132,37 +132,54 @@ class Radar:
                             "errors": st["err"], "error_types": errs, "postings": st["jobs"], "title_match": st["match"]})
 
     def fast(self):
+        """All career systems at once (each system keeps its own polite limit). Workday's two passes stay in one task."""
         run = self.state["run"]
-        for ats, n in self.cfg["rotation"].items():
-            watch = set(read_list(ROOT / f"data/watch/{ats}.txt"))
-            allb = read_list(ROOT / f"data/boards/{ats}.txt")
-            pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
-            self.scan(ats, pick, 16, total=len(set(allb) | watch))
         hourly = run % self.cfg.get("hourly_every_runs", 4) == 0 or "--all" in ARGS
-        for ats, n in self.cfg.get("rotation_wide", {}).items():       # whole list every N runs; hiring companies hourly
-            watch = set(read_list(ROOT / f"data/watch/{ats}.txt")) if hourly else set()
-            allb = read_list(ROOT / f"data/boards/{ats}.txt")
-            pick = sorted(watch | {b for b in allb if bucket(b, n) == run % n})
-            self.scan(ats, pick, self.cfg.get("workers", {}).get(ats, 10), total=len(allb))
-        wn = self.cfg.get("workday_watch_runs", 4)                      # Workday companies seen hiring: a quarter per run = hourly
-        wlist = read_list(ROOT / "data/watch/workday.txt")
-        self.scan("workday", [b for b in wlist if bucket(b, wn) == run % wn], self.cfg.get("workers", {}).get("workday", 6),
-                  total=len(wlist), label="workday (companies hiring QA)")
-        if hourly:
-            self.workday_verify()
-        n = self.cfg.get("workday_universe_runs", 96)                   # every Workday company, a small slice per run
-        wwatch = {b.lower() for b in wlist}
-        allw = read_list(ROOT / "data/boards/workday.txt")
-        self.scan("workday", [b for b in allw if bucket(b, n) == run % n and b.lower() not in wwatch], 5, total=len(allw),
-                  terms=self.cfg.get("workday_universe_terms"), label="workday (all companies, rotating)")
-        if hourly:
+        tasks = []
+        for ats, n in self.cfg["rotation"].items():
+            def t(ats=ats, n=n):
+                watch = set(read_list(ROOT / f"data/watch/{ats}.txt"))
+                allb = read_list(ROOT / f"data/boards/{ats}.txt")
+                self.scan(ats, sorted(watch | {b for b in allb if bucket(b, n) == run % n}), 16, total=len(set(allb) | watch))
+            tasks.append(t)
+        for ats, n in self.cfg.get("rotation_wide", {}).items():
+            def t(ats=ats, n=n):
+                watch = set(read_list(ROOT / f"data/watch/{ats}.txt")) if hourly else set()
+                allb = read_list(ROOT / f"data/boards/{ats}.txt")
+                self.scan(ats, sorted(watch | {b for b in allb if bucket(b, n) == run % n}), self.cfg.get("workers", {}).get(ats, 10), total=len(allb))
+            tasks.append(t)
+
+        def workday_all():
+            wn = self.cfg.get("workday_watch_runs", 4)
+            wlist = read_list(ROOT / "data/watch/workday.txt")
+            self.scan("workday", [b for b in wlist if bucket(b, wn) == run % wn], self.cfg.get("workers", {}).get("workday", 6),
+                      total=len(wlist), label="workday (companies hiring QA)")
+            if hourly:
+                self.workday_verify()
+            n = self.cfg.get("workday_universe_runs", 48)
+            wwatch = {b.lower() for b in wlist}
+            allw = read_list(ROOT / "data/boards/workday.txt")
+            self.scan("workday", [b for b in allw if bucket(b, n) == run % n and b.lower() not in wwatch], 5, total=len(allw),
+                      terms=self.cfg.get("workday_universe_terms"), label="workday (all companies, rotating)")
+        tasks.append(workday_all)
+
+        def amazon():
             try:
                 cs, _ = sources.amazon(self.cfg["amazon_terms"])
                 keep = [c for c in cs if self.titles.ok(c["title"])]
-                self.cands += keep
+                self.cands.extend(keep)
                 self.report.append({"source": "amazon", "companies": 1, "scanned": 1, "ok": 1, "postings": len(cs), "title_match": len(keep)})
             except Exception as ex:
                 self.report.append({"source": "amazon", "companies": 1, "scanned": 1, "ok": 0, "errors": 1, "error_types": type(ex).__name__})
+        if hourly:
+            tasks.append(amazon)
+        with ThreadPoolExecutor(self.cfg.get("parallel_systems", 8)) as ex:
+            for f in [ex.submit(t) for t in tasks]:
+                try:
+                    f.result()
+                except Exception as e:
+                    self.report.append({"source": "scan task", "ok": 0, "errors": 1, "error_types": f"{type(e).__name__}: {str(e)[:60]}"})
+        self.report.sort(key=lambda r: r.get("source", ""))
 
     def workday(self):                      # manual full pass: python radar.py --only workday
         self.scan("workday", read_list(ROOT / "data/watch/workday.txt"), 5)
@@ -191,7 +208,35 @@ class Radar:
                 added[ats] = len(new)
         return added
 
+    def sync_lists(self, man):
+        """Once a day: pull every open company list again so new companies join without anyone asking."""
+        if self.state.get("lists_day") == STAMP[:10] and "--sync" not in ARGS:
+            return
+        found = defaultdict(set)
+        steps = [("open lists", lists.from_open_lists), ("other lists", lists.from_other_lists)]
+        if man:
+            steps.append(("dataset companies", lambda: lists.from_dataset(man)))
+        done = []
+        for name, fn in steps:
+            try:
+                for ats, ids in fn().items():
+                    found[ats] |= ids
+                done.append(name)
+            except Exception as ex:
+                done.append(f"{name} failed ({type(ex).__name__})")
+        added = lists.add(found)
+        sizes = {f.stem: len(read_list(f)) for f in sorted((ROOT / "data/boards").glob("*.txt"))}
+        self.report.append({"source": "company lists sync", "ok": 1, "steps": ", ".join(done), "added": added,
+                            "companies_total": sum(sizes.values()), "per_system": sizes})
+        self.state["lists_day"] = STAMP[:10]
+
     def wide(self):
+        man = None
+        try:
+            man = wide.stapply_generated()
+        except Exception:
+            pass
+        self.sync_lists(man)
         try:
             man = wide.stapply_generated()
             if man.get("generated_at") != self.state.get("stapply_gen") or "--force" in ARGS:
@@ -283,7 +328,7 @@ class Radar:
             seen_ids.add(c["id"])
             todo.append(c)
         stats = Counter()
-        with ThreadPoolExecutor(8) as ex:
+        with ThreadPoolExecutor(16) as ex:
             for c, res in zip(todo, ex.map(lambda c: self.judge(c, platform), todo)):
                 if isinstance(res, str):
                     stats[res] += 1

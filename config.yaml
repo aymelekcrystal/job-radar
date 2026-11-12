@@ -67,6 +67,7 @@ workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6, orac
           paycom: 6, successfactors: 6, personio: 6, dayforce: 4, paylocity: 2, jobvite: 4}
 search_terms: ["QA", "quality", "test", "SDET"]  # for systems searched by keyword (Oracle, UKG, Jibe, iCIMS)   # gentler on systems that sit behind one address
 hourly_every_runs: 4
+parallel_systems: 8                              # career systems read at the same time
 workday_universe_runs: 48                        # all Workday companies twice a day, a slice per run (dead addresses drop out)
 workday_universe_terms: ["QA", "SDET", "test engineer"]
 workday_watch_runs: 4                            # Workday companies seen hiring QA: a quarter per run, so each one hourly
