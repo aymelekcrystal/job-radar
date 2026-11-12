@@ -19,6 +19,9 @@ def session():
     return _local.s
 
 
+MAX_SECONDS, MAX_BYTES = 90, 60_000_000
+
+
 class NotFound(Exception):
     pass
 
@@ -28,7 +31,14 @@ def http(url, method="GET", retries=2, timeout=30, **kw):
     last = None
     for attempt in range(retries + 1):
         try:
-            r = session().request(method, url, timeout=timeout, **kw)
+            r = session().request(method, url, timeout=(10, timeout), stream=True, **kw)
+            body, start = [], time.time()
+            for chunk in r.iter_content(65536):          # hard limits: a slow or huge answer cannot stall a scan
+                body.append(chunk)
+                if time.time() - start > MAX_SECONDS or sum(map(len, body)) > MAX_BYTES:
+                    r.close()
+                    raise requests.ReadTimeout("answer too slow or too large")
+            r._content, r._content_consumed = b"".join(body), True
         except requests.RequestException as ex:
             last = f"{type(ex).__name__}"
             time.sleep(1.5 * (attempt + 1))
