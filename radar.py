@@ -5,7 +5,8 @@ Usage: python radar.py [--dry-run] [--only fast,workday,wide,topup] [--max-board
 """
 import hashlib, json, re, sys
 from collections import Counter, defaultdict
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import math, random, time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -102,8 +103,17 @@ class Radar:
         if self.max_boards:
             boards = boards[: self.max_boards]
         st, hits = Counter(), set()
-        with ThreadPoolExecutor(workers) as ex:
-            for a, b, status, cs, ids, n in ex.map(lambda b: self._read(ats, b, terms), boards):
+        random.shuffle(boards)                         # if time runs out, a different part is left for next time
+        deadline = time.time() + self.cfg.get("system_seconds", 420)
+        ex = ThreadPoolExecutor(workers)
+        futs = [ex.submit(self._read, ats, b, terms) for b in boards]
+        try:
+            for f in as_completed(futs, timeout=max(1, deadline - time.time())):
+                a, b, status, cs, ids, n = f.result()
+                if "429" in status:
+                    st["throttled"] += 1
+                    if st["throttled"] >= 8:           # the system asks us to slow down: stop for this round
+                        break
                 key = f"{a}/{b}"
                 if status == "ok":
                     st["ok"] += 1; st["jobs"] += n; st["match"] += len(cs)
@@ -124,11 +134,15 @@ class Radar:
                     self.state["dead"][key] = self.state["dead"].get(key, 0) + 1
                 else:
                     st["err"] += 1; st["e:" + status.replace("RuntimeError: ", "")[:22]] += 1
-                    if "HTTP 4" in status:                 # a board that keeps answering 4xx is treated like a missing one
+                    if "HTTP 4" in status and "429" not in status:   # a board that keeps answering 4xx is treated like a missing one
                         self.state["dead"][key] = self.state["dead"].get(key, 0) + 1
+        except TimeoutError:
+            st["timeout"] = 1
+        left = sum(1 for f in futs if not f.done())
+        ex.shutdown(wait=False, cancel_futures=True)
         errs = ", ".join(f"{k[2:]}×{v}" for k, v in st.items() if k.startswith("e:"))
         added = self.promote({ats: hits}) if hits else {}      # companies seen hiring for these roles are read more often
-        self.report.append({"source": label or ats, "companies": total or len(boards), "scanned": len(boards), "watch_added": added.get(ats, 0), "ok": st["ok"], "gone": st["gone"],
+        self.report.append({"source": label or ats, "companies": total or len(boards), "scanned": len(boards) - left, "not_reached": left, "watch_added": added.get(ats, 0), "ok": st["ok"], "gone": st["gone"],
                             "errors": st["err"], "error_types": errs, "postings": st["jobs"], "title_match": st["match"]})
 
     def fast(self):
@@ -142,10 +156,12 @@ class Radar:
                 allb = read_list(ROOT / f"data/boards/{ats}.txt")
                 self.scan(ats, sorted(watch | {b for b in allb if bucket(b, n) == run % n}), 16, total=len(set(allb) | watch))
             tasks.append(t)
+        caps = self.cfg.get("per_run_cap", {})
         for ats, n in self.cfg.get("rotation_wide", {}).items():
             def t(ats=ats, n=n):
                 watch = set(read_list(ROOT / f"data/watch/{ats}.txt")) if hourly else set()
                 allb = read_list(ROOT / f"data/boards/{ats}.txt")
+                n = max(n, math.ceil(len(allb) / caps.get(ats, caps.get("default", 700))))   # big lists rotate over more runs
                 self.scan(ats, sorted(watch | {b for b in allb if bucket(b, n) == run % n}), self.cfg.get("workers", {}).get(ats, 10), total=len(allb))
             tasks.append(t)
 
