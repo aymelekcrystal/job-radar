@@ -252,7 +252,7 @@ class Radar:
         kind, why = filters.classify(c["locs"], c["remote"], c["title"], text)
         if kind == "drop":
             return "location"
-        if not filters.software_role(self.titles.is_strong(c["title"]), text):
+        if not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
             return "not software"
         if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
             return "old"

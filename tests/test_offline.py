@@ -83,6 +83,9 @@ eq("flat alt", F.degree(to_lines(flat.replace("Bachelor's degree in Computer Sci
 eq("software generic no", F.software_role(False, "Ensure GMP compliance in our manufacturing plant. Use Minitab software."), False)
 eq("software generic yes", F.software_role(False, "Lead software quality assurance and testing strategies for platforms."), True)
 eq("software strong", F.software_role(True, "GMP manufacturing"), True)
+eq("automation engineer devops", F.testing_role("Platform Automation Engineer", "Terraform, Kubernetes, CI/CD pipelines, Python"), False)
+eq("automation engineer testing", F.testing_role("Automation Engineer", "Build Selenium and Playwright test automation; write test cases; regression"), True)
+eq("automation engineer qa title", F.testing_role("QA Automation Engineer", ""), True)
 eq("tidy salary", [F.tidy_salary("71600.00 to 116550.00"), F.tidy_salary("$150K – $180K"), F.tidy_salary("EUR 50000"), F.tidy_salary("")], ["$71,600 – $116,550", "$150K – $180K", "", ""])
 for t, exp in [("Quality Engineer (Chemical)", False), ("QA Engineer, Drug Product - Second Shift", False), ("QA Automation Engineer (m/f/d)", False),
                ("Sterilization Assurance Quality Engineer", False), ("Acoustic and Audio Test Engineer", False)]:

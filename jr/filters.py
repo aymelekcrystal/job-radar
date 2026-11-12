@@ -106,6 +106,18 @@ SW = [re.compile(p, re.I) for p in SW]
 NONSW = [re.compile(p, re.I) for p in NONSW]
 
 
+_TEST_TITLE = re.compile(r"(?i)\b(qa|qe|sdet|test|tester|testing|quality|eval\w*)\b")
+_TEST_WORDS = [re.compile(p, re.I) for p in (r"selenium", r"playwright", r"cypress", r"appium", r"test automation|automated test",
+               r"test (cases?|plans?|scripts?|framework)", r"regression", r"\bqa\b", r"quality assurance", r"\bsdet\b", r"unit tests?|integration tests?")]
+
+
+def testing_role(title, text):
+    """'Automation Engineer' without a testing word in the title must be about testing in its description."""
+    if _TEST_TITLE.search(title or "") or not re.search(r"(?i)\bautomation (engineer|developer)\b", title or ""):
+        return True
+    return sum(bool(p.search(text or "")) for p in _TEST_WORDS) >= 3
+
+
 def software_role(strong, text):
     """Generic titles ('Quality Engineer') must look like software work in the description."""
     if strong or not text:
