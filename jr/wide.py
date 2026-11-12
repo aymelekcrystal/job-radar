@@ -19,7 +19,7 @@ NOT_COMPANY = {"eures", "bundesagentur", "arbetsformedlingen", "welcometothejung
                "programathor", "getonbrd", "ycombinator", "wellfound", "weworkremotely", "builtin", "mercor", "manfred",
                "join_com", "infojobs_es", "jobs_cz", "seek", "thehub", "remoteok", "usajobs"}
 WATCHED = ("greenhouse", "lever", "ashby", "workday", "smartrecruiters", "breezy", "rippling", "recruitee",
-           "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem")
+           "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem", "oracle", "icims", "ukg")
 _WD = re.compile(r"https://([^./]+)\.(wd\d+)\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?([^/?#]+)")
 _URL = {
     "greenhouse": re.compile(r"greenhouse\.io/(?:embed/job_board\?for=)?([A-Za-z0-9_.\-]+)"),
@@ -35,11 +35,31 @@ _URL = {
     "recruiterbox": re.compile(r"https?://([A-Za-z0-9\-]+)\.recruiterbox\.com"),
     "teamtailor": re.compile(r"https?://([A-Za-z0-9\-]+)\.teamtailor\.com"),
     "gem": re.compile(r"jobs\.gem\.com/([^/?#]+)"),
+    "jibe": re.compile(r"https?://([a-z0-9.\-]+)/jobs/\d"),
 }
+
+
+_ORA = re.compile(r"https://([a-z0-9.\-]+oraclecloud\.com)/hcmUI/CandidateExperience/[A-Za-z_\-]+/sites/([A-Za-z0-9_\-]+)")
+_ICI = re.compile(r"https?://([a-z0-9.\-]+\.icims\.com)", re.I)
+_UKG = re.compile(r"https://([a-z0-9.\-]+)/([A-Za-z0-9]+)/JobBoard/([0-9a-fA-F\-]{36})")
+
+
+PROVEN = set(WATCHED) - {"oracle", "icims", "ukg"}    # direct readers that replace the dataset copy entirely
 
 
 def board_of(ats, url):
     url = url or ""
+    if ats == "oracle":
+        m = _ORA.search(url)
+        return f"{m.group(1).lower()}|{m.group(2)}" if m else None
+    if ats == "icims":
+        m = _ICI.search(url)
+        return m.group(1).lower() if m else None
+    if ats == "ukg":
+        m = _UKG.search(url)
+        return f"{m.group(1).lower()}|{m.group(2)}|{m.group(3).lower()}" if m else None
+    if ats == "jibe":
+        return None
     if ats == "workday":
         m = _WD.match(url)
         return "|".join(m.groups()) if m else None
@@ -85,7 +105,8 @@ def stapply(manifest, cfg, titles):
             b = board_of(ats, u) or board_of(ats, apply_url)
             if b:
                 promote[ats].add(b)
-                continue                           # the direct scanner reads this company itself
+                if ats in PROVEN:
+                    continue                       # the direct scanner reads this company itself
         if ats == "amazon":
             continue
         c = cand(ats, host_company(company) or "x", ats_id or u, title, host_company(company),

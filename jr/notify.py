@@ -1,10 +1,23 @@
 """Telegram notifications (English). One message per posting."""
-import html, os, time
+import hashlib, html, json, os, time
 from datetime import datetime
+from pathlib import Path
 
 import requests
 
 from .common import NOW, ET
+
+TG_FILE = Path(__file__).resolve().parent.parent / "data/tg.json"
+
+
+def hid(job_id):
+    return hashlib.md5(job_id.encode()).hexdigest()[:16]
+
+
+def button(job_id, applied=False):
+    return json.dumps({"inline_keyboard": [[{"text": "✅ Applied · tap to undo" if applied else "☐ Mark as applied",
+                                              "callback_data": f"ap:{hid(job_id)}"}]]})
+
 
 ICON = {"ok": "🟢", "check": "🟡", "platform": "🔵"}
 
@@ -89,15 +102,17 @@ def deliver(j, tok, chats, state):
         tp = topics_for(tok, c, state)
         if j["kind"] == "platform" and not (tp or {}).get("platform"):
             continue                                   # platform postings only go to their own tab
-        results.append(send(fmt(j), tok, c, thread=(tp or {}).get(j["kind"])))
+        results.append(send(fmt(j), tok, c, thread=(tp or {}).get(j["kind"]), markup=button(j["id"], j.get("applied"))))
     return any(results) if results else None
 
 
-def send(text, tok, chat, thread=None):
+def send(text, tok, chat, thread=None, markup=None):
     try:
         data = {"chat_id": chat.strip(), "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": "true"}
         if thread:
             data["message_thread_id"] = thread
+        if markup:
+            data["reply_markup"] = markup
         r = requests.post(f"https://api.telegram.org/bot{tok.strip()}/sendMessage", timeout=20, data=data)
         if r.status_code == 429:
             time.sleep(int(r.json().get("parameters", {}).get("retry_after", 5)) + 1)
@@ -119,9 +134,7 @@ def diagnose(tok):
         me = requests.get(f"https://api.telegram.org/bot{tok.strip()}/getMe", timeout=20)
         if not me.ok:
             return "token rejected by Telegram"
-        up = requests.get(f"https://api.telegram.org/bot{tok.strip()}/getUpdates", timeout=20).json().get("result", [])
-        chats = {str((u.get("message") or u.get("my_chat_member") or {}).get("chat", {}).get("id")) for u in up} - {"None"}
-        return f"token ok; bot has received messages from {len(chats)} chat(s)"
+        return "token ok; check the chat ID"
     except Exception as ex:
         return f"diagnose failed: {type(ex).__name__}"
 
@@ -172,7 +185,10 @@ def process(jobs, state, cfg, dry=False):
     if dry:
         return f"dry run ({len(pend)} pending)"
     chats = [c.strip() for c in chat.replace(";", ",").split(",") if c.strip()]
-    greet_new_chats(tok, chats, state)
+    try:                                             # tabs the owner created by hand (recorded by poll.py)
+        state["tg_named"] = json.loads(TG_FILE.read_text()).get("named", {})
+    except Exception:
+        pass
     for c in chats:                                  # a newly added chat gets a welcome once
         w = state.setdefault("tg_welcomed", [])
         if "*" in w:                                 # setup before multi-chat support: the first chat was already welcomed

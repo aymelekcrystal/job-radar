@@ -7,7 +7,7 @@ ARGS="${1:-}"
 WF="radar.yml"
 
 save() {
-  git add docs/jobs.json docs/desc.json data
+  git add docs/jobs.json docs/desc.json docs/applied.json data 2>/dev/null
   git diff --cached --quiet && return 0
   git commit -q -m "radar: update"
   git pull -q --rebase --autostash || { git rebase --abort 2>/dev/null; git pull -q --no-rebase -X ours || true; }
@@ -39,11 +39,14 @@ next() {
   NEXT_DONE=1
   for i in 1 2 3; do gh workflow run "$WF" --ref main && { echo "next run started"; return 0; }; sleep 10; done
 }
-trap next EXIT TERM          # whatever happens, hand over to a fresh run
+finish() { [ -n "${POLL:-}" ] && kill "$POLL" 2>/dev/null; wait 2>/dev/null; save; next; }
+trap finish EXIT TERM        # whatever happens, save and hand over to a fresh run
 
 sig() { git rev-parse HEAD:scripts/loop.sh HEAD:.github/workflows/$WF HEAD:requirements.txt 2>/dev/null | tr '\n' ' '; }
 START_SIG="$(sig)"
 END=$(( $(date +%s) + 5*3600 + 15*60 ))
+[ -f docs/applied.json ] || echo "[]" > docs/applied.json
+python poll.py "$END" & POLL=$!                 # answers the Telegram "Applied" button within seconds
 while [ "$(date +%s)" -lt "$END" ]; do
   git pull -q --rebase --autostash || true     # pick up config/code changes between scans
   if [ "$(sig)" != "$START_SIG" ]; then echo "loop definition changed; restarting"; break; fi

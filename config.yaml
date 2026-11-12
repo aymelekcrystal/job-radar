@@ -13,6 +13,14 @@ include:
   - '\bautomation test\b'
   - '\b(ai|llm|ml|model|genai|agent) (evals?|evaluation|evaluator|quality|test|testing|qa|reliability)\b'
   - '\beval(s|uation)? (engineer|specialist|analyst)\b'
+  - '\b(ai|llm|model) (red[- ]team\w*|safety tester)\b'
+  - '\bqe\b'
+  - '\bsde[- ]?t\b|\bsde in test\b'
+  - '\bsoftware engineer\b.{0,25}\b(test|testing|quality|qa)\b'
+  - '\b(test|quality)\b.{0,15}\bsoftware engineer\b'
+  - '\btest(ing)? (specialist|consultant|manager|developer|coordinator)\b'
+  - '\bautomation (engineer|developer)\b'
+  - '\btester\b'
 
 # Always rejected.
 exclude:
@@ -25,6 +33,7 @@ exclude:
   - '\b(on[- ]?site only|100% on[- ]?site)\b'
   - '\b(drug|sterili[sz]ation|chemical|ballistic|armor|acoustic|durability|nuclear|fixed wire|pat test|m/w/d|m/f/d)\b'
   - '\b(sales|repair|estimating|reconstruction|casino|analytics & evaluation)\b'
+  - '\b(plc|scada|robotics|industrial|controls?|building automation|marketing automation|penetration tester|pen tester)\b'
 
 # Rejected unless the title also matches "strong" below (keeps software roles, drops factory/compliance "QA").
 exclude_soft:
@@ -33,7 +42,7 @@ exclude_soft:
   - '\b(mortgage|loan|pharmacy|patient|care|medical|microbiology|chemistry|chemist|packaging|incoming|supply|building)\b'
   - '\b(data quality|quality assurance (specialist|analyst|supervisor|manager|professional)|coding|optical|battery|structural)\b'
 strong:
-  - '\b(sdet|software|automation|qa (automation )?engineer|test automation|in test|api|ai|llm|ml|genai|web|mobile|platform)\b'
+  - '\b(sdet|software|qa automation|qa (automation )?engineer|test automation|in test|api|ai|llm|ml|genai|web|mobile|platform)\b'
 
 # Gets the "AI" badge.
 ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative', '\beval', '\bagent']
@@ -49,10 +58,12 @@ main_window_hours: 72     # the main tab shows this window; older ones go to the
 rotation: {greenhouse: 8, lever: 8, ashby: 12}   # the full company list is covered once every N runs
 # More career systems: the full list once every N runs (16 runs = 4 hours); companies seen hiring QA are read hourly.
 rotation_wide: {smartrecruiters: 16, bamboohr: 16, workable: 16, rippling: 16, breezy: 16, recruitee: 16,
-                teamtailor: 16, pinpoint: 8, gem: 8, recruiterbox: 8}
-workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6}   # gentler on systems that sit behind one address
+                teamtailor: 16, pinpoint: 8, gem: 8, recruiterbox: 8,
+                oracle: 16, ukg: 8, jibe: 4, icims: 16, adp: 8}
+workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6, oracle: 6, ukg: 4, jibe: 4, icims: 6, adp: 4}
+search_terms: ["QA", "quality", "test", "SDET"]  # for systems searched by keyword (Oracle, UKG, Jibe, iCIMS)   # gentler on systems that sit behind one address
 hourly_every_runs: 4
-workday_universe_runs: 96                        # all ~12,000 Workday companies once a day, a slice per run
+workday_universe_runs: 48                        # all Workday companies twice a day, a slice per run (dead addresses drop out)
 workday_universe_terms: ["QA", "SDET", "test engineer"]
 workday_watch_runs: 4                            # Workday companies seen hiring QA: a quarter per run, so each one hourly
 workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automation"]
@@ -63,7 +74,8 @@ amazon_terms: ["quality assurance engineer", "SDET", "test engineer"]
 # that has Topics switched on. They are never mixed into the company postings.
 daily_target: 50
 platform_every_minutes: 60       # LinkedIn/Indeed block callers that ask too often; keep this at 60 or more
-platform_order: [linkedin, indeed, remotive, himalayas, remoteok, jobicy, wwr, workingnomads]
+platform_order: [indeed, remotive, himalayas, remoteok, jobicy, wwr, workingnomads]   # listed in the Platforms tab
+discovery_sites: [linkedin]   # read only to learn which companies are hiring; never listed or sent
 platform_terms: ["SDET", "QA automation engineer", "QA engineer", "test automation engineer", "AI QA engineer"]
 platform_results: 40
 

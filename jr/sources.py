@@ -11,7 +11,8 @@ from .common import NOW, NotFound, http, iso, money, ld_jobposting
 LABEL = {"greenhouse": "Greenhouse", "lever": "Lever", "ashby": "Ashby", "workday": "Workday",
          "smartrecruiters": "SmartRecruiters", "breezy": "Breezy", "rippling": "Rippling", "recruitee": "Recruitee",
          "amazon": "Amazon Jobs", "bamboohr": "BambooHR", "workable": "Workable", "pinpoint": "Pinpoint",
-         "recruiterbox": "Recruiterbox", "teamtailor": "Teamtailor", "gem": "Gem"}
+         "recruiterbox": "Recruiterbox", "teamtailor": "Teamtailor", "gem": "Gem", "oracle": "Oracle Cloud",
+         "ukg": "UKG", "jibe": "Jibe", "icims": "iCIMS", "adp": "ADP"}
 
 
 def cand(ats, board, jid, title, company, locs, url, posted="", remote=None, salary="", desc="", date_est=False, detail=None):
@@ -447,6 +448,156 @@ def gem(board):
     return out, {c["id"] for c in out}
 
 
-SIMPLE = {"bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
+# ---------- Oracle Recruiting Cloud (keyword search) ----------
+def oracle(board, terms, title_ok):
+    host, site = board.split("|")
+    api = f"https://{host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions"
+    seen, out = set(), []
+    for term in terms:
+        d = http(api, retries=1, params={"onlyData": "true", "expand": "requisitionList.secondaryLocations",
+                                         "finder": f'findReqs;siteNumber={site},keyword="{term}",limit=50,sortBy=POSTING_DATES_DESC'}).json()
+        for blk in d.get("items") or []:
+            for j in blk.get("requisitionList") or []:
+                jid = str(j.get("Id") or "")
+                if not jid or jid in seen or not title_ok(j.get("Title")):
+                    continue
+                seen.add(jid)
+                locs = [(j.get("PrimaryLocation"), j.get("PrimaryLocationCountry") or "")]
+                locs += [(s.get("Name"), s.get("CountryCode") or "") for s in j.get("secondaryLocations") or []]
+                locs = [(t, "United States" if (c or "").upper() == "US" else c) for t, c in locs]
+                wc = (j.get("WorkplaceTypeCode") or "").upper()
+
+                def detail(c, jid=jid):
+                    x = http(f"https://{host}/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails", retries=1,
+                             params={"expand": "all", "onlyData": "true", "finder": f'ById;Id="{jid}",siteNumber={site}'}).json()
+                    it = (x.get("items") or [{}])[0]
+                    c["desc"] = "".join(f"<h3>{h}</h3>{it.get(k)}" for k, h in (("ExternalDescriptionStr", "Description"),
+                        ("ExternalResponsibilitiesStr", "Responsibilities"), ("ExternalQualificationsStr", "Qualifications")) if it.get(k))
+
+                out.append(cand("oracle", board, jid, j.get("Title"), pretty(host.split(".")[0]), locs,
+                                f"https://{host}/hcmUI/CandidateExperience/en/sites/{site}/job/{jid}", j.get("PostedDate"),
+                                remote=True if "REMOTE" in wc else False if wc else None, detail=detail))
+    return out, None
+
+
+# ---------- UKG Pro Recruiting (keyword search) ----------
+def ukg(board, terms, title_ok):
+    host, tenant, guid = board.split("|")
+    base = f"https://{host}/{tenant}/JobBoard/{guid}"
+    seen, out = set(), []
+    for term in terms:
+        d = http(base + "/JobBoardView/LoadSearchResults", method="POST", retries=1, headers={"Content-Type": "application/json"},
+                 json={"opportunitySearch": {"Top": 50, "Skip": 0, "QueryString": term, "OrderBy": [
+                     {"Value": "postedDateDesc", "PropertyName": "PostedDate", "Ascending": False}], "OrderByKey": None,
+                     "Filters": [], "Coordinates": None, "Extent": None, "ProximitySearchType": 0}}).json()
+        for j in d.get("opportunities") or []:
+            jid = j.get("Id")
+            if not jid or jid in seen or not title_ok(j.get("Title")):
+                continue
+            seen.add(jid)
+            locs = []
+            for l in j.get("Locations") or []:
+                a = l.get("Address") or {}
+                st, ct = (a.get("State") or {}).get("Code"), (a.get("Country") or {}).get("Name") or (a.get("Country") or {}).get("Code") or ""
+                locs.append((", ".join(x for x in (l.get("LocalizedName"), a.get("City"), st) if x), ct))
+
+            def detail(c, jid=jid):
+                txt = http(f"{base}/OpportunityDetail?opportunityId={jid}", retries=1).text
+                i = txt.find("new US.Opportunity.CandidateOpportunityDetail(")
+                if i < 0:
+                    return
+                import json as _json
+                try:
+                    o, _ = _json.JSONDecoder().raw_decode(txt[i + len("new US.Opportunity.CandidateOpportunityDetail("):])
+                except ValueError:
+                    return
+                c["desc"] = o.get("Description") or ""
+                if o.get("IsRemote") or "remote" in str(o.get("JobLocationType", "")).lower():
+                    c["remote"] = True
+
+            out.append(cand("ukg", board, jid, j.get("Title"), pretty(tenant.rstrip("0123456789")), locs or [("", "")],
+                            f"{base}/OpportunityDetail?opportunityId={jid}", j.get("PostedDate"), detail=detail))
+    return out, None
+
+
+# ---------- Jibe (Google) career sites (keyword search) ----------
+def jibe(board, terms, title_ok):
+    seen, out = set(), []
+    for term in terms:
+        d = http(f"https://{board}/api/jobs", retries=1, params={"keywords": term, "limit": 100, "page": 1, "internal": "false"}).json()
+        for row in d.get("jobs") or []:
+            j = row.get("data") or row
+            jid = str(j.get("req_id") or j.get("slug") or "")
+            if not jid or jid in seen or not title_ok(j.get("title")):
+                continue
+            seen.add(jid)
+            ctry = j.get("country") or j.get("country_code") or ""
+            loc = j.get("full_location") or j.get("location_name") or ", ".join(x for x in (j.get("city"), j.get("state")) if x)
+            out.append(cand("jibe", board, jid, j.get("title"), j.get("hiring_organization") or pretty(board.split(".")[-2]),
+                            [(loc, "United States" if str(ctry).upper() in ("US", "USA") else ctry)],
+                            j.get("apply_url") or f"https://{board}/jobs/{j.get('slug') or jid}", j.get("posted_date") or j.get("create_date"),
+                            remote=True if "remote" in str(j.get("location_type", "")).lower() or j.get("remote") else None,
+                            desc=(j.get("description") or "") + (j.get("qualifications") or "") + (j.get("responsibilities") or "")))
+    return out, None
+
+
+# ---------- iCIMS (keyword search page + posting page) ----------
+_ICIMS_CARD = re.compile(r'<li[^>]+class="[^"]*iCIMS_JobCardItem[^"]*"[^>]*>(.*?)</li>', re.S | re.I)
+_ICIMS_A = re.compile(r'<a[^>]+href="(https?://[^"]*?/jobs/(\d+)/[^"]*?/job[^"]*)"', re.I)
+_ICIMS_T = re.compile(r'<h3[^>]*>(.*?)</h3>', re.S | re.I)
+
+
+def icims(board, terms, title_ok):
+    seen, out = set(), []
+    for term in terms:
+        txt = http(f"https://{board}/jobs/search", retries=1, params={"ss": 1, "searchKeyword": term, "in_iframe": 1}).text
+        for body in _ICIMS_CARD.findall(txt):
+            a, t = _ICIMS_A.search(body), _ICIMS_T.search(body)
+            if not a or not t:
+                continue
+            title = re.sub(r"<[^>]+>|\s+", " ", t.group(1)).strip()
+            title = __import__("html").unescape(title)
+            jid = a.group(2)
+            if jid in seen or not title_ok(title):
+                continue
+            seen.add(jid)
+            plain = re.sub(r"<[^>]+>", " ", body)
+            m = re.search(r"(?i)location\s*:?\s*([^\n]{2,80}?)\s{2,}", plain)
+            url = a.group(1).replace("?in_iframe=1", "").replace("&in_iframe=1", "")
+            out.append(cand("icims", board, jid, title, pretty(board.split(".")[0].replace("careers-", "").replace("uscareers-", "")),
+                            [((m.group(1) if m else "").strip(), "")], url, "", date_est=True, detail=page_detail))
+            out[-1]["nodate"] = True
+    return out, None
+
+
+# ---------- ADP Workforce Now ----------
+def adp(board):
+    cid, cc = board.split("|")
+    root = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions"
+    q = {"cid": cid, "ccId": cc, "lang": "en_US", "locale": "en_US"}
+    d = http(root, retries=1, params=dict(q, **{"$top": 100, "$skip": 0})).json()
+    out = []
+    for j in d.get("jobRequisitions") or []:
+        iid = j.get("itemID")
+        locs = []
+        for l in j.get("requisitionLocations") or []:
+            a = l.get("address") or {}
+            locs.append((", ".join(x for x in ((l.get("nameCode") or {}).get("shortName"), a.get("cityName"),
+                                               (a.get("countrySubdivisionLevel1") or {}).get("codeValue")) if x),
+                         "United States" if (a.get("country") or {}).get("codeValue") in ("US", "USA") else (a.get("country") or {}).get("codeValue") or ""))
+
+        def detail(c, iid=iid):
+            x = http(f"{root}/{iid}", retries=1, params=q).json()
+            c["desc"] = x.get("requisitionDescription") or ""
+
+        out.append(cand("adp", board, iid, j.get("requisitionTitle"), pretty(j.get("organizationName") or "") or "ADP employer", locs or [("", "")],
+                        f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={cid}&ccId={cc}&jobId={iid}&lang=en_US",
+                        j.get("postDate"), detail=detail))
+    return out, {c["id"] for c in out}
+
+
+SEARCH = {"oracle": oracle, "ukg": ukg, "jibe": jibe, "icims": icims}   # readers that take search terms
+
+SIMPLE = {"adp": adp, "bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
           "teamtailor": teamtailor, "gem": gem, "greenhouse": greenhouse, "lever": lever, "ashby": ashby, "smartrecruiters": smartrecruiters,
           "breezy": breezy, "rippling": rippling, "recruitee": recruitee}

@@ -91,6 +91,8 @@ def classify(locs, remote_flag=None, title="", desc_text=""):
         return "check", "Remote, but country not stated"
     if "usonly" in res and not denied and (not desc_text or STRONG_REMOTE_DESC.search(desc_text[:6000])):
         return "check", "US location, remote not confirmed"
+    if "uscity" in res and not denied and desc_text and STRONG_REMOTE_DESC.search(desc_text[:6000]):
+        return "check", "Office city listed, but the description says remote"
     return "drop", ""
 
 

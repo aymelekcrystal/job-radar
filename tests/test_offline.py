@@ -39,7 +39,7 @@ for name, got, exp in [
     ("canada", C([("Remote, Canada", "")]), "drop"), ("us or canada", C([("Remote - US or Canada", "")]), "ok"),
     ("multi one us", C([("Remote (Canada)", "Canada"), ("Remote (US)", "United States")]), "ok"),
     ("sf onsite", C([("San Francisco, CA", "")], desc="We work from our office."), "drop"),
-    ("sf strong remote desc", C([("San Francisco, CA", "")], desc="This is a fully remote role."), "drop"),
+    ("sf strong remote desc", C([("San Francisco, CA", "")], desc="This is a fully remote role."), "check"),
     ("remote DE", C([("Remote,DE | München", "")]), "drop"), ("remote ambiguous DE", C([("Remote, DE", "")]), "drop"),
     ("india 3part", C([("Remote, KA, IN", "")]), "drop"), ("unknown place", C([("Cheltenham", "")], True), "drop"),
     ("thb", C([("Chiang Mai,Remote (THB)", "")]), "drop"), ("sg", C([("SG, 486018", "")], True), "drop"),
@@ -198,10 +198,10 @@ assert "🔵 FROM INDEED" in m3 and "Indeed → company link" in m3, m3
 
 # ---- several chats ----
 calls = []
-notify.send = lambda text, tok, c, thread=None: (calls.append((c, thread)), True)[1]
+notify.send = lambda text, tok, c, thread=None, markup=None: (calls.append((c, thread)), True)[1]
 notify.api = lambda tok, method, **p: ({"ok": True, "result": {"is_forum": p.get("chat_id") == "-100222"}} if method == "getChat"
                                          else {"ok": True, "result": {"message_thread_id": {"🟢": 5, "🟡": 6, "🔵": 7}[p["name"][0]]}})
-notify.greet_new_chats = lambda tok, chats, state: None
+notify.TG_FILE = pathlib.Path("/nonexistent/tg.json")
 import os
 os.environ["TELEGRAM_TOKEN"], os.environ["TELEGRAM_CHAT_ID"] = "t", "111, -100222"
 stt = {"tg_hello": True, "tg_welcomed": ["*"]}
@@ -227,6 +227,7 @@ notify.api = deny; os.environ["TELEGRAM_CHAT_ID"] = "111, -100222"
 stt["tg_named"] = {"100222": {"linkedin": 42}}
 eq("named tab override", notify.topics_for("t", "-100222", stt)["platform"], 42)
 stt.pop("tg_named")
+eq("button", json.loads(notify.button("x"))["inline_keyboard"][0][0]["callback_data"], "ap:" + notify.hid("x"))
 os.environ["TELEGRAM_CHAT_ID"] = "111"
 pj2 = [dict(j, id="p2", kind="platform", src="LinkedIn", notify="pending")]
 notify.process(pj2, stt, cfg); eq("platform held without tabs", pj2[0]["notify"], "hold")

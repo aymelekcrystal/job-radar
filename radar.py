@@ -72,6 +72,10 @@ class Radar:
         self.state.setdefault("dead", {})
         self.state.setdefault("seen", {})
         self.state["run"] = self.state.get("run", 0) + 1
+        rules = hashlib.md5((ROOT / "config.yaml").read_bytes() + (ROOT / "jr/filters.py").read_bytes()).hexdigest()
+        if self.state.get("rules") != rules:          # rules changed: postings rejected under the old rules get a fresh look
+            self.state["seen"], self.state["rules"] = {}, rules
+        self.applied = {a["id"] for a in load(ROOT / "docs/applied.json", []) if isinstance(a, dict) and a.get("id")}
         self.jobs = {j["id"]: j for j in load(JOBS, {}).get("jobs", []) if j.get("v") == 2}
         self.desc = load(DESC, {})
         self.report, self.cands, self.present = [], [], {}
@@ -83,6 +87,8 @@ class Radar:
         try:
             if ats == "workday":
                 cs, ids = sources.workday(board, terms or self.cfg["workday_terms"], self.titles.ok)
+            elif ats in sources.SEARCH:
+                cs, ids = sources.SEARCH[ats](board, terms or self.cfg["search_terms"], self.titles.ok)
             else:
                 cs, ids = sources.SIMPLE[ats](board)
             return ats, board, "ok", [c for c in cs if self.titles.ok(c["title"])], ids, len(cs)
@@ -307,7 +313,11 @@ class Radar:
 
     def prune(self):
         closed = 0
+        allowed = {platforms.NAMES.get(s, s) for s in self.cfg["platform_order"]}
         for j in list(self.jobs.values()):
+            if j["kind"] == "platform" and j["src"] not in allowed:
+                self.drop(j["id"])
+                continue
             ids = self.present.get(j["board"]) if j["via"] == "direct" else self.present.get("via:" + j["via"])
             lim = 3 * 24 if j["kind"] == "platform" else self.cfg["max_age_days"] * 24
             if ids is not None and j["id"] not in ids and j.get("first_seen") != STAMP:
@@ -319,6 +329,33 @@ class Radar:
         return closed
 
     # ---------- platforms ----------
+    def discover(self, cs):
+        """Platform postings reveal which companies are hiring right now: read those companies' own sites more often."""
+        if not hasattr(self, "_names"):
+            self._names = defaultdict(set)
+            for f in (ROOT / "data/boards").glob("*.txt"):
+                for b in read_list(f):
+                    k = norm(re.split(r"[|.]", b.replace("careers-", ""))[0])
+                    if len(k) >= 4:
+                        self._names[k].add((f.stem, b))
+        found = defaultdict(set)
+        for c in cs:
+            for ats in wide.WATCHED + ("oracle", "icims"):
+                b = wide.board_of(ats, c.get("url") or "")
+                if b:
+                    found[ats].add(b)
+            k = norm(re.sub(r"(?i)\b(inc|llc|corp(oration)?|co|ltd|group|technologies|solutions|services|north america|usa)\b\.?", "", c["company"]))
+            for ats, b in self._names.get(k, ()):
+                found[ats].add(b)
+        for ats, bs in found.items():                 # a board seen for the first time also joins the full list
+            f = ROOT / f"data/boards/{ats}.txt"
+            if f.exists():
+                cur = set(read_list(f))
+                new = {b for b in bs if b not in cur and re.fullmatch(r"[A-Za-z0-9_.|\-]+", b)}
+                if new:
+                    f.write_text("\n".join(sorted(cur | new)) + "\n")
+        return self.promote(found)
+
     def topup(self):
         today = self.now_et.date()
         boot = self.state.get("boot_done", "")
@@ -327,10 +364,17 @@ class Radar:
         sent = sum(1 for j in self.jobs.values() if j["kind"] == "platform" and j["notify"] in ("sent", "pending")
                    and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
         need = max(0, self.cfg["daily_target"] - have - sent)
+        for site in self.cfg.get("discovery_sites", []):      # read, never listed or sent
+            try:
+                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.ok(c["title"])]
+                self.report.append({"source": f"discovery: {platforms.NAMES[site]}", "ok": 1, "title_match": len(cs), "watch_added": self.discover(cs)})
+            except Exception as ex:
+                self.report.append({"source": f"discovery: {platforms.NAMES[site]}", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:70]}"})
         got = []
         for site in self.cfg["platform_order"]:
             try:
                 cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.ok(c["title"])]
+                self.discover(cs)
                 before = set(self.jobs)
                 st = self.decide(cs, platform=True)
                 new = [self.jobs[i] for i in list(self.jobs) if i not in before]
@@ -347,8 +391,41 @@ class Radar:
         self.report.append({"source": "platform top-up", "company_postings_today": have, "platform_sent_today": sent + min(need, len(got)),
                             "target": self.cfg["daily_target"], "new_this_run": len(got), "ok": 1})
 
+    # ---------- trace: why is a posting (not) here? ----------
+    def trace(self, spec):
+        loose = re.compile(r"(?i)\b(qa|qe|sdet|test|tester|testing|quality|eval\w*|automation)\b")
+        for item in [s.strip() for s in spec.split(",") if s.strip()]:
+            if item.startswith("http"):
+                ats = next((a for a in wide.WATCHED + ("oracle", "icims", "ukg", "jibe") if wide.board_of(a, item)), None)
+                board = wide.board_of(ats, item) if ats else None
+            else:
+                ats, _, board = item.partition("/")
+            print(f"\n=== TRACE {item} -> system={ats} company={board}")
+            if not ats or not board:
+                print("  cannot tell which career system this link belongs to"); continue
+            lists = [f.stem for f in (ROOT / "data").glob("*/" + ats + ".txt") if board.lower() in {b.lower() for b in read_list(f)}]
+            print("  in company lists:", lists or "NO (the bot does not know this company)")
+            if ats == "workday" or ats in sources.SEARCH:
+                ok_all = lambda t: True
+                cs, _ = (sources.workday if ats == "workday" else sources.SEARCH[ats])(board, self.cfg.get("workday_terms" if ats == "workday" else "search_terms"), ok_all)
+            else:
+                cs, _ = sources.SIMPLE[ats](board)
+            print(f"  postings read: {len(cs)}")
+            for c in cs:
+                if not loose.search(c["title"]):
+                    continue
+                if not self.titles.ok(c["title"]):
+                    print(f"  TITLE FILTER  | {c['title'][:70]}"); continue
+                self.state["seen"] = {}
+                res = self.judge(dict(c))
+                why = res if isinstance(res, str) else f"ACCEPTED as {res['kind']} {res['why']}".strip()
+                listed = "  (already listed)" if c["id"] in self.jobs else ""
+                print(f"  {why:22} | {c['title'][:60]} | {show_loc(c['locs'])[:50]} | posted {c['posted'][:10] or '?'}{listed}")
+
     # ---------- run ----------
     def run(self):
+        if arg("--trace"):
+            return self.trace(arg("--trace"))
         only = set((arg("--only") or "").split(",")) - {""}
         dry = "--dry-run" in ARGS
         want = lambda t, due: (t in only) if only else due
@@ -371,6 +448,8 @@ class Radar:
             self.state["bootstrapped"] = True
             self.state["boot_done"] = STAMP
         tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
+        for j in self.jobs.values():
+            j["applied"] = j["id"] in self.applied
         jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)
         by = Counter(j["kind"] for j in jobs)
         summary = {"run": self.state["run"], "new": st.get("accepted", 0), "closed": closed, "rejected": {k: v for k, v in st.items() if k != "accepted"},
