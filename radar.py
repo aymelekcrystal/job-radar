@@ -587,6 +587,23 @@ class Radar:
             self.state["bootstrapped"] = True
             self.state["boot_done"] = STAMP
         tg = notify.process(list(self.jobs.values()), self.state, self.cfg, dry=dry)
+        acc = self.state.setdefault("since_status", {"scans": 0, "companies": 0, "new": 0})
+        acc["scans"] += 1
+        acc["companies"] += sum(r.get("scanned", 0) for r in self.report if isinstance(r.get("scanned"), int))
+        acc["new"] += max(0, st.get("accepted", 0))
+        if not dry and not only and slot_due(self.cfg.get("status_times", []), self.state.get("status_last"), self.now_et):
+            today = self.now_et.date()
+            mine = [j for j in self.jobs.values() if j["kind"] != "platform" and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today]
+            failing = [r["source"] for r in self.report if r.get("ok") == 0 or (r.get("errors", 0) > 20 and "rotating" not in r["source"])]
+            text = (f"📡 Job Radar status · {self.now_et:%a %b %-d, %-I:%M %p} ET\n\n"
+                    f"Running normally. Since the last status: {acc['scans']} scans, {acc['companies']:,} company career pages read, "
+                    f"{acc['new']} new postings.\n"
+                    f"Today so far: {len(mine)} company postings ({sum(1 for j in mine if j['kind'] == 'ok')} confirmed, "
+                    f"{sum(1 for j in mine if j['kind'] == 'check')} to check)."
+                    + (f"\n⚠️ Sources with problems: {', '.join(failing[:6])}" if failing else ""))
+            if notify.broadcast(text):
+                self.state["status_last"] = STAMP
+                self.state["since_status"] = {"scans": 0, "companies": 0, "new": 0}
         for j in self.jobs.values():
             j["applied"] = j["id"] in self.applied
         jobs = sorted(self.jobs.values(), key=lambda j: j["posted"], reverse=True)

@@ -168,6 +168,14 @@ def greet_new_chats(tok, chats, state):
         pass
 
 
+def broadcast(text):
+    """A plain message to every configured chat's main thread. True if at least one arrived."""
+    tok, chat = os.getenv("TELEGRAM_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
+    if not (tok and chat):
+        return False
+    return any([send(text, tok, c) for c in chat.replace(";", ",").split(",") if c.strip()])
+
+
 def quiet(now_et, cfg):
     q0, q1 = cfg.get("quiet_hours", [23, 7])
     return now_et.hour >= q0 or now_et.hour < q1 if q0 > q1 else q0 <= now_et.hour < q1
