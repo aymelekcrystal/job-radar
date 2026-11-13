@@ -33,6 +33,10 @@ US_NAMES = {"us", "usa", "united states", "united states of america", "u.s.", "u
 STRONG_REMOTE_DESC = re.compile(
     r"\b(fully remote|100% remote|remote[- ]first|this (is a|role is|position is)( \w+){0,2} remote|remote (role|position|opportunity)|"
     r"work remotely from anywhere in the (us|u\.s\.|united states))\b", re.I)
+US_DESC = re.compile(
+    r"(?i)\b((anywhere|located|based|resid\w+|live|living|candidates?|applicants?|remote(ly)?|work(ing)?) (with)?in the (contiguous |continental |lower 48 )?"
+    r"(united states|u\.s\.a?\.?|usa?\b)|(authorized|eligible|eligibility|authorization) to work in the (united states|u\.s\.a?\.?|usa?\b)|"
+    r"(u\.s\.|us|usa)[- ]based (candidates?|applicants?|remote|only)|remote \(?(us|usa|u\.s\.|united states)\b)")
 _GENERIC = re.compile(r"(?i)remote|work from home|wfh|virtual|anywhere|worldwide|global|worker|role|work|position|n/?a|full[- ]?time|only|based|location|not specified|unavailable")
 
 
@@ -88,6 +92,8 @@ def classify(locs, remote_flag=None, title="", desc_text=""):
     if "ok" in res:
         return "ok", ""
     if "check" in res:
+        if desc_text and not denied and US_DESC.search(desc_text[:8000]):
+            return "ok", ""                               # location only says "Remote", the description names the US
         return "check", "Remote, but country not stated"
     if "usonly" in res and not denied and desc_text and STRONG_REMOTE_DESC.search(desc_text[:6000]):
         return "ok", ""                                   # "United States" + the description itself says the role is remote
