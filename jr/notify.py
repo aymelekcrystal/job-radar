@@ -196,6 +196,8 @@ def process(jobs, state, cfg, dry=False):
     if dry:
         return f"dry run ({len(pend)} pending)"
     chats = [c.strip() for c in chat.replace(";", ",").split(",") if c.strip()]
+    for k, v in (cfg.get("telegram_tabs") or {}).items():      # pinned in config.yaml so they can never be forgotten
+        state.setdefault("tg_named", {}).setdefault(str(k), {}).update({str(n).lower(): t for n, t in v.items()})
     try:                                             # tabs the owner created by hand (recorded by poll.py); never forget one
         for k, v in json.loads(TG_FILE.read_text()).get("named", {}).items():
             state.setdefault("tg_named", {}).setdefault(k, {}).update(v)
