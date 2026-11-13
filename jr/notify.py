@@ -19,7 +19,7 @@ def button(job_id, applied=False):
                                               "callback_data": f"ap:{hid(job_id)}"}]]})
 
 
-ICON = {"ok": "🟢", "check": "🟡", "platform": "🔵"}
+ICON = {"ok": "🟢", "check": "🟡", "platform": "🔵", "ece": "🟣"}
 
 
 def ago(iso_s, now=None):
@@ -34,7 +34,7 @@ def ago(iso_s, now=None):
 def fmt(j, now=None):
     e = html.escape
     when = f"first seen {ago(j['first_seen'], now)} (post date unknown)" if (j.get("date_est") or j.get("stale")) else f"posted {ago(j['posted'], now)}"
-    head = {"ok": "NEW", "check": "CHECK LOCATION", "platform": "FROM " + j["src"].upper()}[j["kind"]]
+    head = {"ok": "NEW", "check": "CHECK LOCATION", "ece": "ECE · RELATED ROLE", "platform": "FROM " + j["src"].upper()}[j["kind"]]
     src = f"Company site ({e(j['src'])})" if j["kind"] != "platform" else (f"{e(j['src'])} → company link" if j.get("direct_link") else e(j["src"]))
     out = [f"{ICON[j['kind']]} {head} · {when}", "", f"<b>{e(j['title'])}</b>", f"{e(j['company'])} · {src}", "",
            f"📍 {e(j['location'] or 'Not stated')}"]
@@ -88,6 +88,9 @@ def topics_for(tok, chat, state):
     out = {k: v for k, v in ids.items() if not k.startswith("_")}
     if mine:
         out["platform"] = mine
+    ece = next((tid for name, tid in state.get("tg_named", {}).get(key, {}).items() if name.strip().startswith("ece")), None)
+    if ece:
+        out["ece"] = ece                               # a tab named "Ece", made by hand, takes the related-role postings
     return out
 
 
@@ -100,8 +103,8 @@ def deliver(j, tok, chats, state):
     results = []
     for c in chats:
         tp = topics_for(tok, c, state)
-        if j["kind"] == "platform" and not (tp or {}).get("platform"):
-            continue                                   # platform postings only go to their own tab
+        if j["kind"] in ("platform", "ece") and not (tp or {}).get(j["kind"]):
+            continue                                   # platform and related-role postings only go to their own tab
         results.append(send(fmt(j), tok, c, thread=(tp or {}).get(j["kind"]), markup=button(j["id"], j.get("applied"))))
     return any(results) if results else None
 
@@ -216,7 +219,12 @@ def process(jobs, state, cfg, dry=False):
     for j in jobs:                                     # platform postings wait until a Platforms tab exists
         if j["kind"] == "platform" and j.get("notify") in ("hold", "pending"):
             j["notify"] = "pending" if forum else "hold"
-    pend = sorted((j for j in jobs if j.get("notify") == "pending"), key=lambda j: (j["kind"] == "platform", j["posted"]))
+    ece_tab = any((topics_for(tok, c, state) or {}).get("ece") for c in chats)
+    for j in jobs:                                     # related-role postings wait for an "Ece" tab; an old backlog is not sent
+        if j["kind"] == "ece" and j.get("notify") in ("hold", "pending"):
+            fresh = (NOW - datetime.fromisoformat(j["first_seen"])).total_seconds() < 24 * 3600
+            j["notify"] = ("pending" if fresh else "skip") if ece_tab else "hold"
+    pend = sorted((j for j in jobs if j.get("notify") == "pending"), key=lambda j: (j["kind"] in ("platform", "ece"), j["posted"]))
     if quiet(now_et, cfg):
         state["held"] = True
         return f"quiet hours ({len(pend)} held)"

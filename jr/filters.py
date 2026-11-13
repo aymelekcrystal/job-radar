@@ -140,13 +140,23 @@ class Titles:
         j = lambda k: re.compile("|".join(f"(?:{p})" for p in cfg.get(k) or ["(?!)"]), re.I)
         self.inc, self.hard, self.soft, self.strong = j("include"), j("exclude"), j("exclude_soft"), j("strong")
         self.ai = j("ai_terms")
+        self.ece_inc, self.ece_exc = j("ece_include"), j("ece_exclude")
         self.skip = {s.lower() for s in cfg.get("skip_companies", [])}
 
-    def ok(self, title):
+    def qa(self, title):
+        """The main target: software testing / QA / AI evaluation titles."""
         t = title or ""
         if not self.inc.search(t) or self.hard.search(t):
             return False
         return not self.soft.search(t) or bool(self.strong.search(t))
+
+    def ece(self, title):
+        """Neighbouring roles for the "Ece" tab (support, solutions, implementation, analyst, product owner ...)."""
+        t = title or ""
+        return bool(self.ece_inc.search(t)) and not self.hard.search(t) and not self.ece_exc.search(t)
+
+    def ok(self, title):
+        return self.qa(title) or self.ece(title)
 
     def is_strong(self, title):
         return bool(self.strong.search(title or ""))

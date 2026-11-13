@@ -14,6 +14,12 @@ def eq(name, got, exp):
     if got != exp: fails.append(f"{name}: got {got!r}, expected {exp!r}")
 
 # ---- titles ----
+for _t in ("Technical Support Engineer", "Solutions Engineer", "Implementation Specialist", "Business Analyst", "Product Owner", "Lead Analyst, Business Quality (Remote)"):
+    assert T.ece(_t) and not T.qa(_t) and T.ok(_t), _t
+for _t in ("Customer Support Specialist", "Senior Financial Analyst", "Help Desk Analyst", "Sales Engineer", "Software Engineer", "Support Engineer Intern"):
+    assert not T.ok(_t), _t
+assert T.qa("QA Engineer") and T.qa("Product Validation Lead")
+
 for t, exp in [("Senior SDET", True), ("QA Automation Engineer", True), ("Software Engineer in Test", True), ("Junior QA Engineer", True),
                ("LLM Evaluation Engineer", True), ("AI Model Evaluator", True), ("API Test Engineer", True), ("UAT Tester", True),
                ("Manual Tester", True), ("Software Quality Engineer II", True), ("Staff Quality Engineer, AI Platform", True),
