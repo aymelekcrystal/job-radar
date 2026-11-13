@@ -501,7 +501,59 @@ class Radar:
                 ok = notify.send(f"🔔 Job Radar test message ({label}). If you can read this, notifications reach this chat.", tok, c, thread=thread)
                 print(f"   send to {label}: {'OK' if ok else 'FAILED ' + notify.LAST_ERROR[0]}")
 
+    # ---------- gap report: LinkedIn's last-24h remote postings vs. what we decide on the company's own site ----------
+    def gap(self):
+        cs = [c for c in platforms.SITES["linkedin"](self.cfg) if self.titles.ok(c["title"])]
+        self.discover([])                                  # builds the company-name index
+        stop = {"senior", "sr", "staff", "lead", "ii", "iii", "i", "remote", "the", "and", "of", "principal", "jr", "junior"}
+        words = lambda t: set(re.findall(r"[a-z0-9]+", t.lower())) - stop
+        seen, rows = set(), []
+        for c in cs:
+            k = (norm(c["title"]), norm(c["company"]))
+            if k not in seen:
+                seen.add(k); rows.append(c)
+
+        def check(c):
+            k = norm(re.sub(r"(?i)\b(inc|llc|corp(oration)?|co|ltd|group|technologies|solutions|services|north america|usa)\b\.?", "", c["company"]))
+            boards = sorted(self._names.get(k, ()))[:3]
+            if not boards:
+                return "NOT IN LISTS", ""
+            notes = []
+            for ats, b in boards:
+                try:
+                    if ats == "workday":
+                        ps, _ = sources.workday(b, self.cfg["workday_terms"], lambda t: True)
+                    elif ats in sources.SEARCH:
+                        ps, _ = sources.SEARCH[ats](b, self.cfg["search_terms"], lambda t: True)
+                    else:
+                        ps, _ = sources.SIMPLE[ats](b)
+                except Exception as ex:
+                    notes.append(f"{ats}: read failed {type(ex).__name__}"); continue
+                w = words(c["title"])
+                best = [p for p in ps if len(w & words(p["title"])) >= max(2, round(0.7 * len(w)))]
+                if not best:
+                    notes.append(f"{ats}/{b}: no such title among {len(ps)}"); continue
+                for p in best[:2]:
+                    if not self.titles.ok(p["title"]):
+                        notes.append(f"{ats}: TITLE FILTER '{p['title'][:40]}'"); continue
+                    if p["id"] in self.jobs:
+                        notes.append(f"{ats}: LISTED"); continue
+                    res = self.judge(dict(p))
+                    notes.append(f"{ats}: " + (res if isinstance(res, str) else "WOULD ACCEPT " + res["kind"]) + f" [{show_loc(p['locs'])[:38]} | {p['posted'][:10] or '?'}]")
+            verdict = "LISTED" if any("LISTED" in n or "WOULD ACCEPT" in n for n in notes) else "REJECTED/MISSING"
+            return verdict, "; ".join(notes)
+
+        self.state["seen"] = {}
+        with ThreadPoolExecutor(8) as ex:
+            out = list(ex.map(check, rows))
+        tally = Counter(v for v, _ in out)
+        print("GAP total", len(rows), dict(tally))
+        for c, (v, n) in sorted(zip(rows, out), key=lambda x: x[1][0]):
+            print(f"GAP {v:17} | {c['title'][:42]:42} | {c['company'][:22]:22} | {show_loc(c['locs'])[:24]:24} | {n[:230]}")
+
     def run(self):
+        if "--gap" in ARGS:
+            return self.gap()
         if "--sync-lists" in ARGS:
             man = None
             try:
