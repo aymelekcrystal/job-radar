@@ -311,6 +311,8 @@ class Radar:
             return "location"
         ece = not platform and not self.titles.qa(c["title"])
         if ece:
+            if kind == "check" and not why.startswith("Remote"):
+                return "location"                      # related roles: only remote US / Raleigh, no office-city guesses
             if not filters.software_role(False, text):
                 return "not software"
         elif not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
