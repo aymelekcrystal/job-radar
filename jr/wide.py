@@ -20,7 +20,7 @@ NOT_COMPANY = {"eures", "bundesagentur", "arbetsformedlingen", "welcometothejung
                "join_com", "infojobs_es", "jobs_cz", "seek", "thehub", "remoteok", "usajobs"}
 WATCHED = ("greenhouse", "lever", "ashby", "workday", "smartrecruiters", "breezy", "rippling", "recruitee",
            "bamboohr", "workable", "pinpoint", "recruiterbox", "teamtailor", "gem", "oracle", "icims", "ukg",
-           "paycom", "dayforce", "paylocity", "personio", "jobvite")
+           "paycom", "dayforce", "paylocity", "personio", "jobvite", "jazzhr")
 _WD = re.compile(r"https://([^./]+)\.(wd\d+)\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?([^/?#]+)")
 _URL = {
     "greenhouse": re.compile(r"greenhouse\.io/(?:embed/job_board\?for=)?([A-Za-z0-9_.\-]+)"),
@@ -41,6 +41,7 @@ _URL = {
     "paylocity": re.compile(r"recruiting\.paylocity\.com/Recruiting/Jobs/All/([0-9A-Fa-f\-]{36})"),
     "personio": re.compile(r"https?://([a-z0-9\-]+)\.jobs\.personio\.(?:com|de)"),
     "jobvite": re.compile(r"jobs\.jobvite\.com/([A-Za-z0-9_\-]+)"),
+    "jazzhr": re.compile(r"https?://([A-Za-z0-9\-]+)\.applytojob\.com"),
 }
 
 
@@ -49,7 +50,7 @@ _ICI = re.compile(r"https?://([a-z0-9.\-]+\.icims\.com)", re.I)
 _UKG = re.compile(r"https://([a-z0-9.\-]+)/([A-Za-z0-9]+)/JobBoard/([0-9a-fA-F\-]{36})")
 
 
-PROVEN = set(WATCHED) - {"oracle", "icims", "ukg", "paycom", "dayforce", "paylocity", "personio", "jobvite"}    # direct readers that replace the dataset copy entirely
+PROVEN = set(WATCHED) - {"oracle", "icims", "ukg", "paycom", "dayforce", "paylocity", "personio", "jobvite", "jazzhr"}    # direct readers that replace the dataset copy entirely
 
 
 def board_of(ats, url):

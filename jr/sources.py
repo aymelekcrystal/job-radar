@@ -13,7 +13,7 @@ LABEL = {"greenhouse": "Greenhouse", "lever": "Lever", "ashby": "Ashby", "workda
          "amazon": "Amazon Jobs", "bamboohr": "BambooHR", "workable": "Workable", "pinpoint": "Pinpoint",
          "recruiterbox": "Recruiterbox", "teamtailor": "Teamtailor", "gem": "Gem", "oracle": "Oracle Cloud",
          "ukg": "UKG", "jibe": "Jibe", "icims": "iCIMS", "adp": "ADP", "paycom": "Paycom", "dayforce": "Dayforce",
-         "paylocity": "Paylocity", "successfactors": "SuccessFactors", "personio": "Personio", "jobvite": "Jobvite"}
+         "paylocity": "Paylocity", "successfactors": "SuccessFactors", "personio": "Personio", "jobvite": "Jobvite", "jazzhr": "JazzHR"}
 
 
 def cand(ats, board, jid, title, company, locs, url, posted="", remote=None, salary="", desc="", date_est=False, detail=None):
@@ -719,7 +719,46 @@ def jobvite(board):
     return out, {c["id"] for c in out}
 
 
-SIMPLE = {"dayforce": dayforce, "paylocity": paylocity, "successfactors": successfactors, "personio": personio, "jobvite": jobvite,
+# ---------- JazzHR (company.applytojob.com) ----------
+def jazzhr(board):
+    import html as _html
+    txt = http(f"https://{board}.applytojob.com/apply", retries=1).text
+    name = re.search(r"<title>(.*?)</title>", txt, re.S)
+    company = re.sub(r"(?i)\s*[-|]\s*(career page|careers|jobs|job openings).*$", "", _html.unescape(name.group(1)).strip()) if name else ""
+    out, seen = [], set()
+    for m in re.finditer(r'<a[^>]+href="((?:https?://[^"/]+)?/apply/([A-Za-z0-9]{6,})/[^"?#]*)[^"]*"[^>]*>(.*?)</a>', txt, re.S):
+        jid = m.group(2)
+        title = _html.unescape(re.sub(r"<[^>]+>|\s+", " ", m.group(3))).strip()
+        if jid in seen or not title or jid == "jobs":
+            continue
+        seen.add(jid)
+        row = txt[m.end():m.end() + 700].split("<a ", 1)[0]
+        loc = re.search(r"fa-map-marker[^>]*>\s*(?:</i>)?\s*([^<]+)", row)
+        url = m.group(1) if m.group(1).startswith("http") else f"https://{board}.applytojob.com{m.group(1)}"
+        out.append(cand("jazzhr", board, jid, title, company if 1 < len(company) < 60 else pretty(board),
+                        [(_html.unescape(loc.group(1)).strip() if loc else "", "")], url, "", date_est=True, detail=jazzhr_detail))
+        out[-1]["nodate"] = True
+    return out, {c["id"] for c in out}
+
+
+def jazzhr_detail(c):
+    txt = http(c["url"], retries=1).text
+    jp = ld_jobposting(txt)
+    if jp:
+        if len(jp.get("description") or "") > 300:
+            c["desc"] = jp["description"]
+        d = iso(jp.get("datePosted") or "")
+        if d:
+            c["posted"], c["date_est"] = d, False
+        if "TELECOMMUTE" in str(jp.get("jobLocationType", "")).upper():
+            c["remote"] = True
+    if not c["desc"]:
+        m = re.search(r'id="job-description"[^>]*>(.*?)(?:<div[^>]+id="(?:resumator-application|job-apply|resumator-buttons)|<form|</main>|<footer)', txt, re.S)
+        if m and len(m.group(1)) > 300:
+            c["desc"] = m.group(1)
+
+
+SIMPLE = {"jazzhr": jazzhr, "dayforce": dayforce, "paylocity": paylocity, "successfactors": successfactors, "personio": personio, "jobvite": jobvite,
           "adp": adp, "bamboohr": bamboohr, "workable": workable, "pinpoint": pinpoint, "recruiterbox": recruiterbox,
           "teamtailor": teamtailor, "gem": gem, "greenhouse": greenhouse, "lever": lever, "ashby": ashby, "smartrecruiters": smartrecruiters,
           "breezy": breezy, "rippling": rippling, "recruitee": recruitee}

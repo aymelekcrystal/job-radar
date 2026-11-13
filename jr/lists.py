@@ -38,6 +38,7 @@ PAT = {
     "icims": r"https?://([a-z0-9.\-]+\.icims\.com)",
     "personio": r"https?://([a-z0-9\-]+)\.jobs\.personio\.(?:com|de)",
     "jobvite": r"jobs\.jobvite\.com/([A-Za-z0-9_\-]+)",
+    "jazzhr": r"https?://([a-z0-9\-]+)\.applytojob\.com",
     "paycom": r"portal/([0-9a-fA-F]{32})",
     "paylocity": r"Jobs/All/([0-9a-fA-F\-]{36})",
 }
