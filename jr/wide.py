@@ -100,7 +100,7 @@ def stapply(manifest, cfg, titles):
     url = manifest["all"]["parquet"]
     con = duckdb.connect()
     con.execute("INSTALL httpfs; LOAD httpfs;")
-    pat = "(?i)" + "|".join(f"(?:{p})" for p in cfg["include"])
+    pat = "(?i)" + "|".join(f"(?:{p})" for p in cfg["include"] + (cfg.get("ece_include") or []))
     rows = con.execute(
         "SELECT url,title,company,ats_type,ats_id,location,country_iso,is_remote,salary_summary,posted_at,apply_url,description "
         "FROM read_parquet(?) WHERE regexp_matches(title, ?)", [url, pat]).fetchall()
@@ -113,7 +113,8 @@ def stapply(manifest, cfg, titles):
         if ats in WATCHED:
             b = board_of(ats, u) or board_of(ats, apply_url)
             if b:
-                promote[ats].add(b)
+                if titles.qa(title):
+                    promote[ats].add(b)
                 if ats in PROVEN:
                     continue                       # the direct scanner reads this company itself
         if ats == "amazon":

@@ -54,6 +54,7 @@ details.rep{margin-top:26px;color:var(--mute);font-size:12px}
     <button class="chip" data-f="main" aria-pressed="true">Last 72 h<b id="n-main"></b></button>
     <button class="chip" data-f="older" aria-pressed="false">Older<b id="n-older"></b></button>
     <button class="chip" data-f="check" aria-pressed="false">Check<b id="n-check"></b></button>
+    <button class="chip" data-f="ece" aria-pressed="false">Ece<b id="n-ece"></b></button>
     <button class="chip" data-f="platform" aria-pressed="false">Platforms<b id="n-platform"></b></button>
     <button class="chip" data-f="applied" aria-pressed="false">Applied<b id="n-applied"></b></button>
   </div>
@@ -73,7 +74,7 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const hrs=iso=>(Date.now()-new Date(iso))/36e5;
 function ago(iso){const h=hrs(iso); if(h<1.5) return Math.max(1,Math.round(h*60))+' min ago'; if(h<36) return Math.round(h)+' h ago'; return Math.round(h/24)+' days ago';}
 function tabOf(j){ if(j.applied||marks[j.id]==='applied') return 'applied'; if(marks[j.id]==='hidden') return null;
-  if(j.kind==='platform') return 'platform'; if(j.kind==='check') return 'check'; return (!j.stale&&hrs(j.posted)<=72)?'main':'older'; }
+  if(j.kind==='platform') return 'platform'; if(j.kind==='ece') return 'ece'; if(j.kind==='check') return 'check'; return (!j.stale&&hrs(j.posted)<=72)?'main':'older'; }
 function card(j){
   const url=/^https?:\/\//.test(j.url)?j.url:'#', when=j.stale?'post date unknown (already open when first scanned)':j.date_est?('first seen '+ago(j.first_seen)+' · post date unknown'):('posted '+ago(j.posted));
   const src=j.kind==='platform'?(j.src+(j.direct_link?' → company link':'')):('Company site · '+j.src);
@@ -90,7 +91,7 @@ function card(j){
     ${open[j.id]?`<pre class="full">${esc(desc===null?'Loading…':(desc[j.id]||'No description text available.'))}</pre>`:''}</article>`;
 }
 function render(){
-  const q=$('#q').value.trim().toLowerCase(), counts={main:0,older:0,check:0,platform:0,applied:0};
+  const q=$('#q').value.trim().toLowerCase(), counts={main:0,older:0,check:0,ece:0,platform:0,applied:0};
   const rows=data.jobs.filter(j=>{const t=tabOf(j); if(t) counts[t]++; if(t!==tab) return false; if(aiOnly&&!j.ai) return false;
     return !q||(j.title+' '+j.company+' '+j.location).toLowerCase().includes(q);});
   for(const k in counts) $('#n-'+k).textContent=counts[k]||'';

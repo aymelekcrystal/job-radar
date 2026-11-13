@@ -117,7 +117,7 @@ class Radar:
                 key = f"{a}/{b}"
                 if status == "ok":
                     st["ok"] += 1; st["jobs"] += n; st["match"] += len(cs)
-                    if cs:
+                    if any(self.titles.qa(c["title"]) for c in cs):
                         hits.add(b)
                     self.state["dead"].pop(key, None)
                     if cs and cs[0].get("nodate"):          # undated system: on a company's first read, age is unknown
@@ -309,7 +309,11 @@ class Radar:
         kind, why = filters.classify(c["locs"], c["remote"], c["title"], text)
         if kind == "drop":
             return "location"
-        if not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
+        ece = not platform and not self.titles.qa(c["title"])
+        if ece:
+            if not filters.software_role(False, text):
+                return "not software"
+        elif not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
             return "not software"
         if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
             return "old"
@@ -323,9 +327,9 @@ class Radar:
                 "via": "platform" if platform else c.get("via", "direct"), "board": c["board"], "title": c["title"], "company": c["company"],
                 "location": show_loc(c["locs"]), "url": c["url"], "posted": posted, "date_est": bool(c["date_est"] or not c["posted"]),
                 "first_seen": STAMP, "salary": filters.tidy_salary(c["salary"]) or filters.salary_from(text), "reqs": filters.requirements(lines),
-                "kind": "platform" if platform else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
+                "kind": "platform" if platform else "ece" if ece else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
                 "degree": deg, "stale": bool((c.get("boot") or c.get("newboard")) and (c["date_est"] or not c["posted"])),
-                "notify": "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
+                "notify": "hold" if ece else "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):
         keys = {(norm(j["title"]), norm(j["company"])): j["id"] for j in self.jobs.values()}
@@ -416,21 +420,21 @@ class Radar:
     def topup(self):
         today = self.now_et.date()
         boot = self.state.get("boot_done", "")
-        have = sum(1 for j in self.jobs.values() if j["kind"] != "platform" and j["first_seen"] > boot
+        have = sum(1 for j in self.jobs.values() if j["kind"] in ("ok", "check") and j["first_seen"] > boot
                    and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
         sent = sum(1 for j in self.jobs.values() if j["kind"] == "platform" and j["notify"] in ("sent", "pending")
                    and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today)
         need = max(0, self.cfg["daily_target"] - have - sent)
         for site in self.cfg.get("discovery_sites", []):      # read, never listed or sent
             try:
-                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.ok(c["title"])]
+                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.qa(c["title"])]
                 self.report.append({"source": f"discovery: {platforms.NAMES[site]}", "ok": 1, "title_match": len(cs), "watch_added": self.discover(cs)})
             except Exception as ex:
                 self.report.append({"source": f"discovery: {platforms.NAMES[site]}", "ok": 0, "errors": 1, "error_types": f"{type(ex).__name__}: {str(ex)[:70]}"})
         got = []
         for site in self.cfg["platform_order"]:
             try:
-                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.ok(c["title"])]
+                cs = [c for c in platforms.SITES[site](self.cfg) if self.titles.qa(c["title"])]
                 self.discover(cs)
                 before = set(self.jobs)
                 st = self.decide(cs, platform=True)
@@ -503,7 +507,7 @@ class Radar:
 
     # ---------- gap report: LinkedIn's last-24h remote postings vs. what we decide on the company's own site ----------
     def gap(self):
-        cs = [c for c in platforms.SITES["linkedin"](self.cfg) if self.titles.ok(c["title"])]
+        cs = [c for c in platforms.SITES["linkedin"](self.cfg) if self.titles.qa(c["title"])]
         self.discover([])                                  # builds the company-name index
         stop = {"senior", "sr", "staff", "lead", "ii", "iii", "i", "remote", "the", "and", "of", "principal", "jr", "junior"}
         words = lambda t: set(re.findall(r"[a-z0-9]+", t.lower())) - stop
@@ -582,7 +586,7 @@ class Radar:
             self.topup()
         if not self.state.get("bootstrapped"):
             for j in self.jobs.values():       # first run: do not send the whole backlog
-                if j["kind"] == "platform" or j["date_est"] or age_hours(j["posted"]) > 24:
+                if j["kind"] in ("platform", "ece") or j["date_est"] or age_hours(j["posted"]) > 24:
                     j["notify"] = "skip"
             self.state["bootstrapped"] = True
             self.state["boot_done"] = STAMP
@@ -593,7 +597,7 @@ class Radar:
         acc["new"] += max(0, st.get("accepted", 0))
         if not dry and not only and slot_due(self.cfg.get("status_times", []), self.state.get("status_last"), self.now_et):
             today = self.now_et.date()
-            mine = [j for j in self.jobs.values() if j["kind"] != "platform" and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today]
+            mine = [j for j in self.jobs.values() if j["kind"] in ("ok", "check") and datetime.fromisoformat(j["first_seen"]).astimezone(ET).date() == today]
             failing = [r["source"] for r in self.report if r.get("ok") == 0 or (r.get("errors", 0) > 20 and "rotating" not in r["source"])]
             text = (f"📡 Job Radar status · {self.now_et:%a %b %-d, %-I:%M %p} ET\n\n"
                     f"Running normally. Since the last status: {acc['scans']} scans, {acc['companies']:,} company career pages read, "

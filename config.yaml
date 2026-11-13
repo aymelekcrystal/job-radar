@@ -24,6 +24,26 @@ include:
   - '\bquality analyst\b'
   - '\b(product|software|system|systems|platform|release) validation (engineer|lead|analyst|specialist|manager)\b'
 
+# "Ece" tab: other roles her background fits. Same location / degree / age rules; shown on their own tab, never mixed with QA.
+ece_include:
+  - '\b(technical|product|application|applications|software|platform|api|saas|l[123]|tier [123]) support (engineer|specialist|analyst|lead|consultant)\b'
+  - '\bsupport engineer\b|\bescalations? (engineer|specialist)\b|\bsupport operations (engineer|analyst|specialist)\b'
+  - '\b(solutions?|implementation|integrations?|onboarding|deployment|customer|client|professional services|forward deployed) engineer\b'
+  - '\b(implementation|integrations?|onboarding|solutions?) (specialist|consultant|analyst|manager|lead)\b'
+  - '\btechnical (account manager|consultant|customer success|success manager|onboarding|implementation|project manager|program manager|product owner|trainer)\b'
+  - '\bcustomer success (engineer|architect)\b|\btechnical customer success\b'
+  - '\b(business|systems?|business systems|product|technical|functional|uat|operations|it) analyst\b'
+  - '\banalyst\b.{0,25}\bquality\b|\bbusiness quality\b'
+  - '\bproduct owner\b|\bassociate product manager\b|\bproduct operations\b|\bproduct specialist\b'
+  - '\bscrum master\b|\brelease (manager|coordinator|engineer|analyst)\b|\buat\b|\buser acceptance\b'
+  - '\b(ai|llm|genai) (trainer|tutor|specialist|analyst|operations)\b|\bprompt engineer\b|\b(ai )?data annotat\w+\b'
+ece_exclude:
+  - '\b(financial|finance|credit|risk|pricing|actuarial|accounting|tax|payroll|budget|investment|treasury|revenue|billing|claims|underwriting)\b'
+  - '\b(hr|hris|workday|sap|oracle|salesforce|servicenow|epic|erp|dynamics|netsuite|peoplesoft|sharepoint)\b'
+  - '\b(desktop|help ?desk|service desk|it support|network|field|hardware|facilities|medical|clinical|pharmacy|nurse|health information)\b'
+  - '\b(marketing|sales|supply chain|logistics|procurement|intelligence|cyber|security|soc|fraud|aml|legal|policy|grants?|research)\b'
+  - '\b(bilingual|spanish|french|german|japanese|portuguese|mandarin|korean)\b'
+
 # Always rejected.
 exclude:
   - '\b(intern|internship|apprentice|co-?op)\b'
