@@ -12,9 +12,11 @@ Target: remote (US) and Raleigh-area QA / SDET / test automation / AI testing ro
 | Direct scan | SmartRecruiters, BambooHR, Workable, Rippling, Breezy, Recruitee, Teamtailor, Pinpoint, Gem, Recruiterbox (about 19,000 companies), Amazon | whole list every 2-4 hours; companies seen hiring QA hourly |
 | Direct scan | Workday: companies seen hiring QA | hourly (a quarter of them every 15 min) |
 | Direct scan | Workday: all ~12,000 companies | once a day, a slice every 15 min |
-| Direct scan | Oracle Cloud, iCIMS, UKG, Jibe, ADP, Paycom, Dayforce, Paylocity, SuccessFactors, Personio, Jobvite (about 16,000 companies) | whole list every 1-12 hours; companies seen hiring QA hourly |
-| Wide net | Two open datasets, for everything else (Phenom, JazzHR, Taleo, Cornerstone, Eightfold, Avature, ...) and as a safety net | daily |
+| Direct scan | Oracle Cloud, iCIMS, UKG, Jibe, ADP, Paycom, Dayforce, Paylocity, SuccessFactors, Personio, Jobvite, JazzHR (about 20,000 companies) | whole list every 1-12 hours; companies seen hiring QA hourly |
+| Wide net | Two open datasets, for everything else (Phenom, Taleo, Cornerstone, Eightfold, Avature, ...) and as a safety net | daily |
 | Platforms | LinkedIn, Indeed and remote job boards, kept separate (own tab) | hourly |
+
+The "Ece" tab holds related roles (support, solutions, implementation, analyst, product owner; `ece_include` in config.yaml), under the same location, degree and age rules. They go to Telegram only if the group has a topic named "Ece".
 
 Rules: US remote must be stated (unclear ones go to the "Check" tab), postings that require a degree with no
 "or equivalent experience" are dropped, postings older than 30 days are dropped, closed postings are removed.
