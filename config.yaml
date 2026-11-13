@@ -22,6 +22,7 @@ include:
   - '\bautomation (engineer|developer)\b'
   - '\btester\b'
   - '\bquality analyst\b'
+  - '\b(product|software|system|systems|platform|release) validation (engineer|lead|analyst|specialist|manager)\b'
 
 # Always rejected.
 exclude:
@@ -44,7 +45,7 @@ exclude_soft:
   - '\b(mortgage|loan|pharmacy|patient|care|medical|microbiology|chemistry|chemist|packaging|incoming|supply|building)\b'
   - '\b(data quality|quality assurance (specialist|analyst|supervisor|manager|professional)|coding|optical|battery|structural)\b'
 strong:
-  - '\b(sdet|software|qa automation|qa (automation )?engineer|test automation|in test|api|ai|llm|ml|genai|web|mobile|platform)\b'
+  - '\b(sdet|software|qa automation|qa (automation )?engineer|test automation|in test|api|ai|llm|ml|genai|web|mobile|platform|product validation|release validation)\b'
 
 # Gets the "AI" badge.
 ai_terms: ['\bai\b', '\bllm', '\bml\b', 'machine learning', 'genai', 'generative', '\beval', '\bagent']

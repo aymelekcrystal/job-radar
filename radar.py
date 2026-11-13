@@ -450,7 +450,7 @@ class Radar:
 
     # ---------- trace: why is a posting (not) here? ----------
     def trace(self, spec):
-        loose = re.compile(r"(?i)\b(qa|qe|sdet|test|tester|testing|quality|eval\w*|automation)\b")
+        loose = re.compile(r"(?i)\b(qa|qe|sdet|test|tester|testing|quality|eval\w*|automation|validation)\b")
         for item in [s.strip() for s in spec.split(",") if s.strip()]:
             if item.startswith("http"):
                 ats = next((a for a in wide.WATCHED + ("oracle", "icims", "ukg", "jibe") if wide.board_of(a, item)), None)
