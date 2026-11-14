@@ -203,6 +203,10 @@ def process(jobs, state, cfg, dry=False):
             state.setdefault("tg_named", {}).setdefault(k, {}).update(v)
     except Exception:
         pass
+    closed = set(cfg.get("telegram_closed_tabs") or [])       # tabs the owner retired: nothing more is sent there
+    for tabs in state.get("tg_named", {}).values():
+        for name in [n for n, t in tabs.items() if t in closed]:
+            del tabs[name]
     for c in chats:                                  # a newly added chat gets a welcome once
         w = state.setdefault("tg_welcomed", [])
         if "*" in w:                                 # setup before multi-chat support: the first chat was already welcomed
