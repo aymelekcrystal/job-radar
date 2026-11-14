@@ -14,10 +14,16 @@ def eq(name, got, exp):
     if got != exp: fails.append(f"{name}: got {got!r}, expected {exp!r}")
 
 # ---- titles ----
-for _t in ("Technical Support Engineer", "Solutions Engineer", "Implementation Specialist", "Business Analyst", "Product Owner", "Lead Analyst, Business Quality (Remote)"):
-    assert T.ece(_t) and not T.qa(_t) and T.ok(_t), _t
-for _t in ("Customer Support Specialist", "Senior Financial Analyst", "Help Desk Analyst", "Sales Engineer", "Software Engineer", "Support Engineer Intern"):
+for _t in ("Cloud Validation & Release Engineer", "UAT Analyst", "Release Engineer", "AI Trainer", "Accessibility Specialist", "Test Lead"):
+    assert T.ok(_t), _t
+for _t in ("Technical Support Engineer", "Solutions Engineer", "Business Analyst", "Product Owner", "Technical Program Manager",
+           "Design Verification Engineer", "Process Validation Engineer", "Software Engineer", "Clinical Quality Specialist"):
     assert not T.ok(_t), _t
+_fit = lambda *b: F.ece_fit(["Requirements"] + ["• " + x for x in b])
+assert _fit("3+ years in QA / validation / release engineering", "Test-automation skills (Python, CI / CD)", "Experience with regression testing", "Detail-oriented")
+assert not _fit("7+ years of experience in customer support", "Experience with Kubernetes", "Debugging code in Java, Python", "Write test cases", "Regression testing")
+assert not _fit("Proficient in front-end development using React", "Proficient in testing and debugging techniques", "Write test plans", "Python")
+assert not _fit("Gather business requirements", "Stakeholder interviews", "Strong communication", "Support UAT")
 assert T.qa("QA Engineer") and T.qa("Product Validation Lead")
 
 for t, exp in [("Senior SDET", True), ("QA Automation Engineer", True), ("Software Engineer in Test", True), ("Junior QA Engineer", True),

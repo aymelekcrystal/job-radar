@@ -315,6 +315,8 @@ class Radar:
                 return "location"                      # related roles: only remote US / Raleigh, no office-city guesses
             if not filters.software_role(False, text):
                 return "not software"
+            if not filters.ece_fit(lines):
+                return "not a fit"                     # requirements must be testing work, nothing else
         elif not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
             return "not software"
         if c["posted"] and not c["date_est"] and age_hours(c["posted"]) > self.cfg["max_age_days"] * 24:
@@ -331,7 +333,7 @@ class Radar:
                 "first_seen": STAMP, "salary": filters.tidy_salary(c["salary"]) or filters.salary_from(text), "reqs": filters.requirements(lines),
                 "kind": "platform" if platform else "ece" if ece else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
                 "degree": deg, "stale": bool((c.get("boot") or c.get("newboard")) and (c["date_est"] or not c["posted"])),
-                "notify": "hold" if ece else "pending", "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
+                "notify": "hold" if ece else "pending", "fit": 2 if ece else None, "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):
         keys = {(norm(j["title"]), norm(j["company"])): j["id"] for j in self.jobs.values()}
@@ -378,8 +380,8 @@ class Radar:
         closed = 0
         allowed = {platforms.NAMES.get(s, s) for s in self.cfg["platform_order"]}
         for j in list(self.jobs.values()):
-            if j["kind"] == "platform" and j["src"] not in allowed:
-                self.drop(j["id"])
+            if (j["kind"] == "platform" and j["src"] not in allowed) or (j["kind"] == "ece" and j.get("fit") != 2):
+                self.drop(j["id"])                     # also: related-role postings accepted under the old, looser rule
                 continue
             ids = self.present.get(j["board"]) if j["via"] == "direct" else self.present.get("via:" + j["via"])
             lim = 3 * 24 if j["kind"] == "platform" else self.cfg["max_age_days"] * 24

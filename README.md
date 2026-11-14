@@ -16,7 +16,7 @@ Target: remote (US) and Raleigh-area QA / SDET / test automation / AI testing ro
 | Wide net | Two open datasets, for everything else (Phenom, Taleo, Cornerstone, Eightfold, Avature, ...) and as a safety net | daily |
 | Platforms | LinkedIn, Indeed and remote job boards, kept separate (own tab) | hourly |
 
-The "Ece" tab holds related roles (support, solutions, implementation, analyst, product owner; `ece_include` in config.yaml), under the same location, degree and age rules. They go to Telegram only if the group has a topic named "Ece".
+The "Ece" tab holds postings whose work is software testing under another title (validation, release, UAT, AI evaluation; `ece_include` in config.yaml). On top of the usual location, degree and age rules their requirements must be about testing, must not ask for years in another profession and must not be a development job (`filters.ece_fit`). They go to Telegram only if the group has a topic named "Ece".
 
 Rules: US remote must be stated (unclear ones go to the "Check" tab), postings that require a degree with no
 "or equivalent experience" are dropped, postings older than 30 days are dropped, closed postings are removed.

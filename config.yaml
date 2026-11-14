@@ -24,25 +24,28 @@ include:
   - '\bquality analyst\b'
   - '\b(product|software|system|systems|platform|release) validation (engineer|lead|analyst|specialist|manager)\b'
 
-# "Ece" tab: other roles her background fits. Same location / degree / age rules; shown on their own tab, never mixed with QA.
+# "Ece" tab: postings whose work is software testing although the title is not a usual QA title
+# (validation, release, UAT, AI evaluation ...) and QA titles the main list is unsure about.
+# On top of the usual location / degree / age rules the requirements must be about testing (filters.ece_fit):
+# no posting that asks for years in another profession, no development jobs. Few postings, every one a fit.
 ece_include:
-  - '\b(technical|product|application|applications|software|platform|api|saas|l[123]|tier [123]) support (engineer|specialist|analyst|lead|consultant)\b'
-  - '\bsupport engineer\b|\bescalations? (engineer|specialist)\b|\bsupport operations (engineer|analyst|specialist)\b'
-  - '\b(solutions?|implementation|integrations?|onboarding|deployment|customer|client|professional services|forward deployed) engineer\b'
-  - '\b(implementation|integrations?|onboarding|solutions?) (specialist|consultant|analyst|manager|lead)\b'
-  - '\btechnical (account manager|consultant|customer success|success manager|onboarding|implementation|project manager|program manager|product owner|trainer)\b'
-  - '\bcustomer success (engineer|architect)\b|\btechnical customer success\b'
-  - '\b(business|systems?|business systems|product|technical|functional|uat|operations|it) analyst\b'
-  - '\banalyst\b.{0,25}\bquality\b|\bbusiness quality\b'
-  - '\bproduct owner\b|\bassociate product manager\b|\bproduct operations\b|\bproduct specialist\b'
-  - '\bscrum master\b|\brelease (manager|coordinator|engineer|analyst)\b|\buat\b|\buser acceptance\b'
-  - '\b(ai|llm|genai) (trainer|tutor|specialist|analyst|operations)\b|\bprompt engineer\b|\b(ai )?data annotat\w+\b'
+  - '\b(validation|verification) (engineer|analyst|specialist|lead|tester)\b|\bv&v\b'
+  - '\brelease (engineer|manager|coordinator|analyst)\b'
+  - '\buat\b|\buser acceptance\b'
+  - '\btest(ing|s)?\b|\bqa\b|\bquality assurance\b'
+  - '\bquality (specialist|analyst|lead|coordinator|consultant|manager)\b'
+  - '\b(ai|llm|genai|model|ml) (trainer|tutor|rater|reviewer|red[- ]team\w*|safety|evaluation|evaluator)\b|\bprompt engineer\b'
+  - '\baccessibility (tester|specialist|analyst|engineer|auditor)\b'
+  - '\b(performance|load) (test )?engineer\b'
+  - '\b(certification|conformance|interoperability) (engineer|tester|analyst)\b'
+  - '\b(defect|bug|triage) (manager|analyst|coordinator|engineer)\b'
 ece_exclude:
-  - '\b(financial|finance|credit|risk|pricing|actuarial|accounting|tax|payroll|budget|investment|treasury|revenue|billing|claims|underwriting)\b'
-  - '\b(hr|hris|workday|sap|oracle|salesforce|servicenow|epic|erp|dynamics|netsuite|peoplesoft|sharepoint)\b'
-  - '\b(desktop|help ?desk|service desk|it support|network|field|hardware|facilities|medical|clinical|pharmacy|nurse|health information)\b'
-  - '\b(marketing|sales|supply chain|logistics|procurement|intelligence|cyber|security|soc|fraud|aml|legal|policy|grants?|research)\b'
-  - '\b(bilingual|spanish|french|german|japanese|portuguese|mandarin|korean)\b'
+  - '\b(design verification|asic|fpga|rtl|silicon|semiconductor|wafer|hardware|electrical|mechanical|rf|optical|battery|structural|civil)\b'
+  - '\b(manufacturing|production|plant|process|supplier|vendor|materials|packaging|incoming|construction|aircraft|flight|vehicle|facilit\w+)\b'
+  - '\b(clinical|pharma\w*|gmp|gcp|glp|laboratory|lab|food|nurse|patient|medical|care|pharmacy|microbiology|chemist\w*|device)\b'
+  - '\b(call|claims|mortgage|loan|audit|auditor|financial|finance|accounting|tax|payroll|sales|marketing|coding|inspector|technician)\b'
+  - '\b(compliance|regulatory|workforce|customer|data quality|site|field)\b'
+  - '\b(proctor|test prep|standardized test|test center|testing center|drug test\w*|covid)\b'
 
 # Always rejected.
 exclude:
@@ -87,7 +90,7 @@ rotation_wide: {smartrecruiters: 16, bamboohr: 16, workable: 16, rippling: 16, b
                 paycom: 48, successfactors: 16, personio: 32, dayforce: 8, paylocity: 4, jobvite: 4, jazzhr: 8}
 workers: {workable: 4, smartrecruiters: 6, rippling: 6, gem: 4, workday: 6, oracle: 6, ukg: 4, jibe: 4, icims: 6, adp: 4,
           paycom: 6, successfactors: 6, personio: 6, dayforce: 4, paylocity: 2, jobvite: 4, jazzhr: 6}
-search_terms: ["QA", "quality", "test", "SDET"]  # for systems searched by keyword (Oracle, UKG, Jibe, iCIMS)   # gentler on systems that sit behind one address
+search_terms: ["QA", "quality", "test", "SDET", "validation", "UAT"]  # for systems searched by keyword (Oracle, UKG, Jibe, iCIMS)   # gentler on systems that sit behind one address
 hourly_every_runs: 4
 parallel_systems: 8                              # career systems read at the same time
 system_seconds: 420                              # one system may use at most this long per run; the rest waits for next run
@@ -95,7 +98,7 @@ per_run_cap: {default: 700, paylocity: 40, icims: 250, paycom: 150, workable: 32
 workday_universe_runs: 48                        # all Workday companies twice a day, a slice per run (dead addresses drop out)
 workday_universe_terms: ["QA", "SDET", "test engineer"]
 workday_watch_runs: 4                            # Workday companies seen hiring QA: a quarter per run, so each one hourly
-workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automation"]
+workday_terms: ["QA", "SDET", "quality engineer", "test engineer", "test automation", "validation engineer", "UAT"]
 amazon_terms: ["quality assurance engineer", "SDET", "test engineer"]
 
 # ---- job platforms: only to top the day up to the target ----

@@ -282,3 +282,41 @@ def tidy_salary(s):
     if not n:
         return ""
     return f"${n[0]:,.0f} – ${n[1]:,.0f}" if len(n) > 1 and n[1] > n[0] else f"${n[0]:,.0f}"
+
+
+# ---------- "Ece" tab: do the requirements describe testing work? ----------
+_QA_LINE = re.compile(
+    r"(?i)\btest(s|ing|ed|er|ers|able|ability)?\b|\b(qa|sqa|sdet|qe|uat|stlc)\b|\bquality (assurance|engineering|gates?|metrics|standards)\b|"
+    r"\bautomation (frameworks?|suites?|scripts?|tools?)\b|\bselenium\b|\bplaywright\b|\bcypress\b|\bappium\b|\bwebdriver\w*|\btestng\b|\bjunit\b|"
+    r"\bpytest\b|\bcucumber\b|\bpostman\b|\brest[- ]?assured\b|\bjmeter\b|\btestrail\b|\bzephyr\b|\bxray\b|\bvalidation\b|\bverification\b|"
+    r"\bdefects?\b|\bbugs?\b|\bregression\b|\b(llm|model|ai|prompt|rag|agent)s? (evaluat\w+|evals?)\b|\bevaluation (system|methodolog\w+|framework|pipeline|harness|tooling|dataset)s?\b|"
+    r"\bevals\b|\bhallucinat\w+|\bred[- ]team\w*|\bgolden sets?\b|\brelease readiness\b")
+_NOT_QA = re.compile(r"(?i)\ba/b test\w*|\btest and learn\b|\b(drug|background|skills?|aptitude|typing|covid) test\w*|\bcontest\w*|\btestimon\w+")
+_TESTWORD = _QA_LINE
+_OTHER_JOB = re.compile(
+    r"(?i)\b\d+\s*\+?\s*(?:-\s*\d+\s*\+?\s*)?(?:years?|yrs?)[^.;:]{0,70}\b(customer (support|success|service)|technical support|support (experience|role|engineer\w*)|"
+    r"account management|pre-?sales|sales (experience|engineer\w*)|(program|project|product|people) management|software (development|engineering)|"
+    r"(front|back)[- ]?end|full[- ]?stack|system administration|sysadmin|devops|solutions? (engineer\w*|architect\w*)|"
+    r"data (engineering|science)|business analy\w+|machine learning|ml engineering|cyber ?security|security (engineering|operations)|"
+    r"help ?desk|it support|technical writing|scrum master|recruit\w+|legal|law|clinical|nursing|teaching)\b")
+_DEV_LINE = re.compile(
+    r"(?i)\b((front|back)[- ]?end development|full[- ]?stack (development|engineer\w*|developer)|proficien\w+ (in|with) (react|angular|vue|next\.js)|"
+    r"(react|angular|vue|aem|salesforce|sharepoint|\.net|java|python) (forms )?(development|developer) experience|software architecture)\b")
+
+
+def ece_fit(lines):
+    """True when the requirements of a posting describe software-testing work a QA automation engineer does:
+    testing shows up in at least two requirement lines and a third of them, no line asks for years in another
+    profession, and it is not a development job. Unreadable requirements are not a fit."""
+    req = requirements(lines, limit=60, width=10000)
+    if len(req) < 3:
+        req = [ln[2:].strip() for ln in lines if ln.startswith("• ")]
+    if len(req) < 3:
+        return False
+    qa = [l for l in req if _QA_LINE.search(_NOT_QA.sub(" ", l))]
+    if len(qa) < 2 or len(qa) / len(req) < 0.25:
+        return False
+    for l in req:
+        if not _TESTWORD.search(l) and (_OTHER_JOB.search(l) or _DEV_LINE.search(l)):
+            return False
+    return True
