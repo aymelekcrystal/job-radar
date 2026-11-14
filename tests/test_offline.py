@@ -24,6 +24,10 @@ assert _fit("3+ years in QA / validation / release engineering", "Test-automatio
 assert not _fit("7+ years of experience in customer support", "Experience with Kubernetes", "Debugging code in Java, Python", "Write test cases", "Regression testing")
 assert not _fit("Proficient in front-end development using React", "Proficient in testing and debugging techniques", "Write test plans", "Python")
 assert not _fit("Gather business requirements", "Stakeholder interviews", "Strong communication", "Support UAT")
+assert F.testing_text("Write test cases and test plans, build Selenium and Playwright suites, own regression") and not F.testing_text("Build React apps and write unit tests")
+assert T.maybe("Software Engineer II") and not T.maybe("Software Engineer Intern")
+assert not F.ece_fit(["Requirements", "• Write test cases", "• Regression testing", "• Python", "• AWS", "• Communication", "• Docker"], strict=True)
+assert F.ece_fit(["Requirements", "• Write test cases", "• Regression testing", "• Selenium or Playwright", "• Python", "• Communication"], strict=True)
 assert T.qa("QA Engineer") and T.qa("Product Validation Lead")
 
 for t, exp in [("Senior SDET", True), ("QA Automation Engineer", True), ("Software Engineer in Test", True), ("Junior QA Engineer", True),

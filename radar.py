@@ -92,7 +92,15 @@ class Radar:
                 cs, ids = sources.SEARCH[ats](board, terms or self.cfg["search_terms"], self.titles.ok)
             else:
                 cs, ids = sources.SIMPLE[ats](board)
-            return ats, board, "ok", [c for c in cs if self.titles.ok(c["title"])], ids, len(cs)
+            keep = []
+            for c in cs:
+                if self.titles.ok(c["title"]):
+                    keep.append(c)
+                elif (c["desc"] and c["id"] not in self.jobs and c["id"] not in self.state["seen"]
+                      and self.titles.maybe(c["title"]) and filters.testing_text(c["desc"])):
+                    c["by_req"] = True                 # title says something else, the description is about testing
+                    keep.append(c)
+            return ats, board, "ok", keep, ids, len(cs)
         except NotFound:
             return ats, board, "404", [], None, 0
         except Exception as ex:
@@ -315,7 +323,7 @@ class Radar:
                 return "location"                      # related roles: only remote US / Raleigh, no office-city guesses
             if not filters.software_role(False, text):
                 return "not software"
-            if not filters.ece_fit(lines):
+            if not filters.ece_fit(lines, strict=bool(c.get("by_req"))):
                 return "not a fit"                     # requirements must be testing work, nothing else
         elif not filters.software_role(self.titles.is_strong(c["title"]), text) or not filters.testing_role(c["title"], text):
             return "not software"
@@ -333,7 +341,7 @@ class Radar:
                 "first_seen": STAMP, "salary": filters.tidy_salary(c["salary"]) or filters.salary_from(text), "reqs": filters.requirements(lines),
                 "kind": "platform" if platform else "ece" if ece else kind, "why": "" if platform else why, "ai": self.titles.is_ai(c["title"]),
                 "degree": deg, "stale": bool((c.get("boot") or c.get("newboard")) and (c["date_est"] or not c["posted"])),
-                "notify": "hold" if ece else "pending", "fit": 2 if ece else None, "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
+                "notify": "hold" if ece else "pending", "fit": 2 if ece else None, "by_req": bool(c.get("by_req")), "direct_link": bool(c.get("direct_link")), "_text": "\n".join(lines)[:7000]}
 
     def decide(self, cands, platform=False):
         keys = {(norm(j["title"]), norm(j["company"])): j["id"] for j in self.jobs.values()}
@@ -352,7 +360,7 @@ class Radar:
             for c, res in zip(todo, ex.map(lambda c: self.judge(c, platform), todo)):
                 if isinstance(res, str):
                     stats[res] += 1
-                    if c.get("_detailed") or res == "degree":
+                    if c.get("_detailed") or res == "degree" or c.get("by_req"):
                         self.state["seen"][c["id"]] = STAMP[:10]
                     continue
                 k, u = (norm(res["title"]), norm(res["company"])), res["url"].split("?")[0].rstrip("/").lower()
@@ -387,7 +395,7 @@ class Radar:
             lim = 3 * 24 if j["kind"] == "platform" else self.cfg["max_age_days"] * 24
             if ids is not None and j["id"] not in ids and j.get("first_seen") != STAMP:
                 self.drop(j["id"]); closed += 1
-            elif age_hours(j["posted"]) > lim or not self.titles.ok(j["title"]):
+            elif age_hours(j["posted"]) > lim or not (self.titles.ok(j["title"]) or j.get("by_req")):
                 self.drop(j["id"])
         cut = iso(NOW - timedelta(days=45))[:10]
         self.state["seen"] = {k: v for k, v in self.state["seen"].items() if v >= cut}

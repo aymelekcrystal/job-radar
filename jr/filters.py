@@ -158,6 +158,11 @@ class Titles:
     def ok(self, title):
         return self.qa(title) or self.ece(title)
 
+    def maybe(self, title):
+        """Any title that is not ruled out outright: such a posting is still read when its description is about testing."""
+        t = title or ""
+        return bool(t) and not self.hard.search(t) and not self.ece_exc.search(t)
+
     def is_strong(self, title):
         return bool(self.strong.search(title or ""))
 
@@ -304,7 +309,19 @@ _DEV_LINE = re.compile(
     r"(react|angular|vue|aem|salesforce|sharepoint|\.net|java|python) (forms )?(development|developer) experience|software architecture)\b")
 
 
-def ece_fit(lines):
+_TEST_TERMS = re.compile(
+    r"(?i)\b(selenium|playwright|cypress|appium|testng|junit|pytest|cucumber|postman|rest[- ]?assured|jmeter|testrail|sdet|qa|quality assurance|"
+    r"test automation|automated test\w*|automation framework|test cases?|test plans?|test strateg\w+|test scripts?|regression|manual testing|"
+    r"api testing|functional testing|end[- ]to[- ]end test\w*|exploratory testing|uat|defects?|llm evaluation|model evaluation|evals)\b")
+
+
+def testing_text(raw):
+    """Cheap first look at a raw description: does it talk about testing in at least four different ways?
+    Used to notice testing jobs whose title says something else, before the careful requirements check."""
+    return len({m.lower() for m in _TEST_TERMS.findall(raw[:20000])}) >= 4
+
+
+def ece_fit(lines, strict=False):
     """True when the requirements of a posting describe software-testing work a QA automation engineer does:
     testing shows up in at least two requirement lines and a third of them, no line asks for years in another
     profession, and it is not a development job. Unreadable requirements are not a fit."""
@@ -314,8 +331,8 @@ def ece_fit(lines):
     if len(req) < 3:
         return False
     qa = [l for l in req if _QA_LINE.search(_NOT_QA.sub(" ", l))]
-    if len(qa) < 2 or len(qa) / len(req) < 0.25:
-        return False
+    if len(qa) < (3 if strict else 2) or len(qa) / len(req) < (0.4 if strict else 0.25):
+        return False                                   # strict: the title gave no hint, so the requirements must be clearer
     for l in req:
         if not _TESTWORD.search(l) and (_OTHER_JOB.search(l) or _DEV_LINE.search(l)):
             return False
