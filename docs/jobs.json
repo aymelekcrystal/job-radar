@@ -1,77 +1,78 @@
 {
- "updated": "2026-11-20T08:00:01+00:00",
+ "updated": "2026-11-20T09:00:00+00:00",
  "summary": {
-  "run": 642,
-  "new": 0,
-  "closed": 0,
+  "run": 643,
+  "new": 15,
+  "closed": 9,
   "rejected": {
-   "location": 1440,
-   "old": 4454,
-   "not software": 15,
-   "not a fit": 3,
-   "duplicate": 6,
-   "recruiter": 114
+   "old": 11442,
+   "location": 14544,
+   "not software": 136,
+   "not a fit": 26,
+   "degree": 18,
+   "duplicate": 66,
+   "recruiter": 424
   },
   "listed": {
-   "check": 83,
-   "ok": 159,
-   "platform": 24,
-   "ece": 26
+   "check": 86,
+   "ece": 27,
+   "ok": 161,
+   "platform": 24
   },
-  "telegram": "quiet hours (0 held)"
+  "telegram": "quiet hours (15 held)"
  },
  "report": [
   {
    "source": "adp",
    "companies": 2188,
    "scanned": 208,
-   "not_reached": 80,
+   "not_reached": 79,
    "watch_added": 0,
    "ok": 200,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 1953,
-   "title_match": 16
+   "postings": 1854,
+   "title_match": 15
   },
   {
    "source": "ashby",
    "companies": 5074,
-   "scanned": 746,
+   "scanned": 780,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 746,
+   "ok": 780,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 23964,
-   "title_match": 941
+   "postings": 23456,
+   "title_match": 938
   },
   {
    "source": "bamboohr",
    "companies": 16243,
-   "scanned": 680,
+   "scanned": 722,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 680,
+   "ok": 719,
    "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 2410,
-   "title_match": 29
+   "errors": 3,
+   "error_types": "TooManyRedirects×3",
+   "postings": 2781,
+   "title_match": 30
   },
   {
    "source": "breezy",
    "companies": 2709,
-   "scanned": 142,
+   "scanned": 176,
    "not_reached": 0,
-   "watch_added": 0,
-   "ok": 142,
+   "watch_added": 1,
+   "ok": 176,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1572,
-   "title_match": 11
+   "postings": 2580,
+   "title_match": 27
   },
   {
    "source": "company lists sync",
@@ -112,15 +113,15 @@
   {
    "source": "dayforce",
    "companies": 1543,
-   "scanned": 195,
+   "scanned": 189,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 195,
+   "ok": 189,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 9085,
-   "title_match": 76
+   "postings": 7893,
+   "title_match": 23
   },
   {
    "source": "gem",
@@ -132,263 +133,348 @@
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 522,
-   "title_match": 3
+   "postings": 662,
+   "title_match": 10
   },
   {
    "source": "greenhouse",
    "companies": 11130,
-   "scanned": 1977,
+   "scanned": 1910,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 1977,
+   "ok": 1910,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 107488,
-   "title_match": 3406
+   "postings": 101919,
+   "title_match": 3399
   },
   {
    "source": "icims",
    "companies": 11514,
-   "scanned": 90,
+   "scanned": 85,
    "not_reached": 0,
-   "watch_added": 1,
-   "ok": 90,
+   "watch_added": 0,
+   "ok": 85,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 22,
-   "title_match": 22
+   "postings": 50,
+   "title_match": 50
   },
   {
    "source": "jazzhr",
    "companies": 7784,
-   "scanned": 623,
+   "scanned": 664,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 623,
+   "ok": 664,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 8578,
-   "title_match": 43
+   "postings": 16130,
+   "title_match": 148
   },
   {
    "source": "jibe",
    "companies": 283,
-   "scanned": 80,
+   "scanned": 71,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 79,
+   "ok": 71,
    "gone": 0,
-   "errors": 1,
-   "error_types": "ConnectionError×1",
-   "postings": 132,
-   "title_match": 132
+   "errors": 0,
+   "error_types": "",
+   "postings": 43,
+   "title_match": 43
   },
   {
    "source": "jobvite",
    "companies": 555,
-   "scanned": 153,
+   "scanned": 138,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 153,
+   "ok": 138,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 2887,
-   "title_match": 29
+   "postings": 2754,
+   "title_match": 44
   },
   {
    "source": "lever",
    "companies": 4903,
-   "scanned": 601,
+   "scanned": 581,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 601,
+   "ok": 581,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 31319,
-   "title_match": 936
+   "postings": 31647,
+   "title_match": 937
+  },
+  {
+   "source": "open dataset A (60+ career systems)",
+   "companies": 173344,
+   "postings": 7761182,
+   "title_match": 41683,
+   "by_system": {
+    "workday": 7504,
+    "smartrecruiters": 5467,
+    "successfactors": 4606,
+    "greenhouse": 3473,
+    "manatal": 2317,
+    "phenom": 2060,
+    "oracle": 1903,
+    "icims": 1153,
+    "workable": 1150,
+    "lever": 1005,
+    "ashby": 979,
+    "eightfold": 934,
+    "jazzhr": 755,
+    "mycareersfuture": 657,
+    "bamboohr": 554,
+    "paylocity": 438,
+    "teamtailor": 409,
+    "ukg": 386,
+    "apple": 327,
+    "dayforce": 320,
+    "paycom": 317,
+    "jibe": 312,
+    "zoho_recruit": 309,
+    "recruitee": 299,
+    "avature": 288,
+    "breezy": 256,
+    "amazon": 234,
+    "catsone": 233,
+    "cornerstone": 228,
+    "rippling": 212,
+    "moka": 193,
+    "keka": 189,
+    "jobvite": 182,
+    "beisen": 158,
+    "pinpoint": 145,
+    "tesla": 136,
+    "talentsoft": 124,
+    "applicantpro": 116,
+    "adp": 104,
+    "tiktok": 101,
+    "personio": 93,
+    "taleo_enterprise": 89,
+    "taleo": 87,
+    "clearcompany": 85,
+    "darwinbox": 78,
+    "talentbrew": 76,
+    "hrmos": 58,
+    "recruiterbox": 58,
+    "gem": 55,
+    "jobberman": 53,
+    "gupy": 50,
+    "greeting": 48,
+    "applitrack": 46,
+    "brightermonday": 39,
+    "google": 36,
+    "softgarden": 35,
+    "pageup": 25,
+    "meta": 23,
+    "feishu_hire": 18,
+    "herp": 17,
+    "bytedance": 15,
+    "hireology": 14,
+    "emploitic": 13,
+    "talentio": 12,
+    "wantedly": 10,
+    "ninehire": 6,
+    "peopleadmin": 5,
+    "uber": 3,
+    "varbi": 2,
+    "wintalent": 1
+   },
+   "watch_added": {
+    "icims": 1,
+    "ukg": 3,
+    "workday": 13
+   },
+   "snapshot": "2026-11-20T07:28:16.202764+00:00",
+   "ok": 1
   },
   {
    "source": "oracle",
    "companies": 1453,
-   "scanned": 89,
+   "scanned": 93,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 88,
+   "ok": 93,
    "gone": 0,
-   "errors": 1,
-   "error_types": "HTTP 503×1",
-   "postings": 61,
-   "title_match": 61
+   "errors": 0,
+   "error_types": "",
+   "postings": 55,
+   "title_match": 55
   },
   {
    "source": "paycom",
    "companies": 5135,
-   "scanned": 110,
+   "scanned": 118,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 107,
+   "ok": 114,
    "gone": 0,
-   "errors": 3,
-   "error_types": "no portal config×3",
-   "postings": 13,
-   "title_match": 13
+   "errors": 4,
+   "error_types": "no portal config×4",
+   "postings": 3,
+   "title_match": 3
   },
   {
    "source": "paylocity",
    "companies": 12342,
-   "scanned": 50,
-   "not_reached": 0,
-   "watch_added": 1,
-   "ok": 48,
+   "scanned": 18,
+   "not_reached": 41,
+   "watch_added": 0,
+   "ok": 10,
    "gone": 0,
-   "errors": 2,
-   "error_types": "no page data×1, HTTP 429×1",
-   "postings": 1069,
-   "title_match": 2
+   "errors": 7,
+   "error_types": "HTTP 429×7",
+   "postings": 102,
+   "title_match": 0
   },
   {
    "source": "personio",
    "companies": 5567,
-   "scanned": 118,
+   "scanned": 138,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 118,
+   "ok": 138,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 730,
-   "title_match": 3
+   "postings": 993,
+   "title_match": 2
   },
   {
    "source": "pinpoint",
    "companies": 1340,
-   "scanned": 161,
+   "scanned": 167,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 161,
+   "ok": 167,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1506,
-   "title_match": 24
+   "postings": 3402,
+   "title_match": 15
   },
   {
    "source": "recruitee",
    "companies": 3079,
-   "scanned": 188,
+   "scanned": 194,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 187,
-   "gone": 1,
-   "errors": 0,
-   "error_types": "",
-   "postings": 3061,
-   "title_match": 19
+   "ok": 189,
+   "gone": 0,
+   "errors": 5,
+   "error_types": "SSLError×1, HTTP 429×4",
+   "postings": 3187,
+   "title_match": 55
   },
   {
    "source": "recruiterbox",
    "companies": 534,
-   "scanned": 67,
+   "scanned": 65,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 67,
+   "ok": 65,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 811,
-   "title_match": 8
+   "postings": 769,
+   "title_match": 9
   },
   {
    "source": "rippling",
    "companies": 2661,
-   "scanned": 142,
+   "scanned": 147,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 142,
+   "ok": 147,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1456,
-   "title_match": 19
+   "postings": 1756,
+   "title_match": 7
   },
   {
    "source": "smartrecruiters",
    "companies": 11877,
-   "scanned": 722,
+   "scanned": 736,
    "not_reached": 0,
-   "watch_added": 0,
-   "ok": 722,
+   "watch_added": 1,
+   "ok": 736,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 8933,
-   "title_match": 129
+   "postings": 14325,
+   "title_match": 247
   },
   {
    "source": "successfactors",
    "companies": 1513,
-   "scanned": 78,
+   "scanned": 67,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 75,
+   "ok": 63,
    "gone": 0,
-   "errors": 3,
-   "error_types": "ConnectionError×1, ParseError: not well-f×1, SSLError×1",
-   "postings": 10902,
-   "title_match": 127
+   "errors": 4,
+   "error_types": "SSLError×1, ReadTimeout×2, HTTP 429×1",
+   "postings": 6833,
+   "title_match": 44
   },
   {
    "source": "teamtailor",
    "companies": 3175,
-   "scanned": 212,
+   "scanned": 194,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 212,
+   "ok": 194,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 2813,
-   "title_match": 17
+   "postings": 2867,
+   "title_match": 18
   },
   {
    "source": "ukg",
    "companies": 2184,
-   "scanned": 76,
+   "scanned": 90,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 76,
+   "ok": 90,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 5,
-   "title_match": 5
+   "postings": 15,
+   "title_match": 15
   },
   {
    "source": "workable",
    "companies": 4753,
-   "scanned": 309,
+   "scanned": 293,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 309,
-   "gone": 0,
+   "ok": 292,
+   "gone": 1,
    "errors": 0,
    "error_types": "",
-   "postings": 9215,
-   "title_match": 101
+   "postings": 6665,
+   "title_match": 84
   },
   {
    "source": "workday (all companies, rotating)",
    "companies": 13054,
-   "scanned": 10,
-   "not_reached": 88,
+   "scanned": 8,
+   "not_reached": 117,
    "watch_added": 0,
-   "ok": 2,
+   "ok": 0,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
@@ -397,16 +483,16 @@
   },
   {
    "source": "workday (companies hiring QA)",
-   "companies": 1773,
-   "scanned": 8,
-   "not_reached": 430,
+   "companies": 1786,
+   "scanned": 9,
+   "not_reached": 418,
    "watch_added": 0,
-   "ok": 0,
+   "ok": 1,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 0,
-   "title_match": 0
+   "postings": 1,
+   "title_match": 1
   }
  ],
  "jobs": [
@@ -436,7 +522,167 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
+  },
+  {
+   "v": 2,
+   "id": "avature:84148",
+   "ats": "avature",
+   "src": "Avature",
+   "via": "stapply",
+   "board": "avature/Lenovo",
+   "title": "Global Advisory Testing Engineer",
+   "company": "Lenovo",
+   "location": "Morrisville",
+   "url": "https://jobs.lenovo.com/en_US/careers/JobDetail/Global-Advisory-Testing-Engineer/84148",
+   "posted": "2026-11-20T09:00:00+00:00",
+   "date_est": true,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "Basic Qualifications Bachelor’s degree in Computer Engineering, Electrical Engineering, Computer Science, or a related technical discipline, or…",
+    "5+ years of experience in test development, manufacturing engineering, systems engineering, server engineering, or hardware/software integration",
+    "Preferred Qualifications Demonstrated programming and scripting experience using Python, C/C++, C#, PowerShell, Bash/Shell, or comparable languages",
+    "Working knowledge of server hardware architecture, including processors, memory, storage, networking, firmware, and system-level components"
+   ],
+   "kind": "ece",
+   "why": "Raleigh area",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": 2,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "avature:83893",
+   "ats": "avature",
+   "src": "Avature",
+   "via": "stapply",
+   "board": "avature/Lenovo",
+   "title": "Global Staff Testing Engineer",
+   "company": "Lenovo",
+   "location": "Morrisville",
+   "url": "https://jobs.lenovo.com/en_US/careers/JobDetail/Global-Staff-Testing-Engineer/83893",
+   "posted": "2026-11-20T09:00:00+00:00",
+   "date_est": true,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "Basic Qualifications Bachelor’s degree in Computer Engineering, Electrical Engineering, Computer Science, or a related technical discipline, or…",
+    "3+ years of experience in test development, manufacturing engineering, systems engineering, server engineering, or hardware/software integration",
+    "Preferred Qualifications Demonstrated programming and scripting experience using Python, C/C++, C#, PowerShell, Bash/Shell, or comparable languages",
+    "Working knowledge of server hardware architecture, including processors, memory, storage, networking, firmware, and system-level components"
+   ],
+   "kind": "ece",
+   "why": "Raleigh area",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": 2,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "avature:83901",
+   "ats": "avature",
+   "src": "Avature",
+   "via": "stapply",
+   "board": "avature/Lenovo",
+   "title": "Thermal Test Engineer",
+   "company": "Lenovo",
+   "location": "Morrisville",
+   "url": "https://jobs.lenovo.com/en_US/careers/JobDetail/Thermal-Test-Engineer/83901",
+   "posted": "2026-11-20T09:00:00+00:00",
+   "date_est": true,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "The ideal candidate combines strong server hardware knowledge with practical experience in thermal testing, system validation, laboratory…",
+    "Basic Qualifications Bachelor's degree in Mechanical Engineering, Electrical Engineering, Computer Engineering, Computer Science, or a related…",
+    "5+ years of hands-on experience in server hardware validation, system testing, thermal testing, electronics testing, or related engineering…",
+    "Strong knowledge of server hardware architecture and components, including CPUs, DIMMs, NVMe storage, NICs, power supplies, cooling systems, and…"
+   ],
+   "kind": "ok",
+   "why": "Raleigh area",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "avature:132263",
+   "ats": "avature",
+   "src": "Avature",
+   "via": "stapply",
+   "board": "avature/Booz Allen Hamilton",
+   "title": "Systems Integration and Test Engineer",
+   "company": "Booz Allen Hamilton",
+   "location": "Fort Belvoir,VA,US",
+   "url": "https://careers.boozallen.com/careers/JobDetail?jobId=132263",
+   "posted": "2026-11-20T09:00:00+00:00",
+   "date_est": true,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$86,800 – $198,000",
+   "reqs": [
+    "3+ years of experience testing hardware‑software integrated systems",
+    "Experience with DevSecOps tools such as GitLab, Jira, or CI pipelines",
+    "Knowledge of Go, Python, or Java and Merge Request (MR) contributions and simple reviews for minor fixes",
+    "Experience supporting cybersecurity ATO compliance by performing comprehensive testing on a hardened system and validating STIG adherence"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "jazzhr:SALhyGOSjX",
+   "ats": "jazzhr",
+   "src": "JazzHR",
+   "via": "stapply",
+   "board": "jazzhr/Learntastic",
+   "title": "Quality Assurance Engineer",
+   "company": "Learntastic",
+   "location": "Remote",
+   "url": "https://learntastic.applytojob.com/apply/jobs/details/SALhyGOSjX",
+   "posted": "2026-11-20T09:00:00+00:00",
+   "date_est": true,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "3-4 years of experience in software quality assurance and testing",
+    "Strong hands-on experience in manual and automation testing",
+    "Strong analytical and structured thinking, with excellent attention to detail",
+    "Experience using AI tools such as ChatGPT and Claude Cowork as part of testing workflows"
+   ],
+   "kind": "check",
+   "why": "Remote, but country not stated",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
   },
   {
    "v": 2,
@@ -469,7 +715,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -570,6 +816,38 @@
   },
   {
    "v": 2,
+   "id": "paylocity:236047d3-9ad6-4aa6-abf8-174bba32fef8:4680513",
+   "ats": "paylocity",
+   "src": "Paylocity",
+   "via": "stapply",
+   "board": "paylocity/Acumen & DCI",
+   "title": "Senior Software Quality Engineer",
+   "company": "Acumen & DCI",
+   "location": "US",
+   "url": "https://recruiting.paylocity.com/Recruiting/Jobs/Details/4680513",
+   "posted": "2026-11-19T22:32:24+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$110,000 – $140,000",
+   "reqs": [
+    "6+ years of software quality engineering, test automation or software engineering experience, including hands-on design and build of automation…",
+    "Strong hands-on coding skill in at least one language such as C#, TypeScript, Java or Python, plus working SQL, with real automation work the…",
+    "Strong experience with modern test frameworks such as Playwright, Selenium or Cypress, API testing tools, and CI/CD platforms such as Azure DevOps,…",
+    "Experience designing risk-based testing strategies for complex, integrated or high-consequence systems"
+   ],
+   "kind": "ok",
+   "why": "",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
    "id": "successfactors:careers-inc.nttdata.com:1452411000",
    "ats": "successfactors",
    "src": "SuccessFactors",
@@ -632,7 +910,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -660,7 +938,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -759,7 +1037,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1022,7 +1300,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1349,7 +1627,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1382,7 +1660,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1415,7 +1693,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1448,7 +1726,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1514,7 +1792,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1542,7 +1820,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1575,7 +1853,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -1896,7 +2174,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2098,6 +2376,134 @@
   },
   {
    "v": 2,
+   "id": "zoho_recruit:703510000010733001",
+   "ats": "zoho_recruit",
+   "src": "Zoho_Recruit",
+   "via": "stapply",
+   "board": "zoho_recruit/Kissolutions",
+   "title": "QA Engineer",
+   "company": "Kissolutions",
+   "location": "",
+   "url": "https://kissolutions.zohorecruit.com/jobs/Careers/703510000010733001",
+   "posted": "2026-11-18T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "5+ years of professional QA / quality engineering experience, with strong depth in both manual and automation testing",
+    "Strong understanding of QA principles, testing methodologies, and QA processes across the SDLC/STLC",
+    "Strong experience in test case design and testing native Android and iOS mobile applications",
+    "Hands-on experience with Appium and Cucumber; Java strongly preferred (our stack is Appium + Java + Cucumber + BrowserStack)"
+   ],
+   "kind": "check",
+   "why": "Remote, but country not stated",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "jazzhr:fylZ1BPYTX",
+   "ats": "jazzhr",
+   "src": "JazzHR",
+   "via": "stapply",
+   "board": "jazzhr/Bright Vision Technologies",
+   "title": "Appium Automation Engineer",
+   "company": "Bright Vision Technologies",
+   "location": "Plano, TX",
+   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/fylZ1BPYTX",
+   "posted": "2026-11-18T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$115,000 – $165,000",
+   "reqs": [
+    "Experience Required: typically 8+ years in mobile quality assurance or automation engineering; align the final threshold with the approved requisition",
+    "Hands-on experience with Appium and mobile application automation for iOS and Android",
+    "Proficiency in at least one automation language such as Java, Python, or JavaScript/TypeScript",
+    "Understanding of mobile application architecture, locators, gestures, capabilities, permissions, and device lifecycle behavior"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "jazzhr:7qj2TvAGe0",
+   "ats": "jazzhr",
+   "src": "JazzHR",
+   "via": "stapply",
+   "board": "jazzhr/Bright Vision Technologies",
+   "title": "Cypress Automation Engineer",
+   "company": "Bright Vision Technologies",
+   "location": "Piscataway, NJ",
+   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/7qj2TvAGe0",
+   "posted": "2026-11-18T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$115,000 – $165,000",
+   "reqs": [
+    "Experience Required: typically 8+ years in software quality assurance or test automation; align the final threshold with the approved requisition",
+    "Strong hands-on experience with Cypress and JavaScript or TypeScript",
+    "Understanding of browser architecture, DOM selectors, asynchronous behavior, assertions, and test isolation",
+    "Experience testing REST APIs, network requests, authentication, and data-driven application workflows"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "jazzhr:f4Cvwa0KgK",
+   "ats": "jazzhr",
+   "src": "JazzHR",
+   "via": "stapply",
+   "board": "jazzhr/Bright Vision Technologies",
+   "title": "Playwright Automation Engineer",
+   "company": "Bright Vision Technologies",
+   "location": "Santa Clara, CA",
+   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/f4Cvwa0KgK",
+   "posted": "2026-11-18T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$115,000 – $165,000",
+   "reqs": [
+    "Experience Required: typically 8+ years in software testing or automation engineering; align the final threshold with the approved requisition",
+    "Hands-on proficiency with Playwright and JavaScript or TypeScript for browser-based test automation",
+    "Experience creating maintainable test frameworks using fixtures, reusable components, assertions, and test data strategies",
+    "Working knowledge of HTML, CSS, DOM behavior, browser developer tools, and cross-browser testing concepts"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
    "id": "smartrecruiters:nbcuniversal3:744000162180744",
    "ats": "smartrecruiters",
    "src": "SmartRecruiters",
@@ -2160,7 +2566,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2193,7 +2599,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2226,7 +2632,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T06:02:44+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2259,7 +2665,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2292,7 +2698,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2322,7 +2728,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2353,7 +2759,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2386,7 +2792,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2419,7 +2825,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2452,7 +2858,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2482,7 +2888,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2512,7 +2918,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2545,7 +2951,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2578,7 +2984,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2608,7 +3014,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2641,7 +3047,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": true,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2674,7 +3080,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2707,7 +3113,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2738,7 +3144,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2771,7 +3177,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2802,7 +3208,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2834,7 +3240,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2867,7 +3273,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2898,7 +3304,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2930,7 +3336,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -2964,34 +3370,6 @@
    "direct_link": false,
    "applied": true,
    "last_seen": "2026-11-17T17:00:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "keka:snoonu.keka.com:default:6542",
-   "ats": "keka",
-   "src": "Keka",
-   "via": "stapply",
-   "board": "keka/Snoonu",
-   "title": "Middle QA Engineer II",
-   "company": "Snoonu",
-   "location": "Remote, Oregon, United States",
-   "url": "https://snoonu.keka.com/careers/jobdetails/6542",
-   "posted": "2026-11-17T13:25:59+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-18T15:30:01+00:00",
-   "salary": "",
-   "reqs": [],
-   "kind": "ok",
-   "why": "",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
   },
   {
    "v": 2,
@@ -3057,7 +3435,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3222,7 +3600,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3255,7 +3633,66 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
+  },
+  {
+   "v": 2,
+   "id": "clearcompany:1bfff6e5-9dde-5f36-d5c5-07d796d11f93",
+   "ats": "clearcompany",
+   "src": "Clearcompany",
+   "via": "stapply",
+   "board": "clearcompany/Amatriot Group, LLC",
+   "title": "Interaction Designer/User Researcher/Usability Tester",
+   "company": "Amatriot Group, LLC",
+   "location": "US",
+   "url": "https://apply.clearcompany.com/amatriot?jobId=1bfff6e5-9dde-5f36-d5c5-07d796d11f93",
+   "posted": "2026-11-17T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$71,000 – $86,000",
+   "reqs": [
+    "Conduct stakeholder interviews, user requirements analysis, task analysis, and conceptual modeling",
+    "Lead participatory and iterative design activities, including observational studies, customer interviews, usability testing, and other requirements…",
+    "Research user needs and potential system enhancements",
+    "Produce user requirements specifications, experience goals, personas, storyboards, and scenarios"
+   ],
+   "kind": "ok",
+   "why": "",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "zoho_recruit:18780000010037334",
+   "ats": "zoho_recruit",
+   "src": "Zoho_Recruit",
+   "via": "stapply",
+   "board": "zoho_recruit/Dss",
+   "title": "QA Manager (ZR1288)",
+   "company": "Dss",
+   "location": "",
+   "url": "https://dss.zohorecruit.eu/jobs/Careers/18780000010037334",
+   "posted": "2026-11-17T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [],
+   "kind": "check",
+   "why": "Remote, but country not stated",
+   "ai": false,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
   },
   {
    "v": 2,
@@ -3288,7 +3725,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3321,7 +3758,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3386,7 +3823,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3451,40 +3888,39 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
-   "id": "pageup:823/cw/en-us:505403",
-   "ats": "pageup",
-   "src": "Pageup",
+   "id": "icims:2712",
+   "ats": "icims",
+   "src": "iCIMS",
    "via": "stapply",
-   "board": "pageup/Mutual of Omaha",
-   "title": "QA Analyst – API – Remote",
-   "company": "Mutual of Omaha",
-   "location": "Remote",
-   "url": "https://careers.pageuppeople.com/823/cw/en-us/job/505403/qa-analyst-api-remote",
-   "posted": "2026-11-16T15:30:01+00:00",
-   "date_est": true,
-   "first_seen": "2026-11-16T15:30:01+00:00",
-   "salary": "$76,000 – $92,000",
+   "board": "icims/World Travel Holdings Inc",
+   "title": "Quality Engineering Supervisor",
+   "company": "World Travel Holdings Inc",
+   "location": "US-Remote",
+   "url": "https://careers-wth.icims.com/jobs/2712/quality-engineering-supervisor/job?in_iframe=1",
+   "posted": "2026-11-16T05:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$105,000 – $115,000",
    "reqs": [
-    "4+ years of QA analysis experience, including hands-on experience analyzing, testing, and validating API functionality",
-    "Experience using API testing tools such as Postman and Swagger to validate functionality and security",
-    "Strong technical and systems acumen, with the ability to interpret architecture, tools, processes, data flows, and integration patterns and…",
-    "Proficiency with automated testing frameworks such as Karate, including the ability to design, execute, and maintain automated API test scripts that…"
+    "Bachelor’s degree in computer science, engineering, or a related field, or equivalent practical experience",
+    "4+ years of experience in software testing, Quality Engineering, or test automation, including experience coordinating testing work or serving as a…",
+    "Hands-on experience developing and maintaining automated tests in an established framework, with proficiency in Java, Python, JavaScript, or a…",
+    "Practical experience with functional, regression, API, and integration testing, defect management, and risk-based test planning"
    ],
-   "kind": "check",
-   "why": "Remote, but country not stated",
+   "kind": "ok",
+   "why": "",
    "ai": false,
-   "degree": "none",
+   "degree": "alt",
    "stale": false,
-   "notify": "sent",
+   "notify": "pending",
    "fit": null,
    "by_req": false,
    "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "applied": false
   },
   {
    "v": 2,
@@ -3583,7 +4019,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3616,7 +4052,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3649,7 +4085,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3682,7 +4118,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3715,7 +4151,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3748,39 +4184,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "dayforce:asrcfh:CANDIDATEPORTAL:31685",
-   "ats": "dayforce",
-   "src": "Dayforce",
-   "via": "stapply",
-   "board": "dayforce/ASRC Federal",
-   "title": "QA Engineer",
-   "company": "ASRC Federal",
-   "location": "",
-   "url": "https://jobs.dayforcehcm.com/en-US/asrcfh/CANDIDATEPORTAL/jobs/31685",
-   "posted": "2026-11-16T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-19T00:30:01+00:00",
-   "salary": "",
-   "reqs": [
-    "Bachelor's degree or six (6) additional years of relevant professional experience in lieu of a degree",
-    "Minimum of 3 years of directly relevant professional experience for this position",
-    "Strong written and verbal communication skills and the ability to collaborate with Government and contractor stakeholders",
-    "Experience working in agile delivery environments and producing clear technical or program documentation"
-   ],
-   "kind": "check",
-   "why": "Remote, but country not stated",
-   "ai": false,
-   "degree": "alt",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3811,7 +4215,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -3844,7 +4248,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -4283,7 +4687,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -4397,7 +4801,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -4735,7 +5139,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -4768,7 +5172,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -4892,7 +5296,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -5115,138 +5519,6 @@
   },
   {
    "v": 2,
-   "id": "jazzhr:6lzBx1wjmr",
-   "ats": "jazzhr",
-   "src": "JazzHR",
-   "via": "stapply",
-   "board": "jazzhr/Bright Vision Technologies",
-   "title": "Accessibility Test Engineer",
-   "company": "Bright Vision Technologies",
-   "location": "Edison / Middlesex County, NJ",
-   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/6lzBx1wjmr",
-   "posted": "2026-11-12T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-15T18:30:00+00:00",
-   "salary": "$115,000 – $165,000",
-   "reqs": [
-    "Experience Required: typically 4+ years in accessibility testing, software QA, or inclusive digital product validation; align with the approved…",
-    "Working knowledge of WCAG 2.1 or 2.2, accessibility principles, and common web accessibility barriers",
-    "Hands-on experience with screen readers such as NVDA, JAWS, or VoiceOver and keyboard-only testing",
-    "Ability to evaluate HTML semantics, ARIA usage, forms, focus management, and interactive components"
-   ],
-   "kind": "check",
-   "why": "Office city listed, but the description says remote",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "jazzhr:pA6nUHH555",
-   "ats": "jazzhr",
-   "src": "JazzHR",
-   "via": "stapply",
-   "board": "jazzhr/Bright Vision Technologies",
-   "title": "Mobile Performance Test Engineer",
-   "company": "Bright Vision Technologies",
-   "location": "Edison / Middlesex County, NJ",
-   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/pA6nUHH555",
-   "posted": "2026-11-12T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-15T18:30:00+00:00",
-   "salary": "$115,000 – $165,000",
-   "reqs": [
-    "Experience Required: typically 5+ years in performance testing or mobile quality engineering; align with the approved requisition",
-    "Experience testing iOS or Android applications and understanding mobile operating-system behavior",
-    "Hands-on knowledge of performance tools such as JMeter, k6, Gatling, or equivalent load-testing platforms",
-    "Ability to use Android Profiler, Xcode Instruments, logs, and network diagnostics to investigate performance issues"
-   ],
-   "kind": "check",
-   "why": "Office city listed, but the description says remote",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "jazzhr:mIZF21lYMy",
-   "ats": "jazzhr",
-   "src": "JazzHR",
-   "via": "stapply",
-   "board": "jazzhr/Bright Vision Technologies",
-   "title": "Quality Engineering Architect",
-   "company": "Bright Vision Technologies",
-   "location": "Irving / Las Colinas, TX",
-   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/mIZF21lYMy",
-   "posted": "2026-11-12T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-15T18:30:00+00:00",
-   "salary": "$115,000 – $165,000",
-   "reqs": [
-    "Experience Required: typically 8+ years in software quality engineering or test leadership, including enterprise-scale delivery; align with the…",
-    "Strong understanding of software development lifecycles, test strategy, risk-based testing, and continuous quality practices",
-    "Hands-on knowledge of test automation frameworks, API testing, and integration testing approaches",
-    "Experience designing quality practices for cloud-based, distributed, web, or mobile applications"
-   ],
-   "kind": "check",
-   "why": "Office city listed, but the description says remote",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "jazzhr:L3Bha5UarN",
-   "ats": "jazzhr",
-   "src": "JazzHR",
-   "via": "stapply",
-   "board": "jazzhr/Bright Vision Technologies",
-   "title": "Test Automation Architect",
-   "company": "Bright Vision Technologies",
-   "location": "Frisco / North Dallas, TX",
-   "url": "https://brightvisiontechnologies.applytojob.com/apply/jobs/details/L3Bha5UarN",
-   "posted": "2026-11-12T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-15T18:30:00+00:00",
-   "salary": "$115,000 – $165,000",
-   "reqs": [
-    "Experience Required: typically 8+ years in quality engineering, including substantial experience designing automation frameworks; align with the…",
-    "Expertise with one or more modern automation stacks such as Playwright, Selenium, Cypress, or Appium",
-    "Strong programming ability in Java, Python, JavaScript, or TypeScript and experience designing reusable frameworks",
-    "Experience with API automation, distributed application testing, test data, and non-functional test considerations"
-   ],
-   "kind": "check",
-   "why": "Office city listed, but the description says remote",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
    "id": "pinpoint:newfireglobal:606794",
    "ats": "pinpoint",
    "src": "Pinpoint",
@@ -5398,7 +5670,7 @@
    "notify": "sent",
    "direct_link": false,
    "force": true,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5430,7 +5702,7 @@
    "notify": "sent",
    "direct_link": false,
    "force": true,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5582,7 +5854,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5642,39 +5914,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "jazzhr:MjrlDwMDzV",
-   "ats": "jazzhr",
-   "src": "JazzHR",
-   "via": "stapply",
-   "board": "jazzhr/Priwils, Inc",
-   "title": "DHS Certified Accessibility Testing Expert",
-   "company": "Priwils, Inc",
-   "location": "Remote",
-   "url": "https://priwilsinc.applytojob.com/apply/jobs/details/MjrlDwMDzV",
-   "posted": "2026-11-11T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-19T00:30:01+00:00",
-   "salary": "",
-   "reqs": [
-    "Summary We are seeking an experienced Accessibility Testing Expert to provide advanced expertise in evaluating the accessibility and usability of…",
-    "The ideal candidate will bring strong expertise in WCAG standards, assistive technologies, manual accessibility testing, accessibility testing…",
-    "Required Skills Advanced knowledge of WCAG 2.1 and 2.2 Level A and AA, Section 508, applicable ADA accessibility requirements, and familiarity with…",
-    "Extensive hands-on experience testing with JAWS, NVDA, VoiceOver, and TalkBack"
-   ],
-   "kind": "ece",
-   "why": "Remote, but country not stated",
-   "ai": false,
-   "degree": "alt",
-   "stale": false,
-   "notify": "sent",
-   "fit": 2,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -5735,7 +5975,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5823,7 +6063,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -5912,7 +6152,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5943,7 +6183,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -5975,7 +6215,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6008,7 +6248,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6105,7 +6345,71 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
+  },
+  {
+   "v": 2,
+   "id": "avature:33258",
+   "ats": "avature",
+   "src": "Avature",
+   "via": "stapply",
+   "board": "avature/HARMAN",
+   "title": "Principal Software Test Engineer - (Quality Assurance)",
+   "company": "HARMAN",
+   "location": "Location:US Home Office Texas",
+   "url": "https://jobsearch.harman.com/en_US/careers/JobDetail/Principal-Software-Test-Engineer-Quality-Assurance/33258",
+   "posted": "2026-11-09T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "$108,750 – $159,500",
+   "reqs": [
+    "10+ years in Quality Assurance, with a strong focus on testing fully localized mobile applications that incorporate backend services, data…",
+    "Deep understanding of modern QA methodologies, best practices, and tools, with a specific focus on testing Flutter applications, including widget…",
+    "Automation Systems: Proven ability to build and maintain robust automated test pipelines across mobile, backend, and data systems",
+    "Skilled in CI/CD integration (e.g., GitHub Actions, Jenkins, CircleCI)"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": false,
+   "degree": "alt",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "jazzhr:IdAkqtp11q",
+   "ats": "jazzhr",
+   "src": "JazzHR",
+   "via": "stapply",
+   "board": "jazzhr/Delmar Aerospace Corporation",
+   "title": "Operations Training and Stan Eval Specialist (B-52)- Minot",
+   "company": "Delmar Aerospace Corporation",
+   "location": "Minot, ND",
+   "url": "https://delmaraero.applytojob.com/apply/jobs/details/IdAkqtp11q",
+   "posted": "2026-11-08T00:00:00+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-20T09:00:00+00:00",
+   "salary": "",
+   "reqs": [
+    "Active SECRET clearance, or a previously held SECRET clearance that expired and was not revoked",
+    "Minimum two (2) years of experience with PEX or a similar proprietary scheduling program",
+    "Minimum two (2) years of experience with Microsoft Access, Excel and SharePoint",
+    "Minimum two (2) years of experience in a squadron, group and/or wing training and/or stan eval shop — OR — three (3) years in a DoD flying squadron,…"
+   ],
+   "kind": "check",
+   "why": "Office city listed, but the description says remote",
+   "ai": true,
+   "degree": "none",
+   "stale": false,
+   "notify": "pending",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
   },
   {
    "v": 2,
@@ -6504,40 +6808,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
-  },
-  {
-   "v": 2,
-   "id": "paycom:0YA49:254435",
-   "ats": "paycom",
-   "src": "Paycom",
-   "via": "stapply",
-   "board": "paycom/EXCLUSIVE JETS LLC",
-   "title": "Quality Assurance Records Administrator",
-   "company": "EXCLUSIVE JETS LLC",
-   "location": "Raleigh, NC  - Raleigh , NC 27609",
-   "url": "https://www.paycomonline.net/v4/ats/web.php/portal/91989cea70627f35dbdea57ac03e0a2b/jobs/254435",
-   "posted": "2026-11-06T00:00:00+00:00",
-   "date_est": false,
-   "first_seen": "2026-11-16T15:30:01+00:00",
-   "salary": "",
-   "reqs": [
-    "Strong initiative and self-motivation",
-    "Attention to detail and focus on accuracy",
-    "Effective time management and prioritization",
-    "Adaptability and accountability"
-   ],
-   "kind": "ok",
-   "why": "Raleigh area",
-   "ai": false,
-   "degree": "none",
-   "stale": false,
-   "notify": "sent",
-   "fit": null,
-   "by_req": false,
-   "direct_link": false,
-   "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6570,7 +6841,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6600,7 +6871,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6633,7 +6904,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6663,7 +6934,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -6697,7 +6968,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6854,7 +7125,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6920,7 +7191,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6953,7 +7224,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -6986,7 +7257,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7050,7 +7321,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7145,7 +7416,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7178,7 +7449,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7235,7 +7506,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T06:02:44+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7265,7 +7536,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7296,7 +7567,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7327,7 +7598,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7511,7 +7782,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7542,7 +7813,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7572,7 +7843,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7629,7 +7900,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7810,7 +8081,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -7966,7 +8237,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -7997,7 +8268,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -8060,7 +8331,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T06:02:44+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8419,7 +8690,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8450,7 +8721,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8636,7 +8907,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -8663,7 +8934,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8694,7 +8965,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8720,7 +8991,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8751,7 +9022,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -8780,7 +9051,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T19:15:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -8841,7 +9112,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -8903,7 +9174,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -8993,7 +9264,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -9023,7 +9294,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -9057,7 +9328,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -9088,7 +9359,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -9118,7 +9389,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -9180,7 +9451,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -9212,7 +9483,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-20T08:00:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -9237,7 +9508,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -9331,7 +9602,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-19T00:30:01+00:00"
+   "last_seen": "2026-11-20T09:00:00+00:00"
   },
   {
    "v": 2,
@@ -9361,7 +9632,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-20T08:00:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
@@ -9392,7 +9663,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-19T00:30:01+00:00",
+   "last_seen": "2026-11-20T09:00:00+00:00",
    "applied": false
   },
   {
