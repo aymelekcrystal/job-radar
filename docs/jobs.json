@@ -1,85 +1,77 @@
 {
- "updated": "2026-11-27T21:45:01+00:00",
+ "updated": "2026-11-27T22:00:01+00:00",
  "summary": {
-  "run": 1224,
+  "run": 1225,
   "new": 0,
   "closed": 0,
   "rejected": {
-   "location": 6636,
-   "old": 8453,
-   "not software": 52,
-   "not a fit": 6,
-   "duplicate": 8,
+   "old": 3250,
+   "location": 1165,
+   "duplicate": 3,
+   "not software": 22,
+   "not a fit": 2,
    "recruiter": 67
   },
   "listed": {
    "check": 105,
-   "platform": 23,
+   "platform": 26,
    "ok": 164,
    "ece": 24
   },
-  "telegram": "sent 0 of 0"
+  "telegram": "sent 3 of 3"
  },
  "report": [
   {
    "source": "adp",
    "companies": 2189,
    "scanned": 208,
-   "not_reached": 133,
+   "not_reached": 41,
    "watch_added": 0,
    "ok": 200,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 2213,
-   "title_match": 62
-  },
-  {
-   "source": "amazon",
-   "companies": 1,
-   "scanned": 1,
-   "ok": 1,
-   "postings": 114,
-   "title_match": 45
+   "postings": 2090,
+   "title_match": 12
   },
   {
    "source": "ashby",
    "companies": 5078,
-   "scanned": 780,
+   "scanned": 779,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 778,
-   "gone": 2,
+   "ok": 779,
+   "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 24792,
-   "title_match": 942
+   "postings": 24231,
+   "title_match": 940
   },
   {
    "source": "bamboohr",
    "companies": 18442,
-   "scanned": 1193,
+   "scanned": 687,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 1193,
+   "ok": 686,
    "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 9795,
-   "title_match": 473
+   "errors": 1,
+   "error_types": "TooManyRedirects×1",
+   "postings": 2580,
+   "title_match": 13
   },
   {
    "source": "breezy",
    "companies": 3379,
-   "scanned": 371,
+   "scanned": 204,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 371,
+   "ok": 204,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 7071,
-   "title_match": 216
+   "postings": 3345,
+   "title_match": 50
   },
   {
    "source": "company lists sync",
@@ -122,283 +114,283 @@
   {
    "source": "dayforce",
    "companies": 1543,
-   "scanned": 297,
+   "scanned": 202,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 297,
+   "ok": 202,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 21113,
-   "title_match": 243
+   "postings": 10329,
+   "title_match": 21
   },
   {
    "source": "gem",
    "companies": 495,
-   "scanned": 87,
+   "scanned": 62,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 87,
+   "ok": 62,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 969,
-   "title_match": 35
+   "postings": 363,
+   "title_match": 8
   },
   {
    "source": "greenhouse",
    "companies": 11130,
-   "scanned": 1042,
-   "not_reached": 896,
+   "scanned": 1009,
+   "not_reached": 920,
    "watch_added": 0,
-   "ok": 1032,
+   "ok": 1000,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 55125,
-   "title_match": 2294
+   "postings": 54718,
+   "title_match": 1811
   },
   {
    "source": "icims",
    "companies": 11635,
-   "scanned": 572,
+   "scanned": 92,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 572,
+   "ok": 92,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 918,
-   "title_match": 918
+   "postings": 6,
+   "title_match": 6
   },
   {
    "source": "jazzhr",
    "companies": 7832,
-   "scanned": 865,
+   "scanned": 664,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 865,
+   "ok": 664,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 19449,
-   "title_match": 570
+   "postings": 8364,
+   "title_match": 75
   },
   {
    "source": "jibe",
    "companies": 283,
-   "scanned": 107,
+   "scanned": 74,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 103,
+   "ok": 73,
    "gone": 0,
-   "errors": 4,
-   "error_types": "ReadTimeout×3, JSONDecodeError: Expec×1",
-   "postings": 400,
-   "title_match": 400
+   "errors": 1,
+   "error_types": "JSONDecodeError: Expec×1",
+   "postings": 152,
+   "title_match": 152
   },
   {
    "source": "jobvite",
    "companies": 555,
-   "scanned": 197,
+   "scanned": 131,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 197,
+   "ok": 131,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 4800,
-   "title_match": 111
+   "postings": 2606,
+   "title_match": 34
   },
   {
    "source": "lever",
    "companies": 4903,
-   "scanned": 591,
+   "scanned": 602,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 591,
+   "ok": 602,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 32150,
-   "title_match": 914
+   "postings": 33706,
+   "title_match": 912
   },
   {
    "source": "oracle",
    "companies": 1537,
-   "scanned": 401,
+   "scanned": 106,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 399,
+   "ok": 106,
    "gone": 0,
-   "errors": 2,
-   "error_types": "HTTP 503×2",
-   "postings": 1299,
-   "title_match": 1299
+   "errors": 0,
+   "error_types": "",
+   "postings": 124,
+   "title_match": 124
   },
   {
    "source": "paycom",
    "companies": 5135,
-   "scanned": 297,
+   "scanned": 94,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 291,
+   "ok": 93,
    "gone": 0,
-   "errors": 6,
-   "error_types": "no portal config×6",
-   "postings": 235,
-   "title_match": 235
+   "errors": 1,
+   "error_types": "no portal config×1",
+   "postings": 13,
+   "title_match": 13
   },
   {
    "source": "paylocity",
    "companies": 12342,
-   "scanned": 67,
-   "not_reached": 231,
+   "scanned": 28,
+   "not_reached": 0,
    "watch_added": 0,
-   "ok": 49,
+   "ok": 24,
    "gone": 0,
-   "errors": 17,
-   "error_types": "no page data×10, HTTP 429×7",
-   "postings": 2041,
-   "title_match": 68
+   "errors": 4,
+   "error_types": "no page data×3, HTTP 429×1",
+   "postings": 297,
+   "title_match": 0
   },
   {
    "source": "personio",
    "companies": 6437,
-   "scanned": 206,
+   "scanned": 140,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 206,
+   "ok": 140,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1963,
-   "title_match": 73
+   "postings": 1182,
+   "title_match": 1
   },
   {
    "source": "pinpoint",
    "companies": 1603,
-   "scanned": 256,
+   "scanned": 214,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 256,
+   "ok": 214,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 7364,
-   "title_match": 124
+   "postings": 3494,
+   "title_match": 27
   },
   {
    "source": "recruitee",
    "companies": 3548,
-   "scanned": 389,
+   "scanned": 225,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 389,
+   "ok": 223,
    "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 14890,
-   "title_match": 442
+   "errors": 2,
+   "error_types": "SSLError×2",
+   "postings": 3146,
+   "title_match": 16
   },
   {
    "source": "recruiterbox",
    "companies": 742,
-   "scanned": 112,
+   "scanned": 96,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 112,
+   "ok": 96,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1909,
-   "title_match": 118
+   "postings": 898,
+   "title_match": 36
   },
   {
    "source": "rippling",
    "companies": 2661,
-   "scanned": 280,
+   "scanned": 145,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 280,
+   "ok": 145,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 4483,
-   "title_match": 245
+   "postings": 1275,
+   "title_match": 13
   },
   {
    "source": "smartrecruiters",
    "companies": 11877,
-   "scanned": 1384,
+   "scanned": 780,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 1384,
+   "ok": 780,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 86049,
-   "title_match": 3056
+   "postings": 11749,
+   "title_match": 162
   },
   {
    "source": "successfactors",
    "companies": 1513,
-   "scanned": 267,
+   "scanned": 65,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 265,
+   "ok": 65,
    "gone": 0,
-   "errors": 2,
-   "error_types": "SSLError×1, ConnectionError×1",
-   "postings": 71963,
-   "title_match": 1292
+   "errors": 0,
+   "error_types": "",
+   "postings": 13681,
+   "title_match": 64
   },
   {
    "source": "teamtailor",
    "companies": 4384,
-   "scanned": 466,
+   "scanned": 270,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 466,
+   "ok": 270,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 9709,
-   "title_match": 322
+   "postings": 3973,
+   "title_match": 22
   },
   {
    "source": "ukg",
    "companies": 2186,
-   "scanned": 212,
+   "scanned": 75,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 212,
+   "ok": 75,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 278,
-   "title_match": 278
+   "postings": 17,
+   "title_match": 17
   },
   {
    "source": "workable",
    "companies": 4756,
-   "scanned": 650,
+   "scanned": 275,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 650,
+   "ok": 275,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 45451,
-   "title_match": 1198
+   "postings": 6426,
+   "title_match": 72
   },
   {
    "source": "workday (all companies, rotating)",
    "companies": 13091,
-   "scanned": 12,
-   "not_reached": 96,
+   "scanned": 10,
+   "not_reached": 103,
    "watch_added": 0,
-   "ok": 4,
+   "ok": 2,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
@@ -408,8 +400,8 @@
   {
    "source": "workday (companies hiring QA)",
    "companies": 1879,
-   "scanned": 9,
-   "not_reached": 464,
+   "scanned": 8,
+   "not_reached": 450,
    "watch_added": 0,
    "ok": 0,
    "gone": 0,
@@ -419,8 +411,59 @@
    "title_match": 0
   },
   {
-   "source": "workday (still open check)",
-   "closed": 0,
+   "source": "discovery: LinkedIn",
+   "ok": 1,
+   "title_match": 18,
+   "watch_added": {}
+  },
+  {
+   "source": "platform: Indeed",
+   "ok": 1,
+   "title_match": 0,
+   "accepted": 0
+  },
+  {
+   "source": "platform: Remotive",
+   "ok": 1,
+   "title_match": 0,
+   "accepted": 0
+  },
+  {
+   "source": "platform: Himalayas",
+   "ok": 1,
+   "title_match": 5,
+   "accepted": 3
+  },
+  {
+   "source": "platform: RemoteOK",
+   "ok": 1,
+   "title_match": 0,
+   "accepted": 0
+  },
+  {
+   "source": "platform: Jobicy",
+   "ok": 1,
+   "title_match": 1,
+   "accepted": 0
+  },
+  {
+   "source": "platform: We Work Remotely",
+   "ok": 1,
+   "title_match": 2,
+   "accepted": 0
+  },
+  {
+   "source": "platform: Working Nomads",
+   "ok": 1,
+   "title_match": 5,
+   "accepted": 0
+  },
+  {
+   "source": "platform top-up",
+   "company_postings_today": 4,
+   "platform_sent_today": 7,
+   "target": 50,
+   "new_this_run": 3,
    "ok": 1
   }
  ],
@@ -452,6 +495,102 @@
    "direct_link": false,
    "applied": false,
    "last_seen": "2026-11-27T16:15:00+00:00"
+  },
+  {
+   "v": 2,
+   "id": "himalayas:himalayas:https://himalayas.app/companies/volga-partners/jobs/mainland-china-corporate-regulatory-legal-specialist-sme-ai-evaluator-eu",
+   "ats": "himalayas",
+   "src": "Himalayas",
+   "via": "platform",
+   "board": "himalayas/himalayas",
+   "title": "Mainland China Corporate & Regulatory Legal Specialist (SME) - AI Evaluator (EU)",
+   "company": "Volga Partners",
+   "location": "Albania, Andorra, Austria, Belarus, Belgium, Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, Czechia, Denmark, Estonia, Faroe Islands, Finland, France, Germany, Gibraltar, Greece, Guernsey, Holy See (Vatican City State), Hong Kong, Hungary, Iceland, Ireland, Isle of Man, Italy, Jersey, Kosovo, Latvia, Liechtenstein, Lithuania, Luxembourg, Malaysia, Malta, Moldova, Monaco, Montenegro, Netherlands, North Macedonia, Norway, Poland, Portugal, Romania, San Marino, Serbia, Singapore, Slovakia, Slovenia, Spain, Svalbard and Jan Mayen, Sweden, Switzerland, Taiwan, Ukraine, United Kingdom, United States, Åland Islands",
+   "url": "https://himalayas.app/companies/volga-partners/jobs/mainland-china-corporate-regulatory-legal-specialist-sme-ai-evaluator-eu?utm_source=api",
+   "posted": "2026-11-27T20:11:10+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-27T22:00:01+00:00",
+   "salary": "$15 – $45",
+   "reqs": [
+    "Recognized Mainland China legal professional qualification",
+    "Current or previous admission to practice law in Mainland China, or equivalent corporate/compliance legal credentials",
+    "Relevant legal education obtained in Mainland China and/or professional work experience in Mainland China",
+    "Native-level written Chinese proficiency, including the ability to draft, review, and interpret complex legal documents using professional…"
+   ],
+   "kind": "platform",
+   "why": "",
+   "ai": true,
+   "degree": "none",
+   "stale": false,
+   "notify": "sent",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "himalayas:himalayas:https://himalayas.app/companies/parsons-corporation/jobs/test-and-evaluation-engineer-secret",
+   "ats": "himalayas",
+   "src": "Himalayas",
+   "via": "platform",
+   "board": "himalayas/himalayas",
+   "title": "Test and Evaluation Engineer - Secret",
+   "company": "Parsons Corporation",
+   "location": "United States",
+   "url": "https://himalayas.app/companies/parsons-corporation/jobs/test-and-evaluation-engineer-secret?utm_source=api",
+   "posted": "2026-11-27T19:58:56+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-27T22:00:01+00:00",
+   "salary": "$88,400 – $154,700",
+   "reqs": [
+    "Bachelor’s degree and a minimum of 5 years of experience in software testing, systems testing, test and evaluation or a related technical field or…",
+    "Must have an active Secret clearance",
+    "Must have a Valid US Passport",
+    "Experience developing test strategies, test plans, test cases, test procedures, or test reports"
+   ],
+   "kind": "platform",
+   "why": "",
+   "ai": true,
+   "degree": "alt",
+   "stale": false,
+   "notify": "sent",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
+  },
+  {
+   "v": 2,
+   "id": "himalayas:himalayas:https://himalayas.app/companies/volga-partners/jobs/mainland-china-labor-payroll-compliance-specialist-sme-ai-evaluator-eu",
+   "ats": "himalayas",
+   "src": "Himalayas",
+   "via": "platform",
+   "board": "himalayas/himalayas",
+   "title": "Mainland China Labor & Payroll Compliance Specialist (SME) - AI Evaluator (EU)",
+   "company": "Volga Partners",
+   "location": "Albania, Andorra, Austria, Belarus, Belgium, Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, Czechia, Denmark, Estonia, Faroe Islands, Finland, France, Germany, Gibraltar, Greece, Guernsey, Holy See (Vatican City State), Hong Kong, Hungary, Iceland, Ireland, Isle of Man, Italy, Jersey, Kosovo, Latvia, Liechtenstein, Lithuania, Luxembourg, Malaysia, Malta, Moldova, Monaco, Montenegro, Netherlands, North Macedonia, Norway, Poland, Portugal, Romania, San Marino, Serbia, Singapore, Slovakia, Slovenia, Spain, Svalbard and Jan Mayen, Sweden, Switzerland, Taiwan, Ukraine, United Kingdom, United States, Åland Islands",
+   "url": "https://himalayas.app/companies/volga-partners/jobs/mainland-china-labor-payroll-compliance-specialist-sme-ai-evaluator-eu?utm_source=api",
+   "posted": "2026-11-27T19:41:13+00:00",
+   "date_est": false,
+   "first_seen": "2026-11-27T22:00:01+00:00",
+   "salary": "$15 – $45",
+   "reqs": [
+    "Relevant education obtained in Mainland China and/or professional work experience in Mainland China within HR, labor compliance, payroll…",
+    "Must currently reside and perform all project work outside Mainland China",
+    "Demonstrated hands-on experience in HR, payroll administration, employment compliance, labor relations, or compensation and benefits",
+    "Strong knowledge of Mainland China's labor laws, payroll regulations, statutory contribution requirements, and employment compliance obligations"
+   ],
+   "kind": "platform",
+   "why": "",
+   "ai": true,
+   "degree": "none",
+   "stale": false,
+   "notify": "sent",
+   "fit": null,
+   "by_req": false,
+   "direct_link": false,
+   "applied": false
   },
   {
    "v": 2,
@@ -545,7 +684,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -1360,7 +1499,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -1970,7 +2109,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:30:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2316,7 +2455,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2706,7 +2845,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2739,7 +2878,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2772,7 +2911,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2805,7 +2944,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -2932,7 +3071,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -3594,7 +3733,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -3688,7 +3827,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -4173,7 +4312,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -4305,7 +4444,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T18:00:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -4484,7 +4623,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:00:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -4517,7 +4656,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -4613,7 +4752,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:30:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -6000,7 +6139,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -6290,7 +6429,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -6861,7 +7000,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:30:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -6975,7 +7114,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -7441,7 +7580,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:30:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -7535,7 +7674,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:45:01+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
@@ -7847,7 +7986,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -7908,7 +8047,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:45:01+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
@@ -7998,7 +8137,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:45:01+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
@@ -8175,7 +8314,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:45:01+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
@@ -8206,7 +8345,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:30:00+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
@@ -8238,7 +8377,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -9251,7 +9390,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -9284,7 +9423,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:30:00+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -9315,7 +9454,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-27T21:45:01+00:00"
+   "last_seen": "2026-11-27T22:00:01+00:00"
   },
   {
    "v": 2,
@@ -9530,7 +9669,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-27T21:45:01+00:00",
+   "last_seen": "2026-11-27T22:00:01+00:00",
    "applied": false
   },
   {
