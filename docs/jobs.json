@@ -1,14 +1,14 @@
 {
- "updated": "2026-11-28T03:45:00+00:00",
+ "updated": "2026-11-28T04:00:01+00:00",
  "summary": {
-  "run": 1249,
+  "run": 1250,
   "new": 0,
   "closed": 0,
   "rejected": {
-   "location": 1122,
-   "old": 2603,
-   "not a fit": 3,
-   "not software": 25,
+   "location": 1144,
+   "old": 3749,
+   "not software": 14,
+   "not a fit": 2,
    "duplicate": 1,
    "recruiter": 67
   },
@@ -18,60 +18,60 @@
    "ok": 157,
    "ece": 24
   },
-  "telegram": "sent 0 of 0"
+  "telegram": "quiet hours (0 held)"
  },
  "report": [
   {
    "source": "adp",
    "companies": 2189,
-   "scanned": 208,
-   "not_reached": 41,
+   "scanned": 207,
+   "not_reached": 81,
    "watch_added": 0,
-   "ok": 200,
+   "ok": 199,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 2108,
-   "title_match": 11
+   "postings": 1941,
+   "title_match": 12
   },
   {
    "source": "ashby",
    "companies": 5078,
-   "scanned": 779,
+   "scanned": 753,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 779,
+   "ok": 753,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 24222,
-   "title_match": 939
+   "postings": 23310,
+   "title_match": 941
   },
   {
    "source": "bamboohr",
    "companies": 18442,
-   "scanned": 646,
+   "scanned": 673,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 646,
+   "ok": 671,
    "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 2842,
-   "title_match": 15
+   "errors": 2,
+   "error_types": "TooManyRedirects×2",
+   "postings": 2370,
+   "title_match": 12
   },
   {
    "source": "breezy",
    "companies": 3379,
-   "scanned": 192,
+   "scanned": 184,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 192,
+   "ok": 184,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 1860,
-   "title_match": 18
+   "postings": 1671,
+   "title_match": 12
   },
   {
    "source": "company lists sync",
@@ -112,41 +112,41 @@
   {
    "source": "dayforce",
    "companies": 1543,
-   "scanned": 202,
+   "scanned": 195,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 202,
+   "ok": 195,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 10325,
-   "title_match": 21
+   "postings": 8988,
+   "title_match": 76
   },
   {
    "source": "gem",
    "companies": 495,
-   "scanned": 62,
+   "scanned": 64,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 62,
+   "ok": 64,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 363,
-   "title_match": 8
+   "postings": 534,
+   "title_match": 4
   },
   {
    "source": "greenhouse",
    "companies": 11130,
-   "scanned": 1009,
-   "not_reached": 920,
+   "scanned": 1008,
+   "not_reached": 979,
    "watch_added": 0,
    "ok": 1000,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
-   "postings": 52120,
-   "title_match": 1239
+   "postings": 63356,
+   "title_match": 2300
   },
   {
    "source": "icims",
@@ -158,47 +158,47 @@
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 9,
-   "title_match": 9
+   "postings": 23,
+   "title_match": 23
   },
   {
    "source": "jazzhr",
    "companies": 7832,
-   "scanned": 664,
+   "scanned": 643,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 664,
+   "ok": 643,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 8367,
-   "title_match": 75
+   "postings": 6529,
+   "title_match": 69
   },
   {
    "source": "jibe",
    "companies": 283,
-   "scanned": 74,
+   "scanned": 80,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 73,
+   "ok": 79,
    "gone": 0,
    "errors": 1,
    "error_types": "JSONDecodeError: Expec×1",
-   "postings": 152,
-   "title_match": 152
+   "postings": 134,
+   "title_match": 134
   },
   {
    "source": "jobvite",
    "companies": 555,
-   "scanned": 131,
+   "scanned": 153,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 131,
+   "ok": 153,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 2605,
-   "title_match": 34
+   "postings": 2834,
+   "title_match": 25
   },
   {
    "source": "lever",
@@ -210,51 +210,103 @@
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 33926,
-   "title_match": 917
+   "postings": 31841,
+   "title_match": 915
   },
   {
    "source": "oracle",
    "companies": 1537,
-   "scanned": 84,
+   "scanned": 93,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 84,
+   "ok": 92,
    "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 66,
-   "title_match": 66
+   "errors": 1,
+   "error_types": "HTTP 503×1",
+   "postings": 63,
+   "title_match": 63
   },
   {
    "source": "paycom",
    "companies": 5135,
-   "scanned": 101,
+   "scanned": 118,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 99,
+   "ok": 116,
    "gone": 0,
    "errors": 2,
    "error_types": "no portal config×2",
-   "postings": 8,
-   "title_match": 8
+   "postings": 5,
+   "title_match": 5
   },
   {
    "source": "paylocity",
    "companies": 12342,
-   "scanned": 28,
-   "not_reached": 18,
+   "scanned": 23,
+   "not_reached": 0,
    "watch_added": 0,
-   "ok": 20,
+   "ok": 16,
    "gone": 0,
    "errors": 7,
-   "error_types": "HTTP 429×7",
-   "postings": 227,
+   "error_types": "no page data×1, HTTP 429×6",
+   "postings": 67,
    "title_match": 0
   },
   {
    "source": "personio",
    "companies": 6437,
+   "scanned": 143,
+   "not_reached": 0,
+   "watch_added": 0,
+   "ok": 143,
+   "gone": 0,
+   "errors": 0,
+   "error_types": "",
+   "postings": 755,
+   "title_match": 4
+  },
+  {
+   "source": "pinpoint",
+   "companies": 1603,
+   "scanned": 194,
+   "not_reached": 0,
+   "watch_added": 0,
+   "ok": 194,
+   "gone": 0,
+   "errors": 0,
+   "error_types": "",
+   "postings": 1867,
+   "title_match": 36
+  },
+  {
+   "source": "recruitee",
+   "companies": 3548,
+   "scanned": 211,
+   "not_reached": 0,
+   "watch_added": 0,
+   "ok": 210,
+   "gone": 0,
+   "errors": 1,
+   "error_types": "HTTP 429×1",
+   "postings": 3507,
+   "title_match": 21
+  },
+  {
+   "source": "recruiterbox",
+   "companies": 742,
+   "scanned": 92,
+   "not_reached": 0,
+   "watch_added": 0,
+   "ok": 92,
+   "gone": 0,
+   "errors": 0,
+   "error_types": "",
+   "postings": 893,
+   "title_match": 8
+  },
+  {
+   "source": "rippling",
+   "companies": 2661,
    "scanned": 142,
    "not_reached": 0,
    "watch_added": 0,
@@ -262,133 +314,81 @@
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 956,
-   "title_match": 4
-  },
-  {
-   "source": "pinpoint",
-   "companies": 1603,
-   "scanned": 214,
-   "not_reached": 0,
-   "watch_added": 0,
-   "ok": 214,
-   "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 3478,
-   "title_match": 27
-  },
-  {
-   "source": "recruitee",
-   "companies": 3548,
-   "scanned": 220,
-   "not_reached": 0,
-   "watch_added": 0,
-   "ok": 218,
-   "gone": 1,
-   "errors": 1,
-   "error_types": "SSLError×1",
-   "postings": 3256,
-   "title_match": 18
-  },
-  {
-   "source": "recruiterbox",
-   "companies": 742,
-   "scanned": 96,
-   "not_reached": 0,
-   "watch_added": 0,
-   "ok": 96,
-   "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 898,
-   "title_match": 36
-  },
-  {
-   "source": "rippling",
-   "companies": 2661,
-   "scanned": 155,
-   "not_reached": 0,
-   "watch_added": 0,
-   "ok": 155,
-   "gone": 0,
-   "errors": 0,
-   "error_types": "",
-   "postings": 1974,
-   "title_match": 23
+   "postings": 1513,
+   "title_match": 19
   },
   {
    "source": "smartrecruiters",
    "companies": 11877,
-   "scanned": 670,
+   "scanned": 700,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 670,
+   "ok": 700,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 12438,
-   "title_match": 114
+   "postings": 8908,
+   "title_match": 168
   },
   {
    "source": "successfactors",
    "companies": 1513,
-   "scanned": 81,
+   "scanned": 78,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 79,
+   "ok": 75,
    "gone": 0,
-   "errors": 2,
-   "error_types": "ParseError: not well-f×1, ParseError: undefined ×1",
-   "postings": 9224,
-   "title_match": 53
+   "errors": 3,
+   "error_types": "SSLError×1, HTTP 429×1, ConnectionError×1",
+   "postings": 10572,
+   "title_match": 123
   },
   {
    "source": "teamtailor",
    "companies": 4384,
-   "scanned": 272,
+   "scanned": 286,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 272,
+   "ok": 286,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 3519,
-   "title_match": 39
+   "postings": 3724,
+   "title_match": 15
   },
   {
    "source": "ukg",
    "companies": 2186,
-   "scanned": 68,
+   "scanned": 84,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 68,
+   "ok": 84,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 17,
-   "title_match": 17
+   "postings": 12,
+   "title_match": 12
   },
   {
    "source": "workable",
    "companies": 4756,
-   "scanned": 303,
+   "scanned": 309,
    "not_reached": 0,
    "watch_added": 0,
-   "ok": 303,
+   "ok": 309,
    "gone": 0,
    "errors": 0,
    "error_types": "",
-   "postings": 8205,
-   "title_match": 129
+   "postings": 9496,
+   "title_match": 83
   },
   {
    "source": "workday (all companies, rotating)",
    "companies": 13091,
-   "scanned": 12,
-   "not_reached": 96,
+   "scanned": 8,
+   "not_reached": 100,
    "watch_added": 0,
-   "ok": 4,
+   "ok": 0,
    "gone": 0,
    "errors": 7,
    "error_types": "HTTP 429×7",
@@ -399,7 +399,7 @@
    "source": "workday (companies hiring QA)",
    "companies": 1879,
    "scanned": 8,
-   "not_reached": 450,
+   "not_reached": 466,
    "watch_added": 0,
    "ok": 0,
    "gone": 0,
@@ -1540,7 +1540,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -1959,7 +1959,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2338,7 +2338,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2404,7 +2404,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2470,7 +2470,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2728,7 +2728,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2761,7 +2761,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2794,7 +2794,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -2987,7 +2987,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -3616,7 +3616,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -3710,7 +3710,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4167,7 +4167,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:15:01+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4195,7 +4195,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4294,7 +4294,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4506,7 +4506,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4602,7 +4602,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -4795,7 +4795,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -5219,7 +5219,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -6022,7 +6022,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -6312,7 +6312,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -6572,7 +6572,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -6997,7 +6997,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -7154,7 +7154,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -7275,7 +7275,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:30:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -7681,7 +7681,7 @@
    "stale": true,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:30:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -7869,7 +7869,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -7930,7 +7930,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:45:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -8020,7 +8020,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:45:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -8197,7 +8197,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:45:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -8260,7 +8260,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -8640,7 +8640,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:30:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -8954,7 +8954,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:45:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
@@ -9211,7 +9211,7 @@
    "by_req": false,
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:00:01+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -9275,7 +9275,7 @@
    "notify": "sent",
    "direct_link": false,
    "applied": false,
-   "last_seen": "2026-11-28T03:45:00+00:00"
+   "last_seen": "2026-11-28T04:00:01+00:00"
   },
   {
    "v": 2,
@@ -9490,7 +9490,7 @@
    "stale": false,
    "notify": "sent",
    "direct_link": false,
-   "last_seen": "2026-11-28T03:45:00+00:00",
+   "last_seen": "2026-11-28T04:00:01+00:00",
    "applied": false
   },
   {
